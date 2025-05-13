@@ -1,0 +1,6 @@
+@Y_te_hoc_duong_HostAddress = http://localhost:5291
+
+GET {{Y_te_hoc_duong_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

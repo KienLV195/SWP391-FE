@@ -1,0 +1,40 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Y te hoc duong solution/Y te hoc duong solution.sln
+
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+*.nupkg
+packages/
+*.snupkg
+
+# Others
+*.log
+*.DS_Store
+*.dbmdl
+*.pidb
+*.psess
+*.vsp
+*.vspscc
+
+# Entity Framework
+Migrations/
+
+# Mac system files
+.DS_Store
+
+# User secrets
+secrets.json
+
+# node_modules (nếu có frontend)
+node_modules/
