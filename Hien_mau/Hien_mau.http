@@ -1,0 +1,6 @@
+@Hien_mau_HostAddress = http://localhost:5246
+
+GET {{Hien_mau_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
