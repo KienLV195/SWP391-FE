@@ -2,7 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Y te hoc duong solution/Y te hoc duong solution.sln
+/Hien_mau/Hien_mau.sln
 
 .vs/
 *.user
