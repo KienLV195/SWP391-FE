@@ -1,0 +1,25 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", "Roboto", Arial, sans-serif;
+  color: $text-color;
+  background: $background-main;
+}
+
+.main-title,
+.merriweather-title {
+  font-family: "Poppins", "Montserrat", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: $primary-color;
+}
+
+.main-desc,
+.merriweather-content {
+  font-family: "Open Sans", "Roboto", Arial, sans-serif;
+  color: $text-secondary;
+}

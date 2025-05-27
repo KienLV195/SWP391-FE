@@ -1,0 +1,71 @@
+@import "../../styles/base/variables";
+.guest-navbar {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-unit * 2;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .navbar-logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    color: $primary-color;
+
+    img {
+      height: 40px;
+    }
+  }
+
+  .navbar-links {
+    display: flex;
+    list-style: none;
+    gap: $spacing-unit * 3;
+
+    a {
+      text-decoration: none;
+      color: $text-color;
+      font-size: 16px;
+      transition: color 0.3s;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+
+  .navbar-actions {
+    display: flex;
+    gap: $spacing-unit * 2;
+
+    .btn-login,
+    .btn-register {
+      padding: $spacing-unit $spacing-unit * 2;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      transition: background-color 0.3s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .btn-login {
+      background-color: $secondary-color;
+    }
+
+    .btn-register {
+      background-color: $primary-color;
+    }
+  }
+}

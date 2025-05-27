@@ -1,0 +1,184 @@
+@import "../../styles/base/variables";
+.guest-home-page {
+  width: 100%;
+  overflow-x: hidden;
+  .hero-section {
+    background: linear-gradient(90deg, #eaf6fb 60%, #e3f2fd 100%);
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+    padding: 0;
+    .hero-swiper {
+      width: 100%;
+      max-width: 100vw;
+      height: 60dvh;
+      min-height: 320px;
+      margin: 0 auto;
+      position: relative;
+      .swiper-slide {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 60dvh;
+        max-width: 100vw;
+      }
+      .hero-slide {
+        position: relative;
+        width: 100%;
+        height: 60dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100vw;
+      }
+      .hero-img {
+        width: 100%;
+        height: 60dvh;
+        object-fit: cover;
+        border-radius: 0;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+        display: block;
+        max-width: 100vw;
+      }
+      .hero-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.85);
+        padding: 32px 36px;
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        min-width: 320px;
+        max-width: 80vw;
+        .merriweather-title {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $primary-color;
+          margin-bottom: 16px;
+          font-family: "Poppins", "Montserrat", Arial, sans-serif;
+        }
+        .merriweather-content {
+          font-size: 1.1rem;
+          color: $text-secondary;
+          margin-bottom: 24px;
+          font-family: "Open Sans", "Roboto", Arial, sans-serif;
+        }
+        .cta-row {
+          display: flex;
+          justify-content: center;
+          gap: 18px;
+          .cta-button {
+            border-radius: 24px;
+            background: $secondary-color;
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 28px;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: background 0.2s;
+            &:hover {
+              background: $primary-color;
+            }
+            &.secondary {
+              background: $primary-color;
+              &:hover {
+                background: $primary-hover;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .hospital-info-section {
+    background: #f6fbfd;
+    padding: 64px 0;
+    .hospital-container {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(25, 118, 210, 0.07);
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      display: flex;
+      gap: 48px;
+      align-items: center;
+    }
+    .hospital-left {
+      flex: 1;
+      .merriweather-title {
+        font-family: "Poppins", "Montserrat", Arial, sans-serif;
+        font-size: 2rem;
+        color: #1976d2;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+      .hospital-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 10px;
+      }
+      p,
+      .hospital-contact li {
+        font-family: "Open Sans", "Roboto", Arial, sans-serif;
+        color: #6c757d;
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+      }
+      .hospital-contact {
+        margin-top: 18px;
+      }
+    }
+    .hospital-right {
+      flex: 0 0 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .img-stack {
+        width: 180px;
+        height: 180px;
+        position: relative;
+        .img-1,
+        .img-2 {
+          border-radius: 16px;
+          box-shadow: 0 2px 12px rgba(25, 118, 210, 0.1);
+        }
+        .img-1 {
+          width: 140px;
+          height: 140px;
+          background: #e3f2fd;
+          position: absolute;
+          left: 0;
+          top: 0;
+          z-index: 2;
+        }
+        .img-2 {
+          width: 100px;
+          height: 100px;
+          background: #b3e5fc;
+          position: absolute;
+          left: 50px;
+          top: 50px;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}
+
+.hero-img {
+  width: 100%;
+  height: 60dvh;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+  display: block;
+  max-width: 100vw;
+}

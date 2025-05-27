@@ -1,0 +1,18 @@
+@import "../../styles/base/variables";
+.not-found-page {
+  main {
+    padding: $spacing-unit * 5;
+    text-align: center;
+
+    h1 {
+      font-size: 36px;
+      color: $primary-color;
+      margin-bottom: $spacing-unit * 2;
+    }
+
+    p {
+      font-size: 18px;
+      color: $text-color;
+    }
+  }
+}

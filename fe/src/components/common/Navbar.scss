@@ -1,0 +1,37 @@
+@import "../../styles/base/variables";
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-unit * 2;
+  background-color: #f5f5f5;
+
+  .navbar-logo {
+    img {
+      height: 40px;
+    }
+  }
+
+  .navbar-actions {
+    display: flex;
+    gap: $spacing-unit * 2;
+
+    .btn-login,
+    .btn-register {
+      padding: $spacing-unit $spacing-unit * 2;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      background-color: $secondary-color;
+      color: white;
+    }
+
+    .btn-register {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+}
