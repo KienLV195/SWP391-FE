@@ -1,0 +1,49 @@
+// Gợi ý: Thêm vào src/pages/auth/LoginPage.scss (nếu muốn tách riêng)
+// Hoặc thêm vào global styles nếu dùng chung cho cả RegisterPage
+
+.auth-page__container {
+    min-height: 100vh;
+    background: #f6f6f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-page__content {
+    display: flex;
+    background: #fff;
+    border-radius: 40px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+    width: 950px;
+    max-width: 98vw;
+    min-height: 520px;
+    overflow: hidden;
+}
+
+.auth-page__left {
+    flex: 1;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 40px 0 0 40px;
+    min-height: 400px;
+}
+
+.auth-page__image-placeholder {
+    width: 180px;
+    height: 180px;
+    background: #ccc;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #fff;
+}
+
+.auth-page__right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

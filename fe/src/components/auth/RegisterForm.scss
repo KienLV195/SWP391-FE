@@ -1,0 +1,145 @@
+.register-form__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f6f6f6;
+}
+
+.register-form__box {
+    background: #fff;
+    border-radius: 32px;
+    padding: 48px 40px 32px 40px;
+    width: 420px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-form__logo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+}
+
+.register-form__welcome {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.register-form__google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 320px;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    gap: 8px;
+    margin-bottom: 24px;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.register-form__google-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.register-form__divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    margin: 16px 0 24px 0;
+    color: #bbb;
+    font-size: 13px;
+    gap: 8px;
+
+    span:first-child,
+    span:last-child {
+        flex: 1;
+        height: 1px;
+        background: #eee;
+    }
+}
+
+.register-form__divider-text {
+    padding: 0 8px;
+    white-space: nowrap;
+}
+
+.register-form__form {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.register-form__label {
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.register-form__input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 8px;
+    transition: border 0.2s;
+
+    &:focus {
+        border: 1.5px solid #4285F4;
+    }
+}
+
+.register-form__submit {
+    width: 100%;
+    padding: 12px 0;
+    background: #bbb;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #888;
+    }
+}
+
+.register-form__login {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 15px;
+
+    a {
+        font-weight: 700;
+        text-decoration: underline;
+        color: #222;
+        margin-left: 4px;
+    }
+}

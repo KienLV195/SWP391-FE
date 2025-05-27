@@ -2,11 +2,21 @@ import { createBrowserRouter } from "react-router-dom";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import ForbiddenPage from "../pages/error/ForbiddenPage";
 import GuestHomePage from "../pages/HomeGuest/HomePage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <GuestHomePage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/403",
