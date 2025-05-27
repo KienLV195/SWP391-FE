@@ -1,3 +1,11 @@
+/*
+  Để font hiển thị tiếng Việt chuẩn, hãy import các font sau vào index.html:
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap&subset=vietnamese" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap&subset=vietnamese" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap&subset=vietnamese" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap&subset=vietnamese" rel="stylesheet">
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -5,21 +13,33 @@
 }
 
 body {
-  font-family: "Open Sans", "Roboto", Arial, sans-serif;
+  font-family: "Open Sans", "Roboto", "Inter", Arial, Helvetica, sans-serif;
   color: $text-color;
   background: $background-main;
 }
 
 .main-title,
-.merriweather-title {
-  font-family: "Poppins", "Montserrat", Arial, sans-serif;
-  font-weight: 700;
+.merriweather-title,
+h1,
+h2,
+h3 {
+  font-family: "Montserrat", "Poppins", Arial, Helvetica, sans-serif;
+  font-weight: 800;
   font-size: 2.2rem;
   color: $primary-color;
 }
 
 .main-desc,
-.merriweather-content {
-  font-family: "Open Sans", "Roboto", Arial, sans-serif;
+.merriweather-content,
+p,
+li {
+  font-family: "Open Sans", "Roboto", "Inter", Arial, Helvetica, sans-serif;
   color: $text-secondary;
+}
+
+.button,
+.cta-button {
+  font-family: "Montserrat", "Poppins", Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
 }

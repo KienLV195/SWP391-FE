@@ -5,12 +5,10 @@
   .hero-section {
     background: linear-gradient(90deg, #eaf6fb 60%, #e3f2fd 100%);
     width: 100%;
-    max-width: 100vw;
     overflow: hidden;
     padding: 0;
     .hero-swiper {
       width: 100%;
-      max-width: 100vw;
       height: 60dvh;
       min-height: 320px;
       margin: 0 auto;
@@ -22,7 +20,6 @@
         justify-content: center;
         width: 100%;
         height: 60dvh;
-        max-width: 100vw;
       }
       .hero-slide {
         position: relative;
@@ -31,7 +28,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 100vw;
       }
       .hero-img {
         width: 100%;
@@ -40,7 +36,6 @@
         border-radius: 0;
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
         display: block;
-        max-width: 100vw;
       }
       .hero-content {
         position: absolute;
@@ -55,11 +50,12 @@
         min-width: 320px;
         max-width: 80vw;
         .merriweather-title {
-          font-size: 2rem;
-          font-weight: 700;
-          color: $primary-color;
+          font-size: 2.5rem;
+          font-weight: 900;
+          color: #d32f2f;
+          text-shadow: 0 2px 8px rgba(211, 47, 47, 0.08);
           margin-bottom: 16px;
-          font-family: "Poppins", "Montserrat", Arial, sans-serif;
+          font-family: "Montserrat", Arial, Helvetica, sans-serif;
         }
         .merriweather-content {
           font-size: 1.1rem;
@@ -73,22 +69,30 @@
           gap: 18px;
           .cta-button {
             border-radius: 24px;
-            background: $secondary-color;
+            background: #1976d2;
             color: #fff;
-            font-weight: 600;
-            padding: 10px 28px;
-            font-size: 1rem;
+            font-weight: 800;
+            padding: 12px 32px;
+            font-size: 1.08rem;
             border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: background 0.2s;
+            box-shadow: 0 6px 24px rgba(25, 118, 210, 0.18), 0 1.5px 0 #1253a2;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            transform: translateY(0);
             &:hover {
-              background: $primary-color;
+              background: #2196f3;
+              box-shadow: 0 10px 32px rgba(25, 118, 210, 0.22), 0 2px 0 #1253a2;
+              transform: translateY(-2px) scale(1.03);
             }
-            &.secondary {
-              background: $primary-color;
-              &:hover {
-                background: $primary-hover;
-              }
+          }
+          .cta-button.secondary {
+            background: $secondary-color;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            &:hover {
+              background: #00c9a7;
+              box-shadow: 0 10px 32px rgba(0, 201, 167, 0.18), 0 2px 0 #00897b;
+              transform: translateY(-2px) scale(1.03);
             }
           }
         }
@@ -99,74 +103,97 @@
   .hospital-info-section {
     background: #f6fbfd;
     padding: 64px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 350px;
     .hospital-container {
       background: #fff;
       border-radius: 18px;
       box-shadow: 0 4px 24px rgba(25, 118, 210, 0.07);
-      max-width: 1100px;
-      margin: 0 auto;
+      width: 48vw;
+      min-width: 340px;
+      max-width: 600px;
+      margin-left: 6vw;
       padding: 48px 40px;
-      display: flex;
-      gap: 48px;
-      align-items: center;
+      z-index: 2;
+      position: relative;
+      display: block;
     }
     .hospital-left {
-      flex: 1;
-      .merriweather-title {
-        font-family: "Poppins", "Montserrat", Arial, sans-serif;
-        font-size: 2rem;
-        color: #1976d2;
-        font-weight: 700;
-        margin-bottom: 18px;
-      }
-      .hospital-name {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #222;
-        margin-bottom: 10px;
-      }
-      p,
-      .hospital-contact li {
-        font-family: "Open Sans", "Roboto", Arial, sans-serif;
-        color: #6c757d;
-        font-size: 1.05rem;
-        margin-bottom: 10px;
-      }
-      .hospital-contact {
-        margin-top: 18px;
-      }
+      text-align: left;
+    }
+    .hospital-title {
+      font-family: "Montserrat", Arial, Helvetica, sans-serif;
+      font-size: 1.15rem;
+      color: #000;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      text-transform: none;
     }
     .hospital-right {
-      flex: 0 0 220px;
+      position: absolute;
+      right: 8vw;
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
       align-items: center;
-      justify-content: center;
-      .img-stack {
+      justify-content: flex-end;
+      z-index: 1;
+      .hospital-img-box {
         width: 180px;
         height: 180px;
-        position: relative;
-        .img-1,
-        .img-2 {
-          border-radius: 16px;
-          box-shadow: 0 2px 12px rgba(25, 118, 210, 0.1);
-        }
-        .img-1 {
-          width: 140px;
-          height: 140px;
-          background: #e3f2fd;
-          position: absolute;
-          left: 0;
-          top: 0;
-          z-index: 2;
-        }
-        .img-2 {
-          width: 100px;
-          height: 100px;
-          background: #b3e5fc;
-          position: absolute;
-          left: 50px;
-          top: 50px;
-          z-index: 1;
+        background: #e3f2fd;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 12px rgba(25, 118, 210, 0.1);
+        overflow: hidden;
+      }
+    }
+    .hospital-name {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1976d2;
+      margin-bottom: 18px;
+      font-family: "Montserrat", Arial, Helvetica, sans-serif;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .hospital-desc {
+      font-family: "Open Sans", "Roboto", Arial, sans-serif;
+      color: #6c757d;
+      font-size: 1.08rem;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .hospital-contact {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        display: flex;
+        align-items: center;
+        font-size: 1.05rem;
+        color: #1976d2;
+        margin-bottom: 10px;
+        .icon {
+          margin-right: 10px;
+          font-size: 1.2em;
+          &.phone {
+            color: #00b894;
+          }
+          &.email {
+            color: #1976d2;
+          }
+          &.address {
+            color: #ff7043;
+          }
+          &.clock {
+            color: #ffa000;
+          }
         }
       }
     }
@@ -180,5 +207,4 @@
   border-radius: 0;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
   display: block;
-  max-width: 100vw;
 }

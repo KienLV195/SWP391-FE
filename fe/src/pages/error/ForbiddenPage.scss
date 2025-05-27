@@ -1,13 +1,13 @@
 @import "../../styles/base/variables";
 .forbidden-page {
   main {
-    padding: $spacing-unit * 5;
+    padding: 40px;
     text-align: center;
 
     h1 {
       font-size: 36px;
       color: $primary-color;
-      margin-bottom: $spacing-unit * 2;
+      margin-bottom: 16px;
     }
 
     p {

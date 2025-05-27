@@ -6,10 +6,11 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import blood1 from "../../assets/images/blood1.jpg";
 import blood2 from "../../assets/images/blood2.jpg";
 import blood3 from "../../assets/images/blood3.jpg";
+import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
 
 // Dữ liệu giả lập
 const hospitalInfo = {
@@ -30,7 +31,8 @@ const GuestHomePage = () => {
       <section className="hero-section">
         <Swiper
           pagination={{ dynamicBullets: true }}
-          modules={[Pagination]}
+          modules={[Pagination, Autoplay]}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
           className="hero-swiper"
         >
           <SwiperSlide>
@@ -112,36 +114,41 @@ const GuestHomePage = () => {
       <section className="hospital-info-section">
         <div className="hospital-container">
           <div className="hospital-left">
-            <h2 className="merriweather-title">GIỚI THIỆU VỀ CHÚNG TÔI</h2>
-            <h3 className="hospital-name">{hospitalInfo.name}</h3>
-            <p>
-              Bệnh viện An Khoa Ánh Dương là đơn vị y tế hàng đầu, cam kết cung
+            <h3 className="hospital-title">GIỚI THIỆU VỀ CHÚNG TÔI</h3>
+            <h2 className="hospital-name">Bệnh viện Đa khoa Ánh Dương</h2>
+            <p className="hospital-desc">
+              Bệnh viện Đa khoa Ánh Dương là đơn vị y tế hàng đầu, cam kết cung
               cấp dịch vụ chăm sóc sức khỏe chất lượng cao. Với cơ sở vật chất
-              hiện đại, đội ngũ chuyên môn giàu kinh nghiệm và uy tín minh bạch,
-              chúng tôi luôn là điểm tựa vững chắc cho cộng đồng.
+              hiện đại, đội ngũ chuyên môn giàu kinh nghiệm và quy trình minh
+              bạch, chúng tôi luôn là điểm tựa vững chắc cho cộng đồng.
+              <br />
+              <br />
+              Bệnh viện đa khoa Ánh Dương đặc biệt chú trọng xây dựng và vận
+              hành hệ thống tiếp nhận, điều phối máu tiên tiến. Nguồn máu được
+              hiến tặng không chỉ phục vụ nhu cầu điều trị nội bộ mà còn sẵn
+              sàng hỗ trợ các bệnh nhân có nhu cầu, góp phần cứu sống nhiều sinh
+              mạng. Ánh Dương tự hào là cầu nối tin cậy giữa lòng nhân ái và sự
+              sống.
             </p>
             <ul className="hospital-contact">
               <li>
-                <span className="icon">📞</span> {hospitalInfo.phone}
+                <FiPhone className="icon phone" /> {hospitalInfo.phone}
               </li>
               <li>
-                <span className="icon">✉️</span> {hospitalInfo.email}
+                <FiMail className="icon email" /> {hospitalInfo.email}
               </li>
               <li>
-                <span className="icon">📍</span> {hospitalInfo.address}
+                <FiMapPin className="icon address" /> {hospitalInfo.address}
               </li>
               <li>
-                <span className="icon">⏰</span> {hospitalInfo.hours}
+                <FiClock className="icon clock" /> {hospitalInfo.hours}
               </li>
             </ul>
           </div>
-          <div className="hospital-right">
-            <div className="img-stack">
-              <div className="img-1">{/* Hình ảnh chính */}</div>
-              <div className="img-2">
-                {/* Hình ảnh phụ hoặc hiệu ứng nền */}
-              </div>
-            </div>
+        </div>
+        <div className="hospital-right">
+          <div className="hospital-img-box">
+            {/* Chèn ảnh bệnh viện hoặc ảnh minh họa tại đây */}
           </div>
         </div>
       </section>
