@@ -3,14 +3,9 @@ import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
 import "./HomePage.scss";
 import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/pagination";
-import { Pagination, Autoplay } from "swiper/modules";
 import blood1 from "../../assets/images/blood1.jpg";
-import blood2 from "../../assets/images/blood2.jpg";
-import blood3 from "../../assets/images/blood3.jpg";
 import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
+import hospitalImg from "../../assets/images/hospital.jpg";
 
 // Dữ liệu giả lập
 const hospitalInfo = {
@@ -29,85 +24,31 @@ const GuestHomePage = () => {
 
       {/* Hero Section */}
       <section className="hero-section">
-        <Swiper
-          pagination={{ dynamicBullets: true }}
-          modules={[Pagination, Autoplay]}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          className="hero-swiper"
-        >
-          <SwiperSlide>
-            <div className="hero-slide">
-              <img src={blood1} alt="Truyền máu 1" className="hero-img" />
-              <div className="hero-content">
-                <h1 className="merriweather-title">
-                  HIẾN MÁU CỨU NGƯỜI
-                  <br />
-                  NHẬN MÁU CỨU MÌNH
-                </h1>
-                <p className="merriweather-content">
-                  Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
-                  nối sự sống bằng từng giọt máu yêu thương.
-                </p>
-                <div className="cta-row">
-                  <Link to="/register" className="cta-button">
-                    ĐĂNG KÝ HIẾN MÁU
-                  </Link>
-                  <Link to="/receive" className="cta-button secondary">
-                    ĐĂNG KÝ NHẬN MÁU
-                  </Link>
-                </div>
-              </div>
+        <div className="hero-container">
+          <div className="hero-content">
+            <h1 className="merriweather-title">
+              HIẾN MÁU CỨU NGƯỜI
+              <br />
+              NHẬN MÁU CỨU MÌNH
+            </h1>
+            <p className="merriweather-content">
+              Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết nối
+              sự sống bằng từng giọt máu yêu thương.
+            </p>
+            <div className="cta-row">
+              <Link to="/register" className="cta-button">
+                ĐĂNG KÝ HIẾN MÁU
+              </Link>
+              <Link to="/receive" className="cta-button secondary">
+                ĐĂNG KÝ NHẬN MÁU
+              </Link>
             </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="hero-slide">
-              <img src={blood2} alt="Truyền máu 2" className="hero-img" />
-              <div className="hero-content">
-                <h1 className="merriweather-title">
-                  HIẾN MÁU CỨU NGƯỜI
-                  <br />
-                  NHẬN MÁU CỨU MÌNH
-                </h1>
-                <p className="merriweather-content">
-                  Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
-                  nối sự sống bằng từng giọt máu yêu thương.
-                </p>
-                <div className="cta-row">
-                  <Link to="/register" className="cta-button">
-                    ĐĂNG KÝ HIẾN MÁU
-                  </Link>
-                  <Link to="/receive" className="cta-button secondary">
-                    ĐĂNG KÝ NHẬN MÁU
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="hero-slide">
-              <img src={blood3} alt="Truyền máu 3" className="hero-img" />
-              <div className="hero-content">
-                <h1 className="merriweather-title">
-                  HIẾN MÁU CỨU NGƯỜI
-                  <br />
-                  NHẬN MÁU CỨU MÌNH
-                </h1>
-                <p className="merriweather-content">
-                  Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
-                  nối sự sống bằng từng giọt máu yêu thương.
-                </p>
-                <div className="cta-row">
-                  <Link to="/register" className="cta-button">
-                    ĐĂNG KÝ HIẾN MÁU
-                  </Link>
-                  <Link to="/receive" className="cta-button secondary">
-                    ĐĂNG KÝ NHẬN MÁU
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
+          </div>
+          <div className="hero-image">
+            <div className="hero-image-bg"></div>
+            <img src={blood1} alt="Truyền máu" className="hero-img" />
+          </div>
+        </div>
       </section>
 
       {/* Hospital Info Section */}
@@ -148,7 +89,11 @@ const GuestHomePage = () => {
         </div>
         <div className="hospital-right">
           <div className="hospital-img-box">
-            {/* Chèn ảnh bệnh viện hoặc ảnh minh họa tại đây */}
+            <img
+              src={hospitalImg}
+              alt="Bệnh viện Ánh Dương"
+              className="hospital-img"
+            />
           </div>
         </div>
       </section>
