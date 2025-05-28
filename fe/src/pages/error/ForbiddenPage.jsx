@@ -1,6 +1,6 @@
 import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
-import "./ForbiddenPage.scss";
+import "../../styles/pages/ForbiddenPage.scss";
 
 const ForbiddenPage = () => {
   return (

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import "./Header.scss";
+import "../../styles/components/Header.scss";
 
 const Header = () => {
   const location = useLocation();

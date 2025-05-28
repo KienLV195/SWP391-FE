@@ -1,0 +1,76 @@
+@use "../../styles/base/variables" as vars;
+@use "../../styles/base/mixin" as mix;
+
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: vars.$background-light;
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: vars.$spacing-xxl vars.$spacing-lg;
+    text-align: center;
+  }
+
+  &__error-code {
+    font-size: 120px;
+    font-weight: 800;
+    color: vars.$primary-color;
+    margin-bottom: vars.$spacing-lg;
+  }
+
+  &__title {
+    font-size: vars.$font-size-xlarge;
+    color: vars.$text-color;
+    margin-bottom: vars.$spacing-md;
+  }
+
+  &__message {
+    font-size: vars.$font-size-large;
+    color: vars.$text-secondary;
+    margin-bottom: vars.$spacing-xl;
+    max-width: 600px;
+  }
+
+  &__button {
+    @include mix.primary-button;
+    text-decoration: none;
+  }
+}
+
+@include mix.tablet {
+  .not-found-page {
+    &__error-code {
+      font-size: 100px;
+    }
+
+    &__title {
+      font-size: vars.$font-size-large;
+    }
+
+    &__message {
+      font-size: vars.$font-size-base;
+    }
+  }
+}
+
+@include mix.mobile {
+  .not-found-page {
+    &__error-code {
+      font-size: 80px;
+    }
+
+    &__title {
+      font-size: vars.$font-size-base;
+    }
+
+    &__message {
+      font-size: vars.$font-size-small;
+    }
+  }
+}

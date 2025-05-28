@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './LoginForm.scss';
+import "../../styles/components/LoginForm.scss";
 
 export default function LoginForm() {
     const [phone, setPhone] = useState('');

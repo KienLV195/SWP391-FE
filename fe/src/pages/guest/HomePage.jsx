@@ -1,11 +1,11 @@
+import React from "react";
 import { Link } from "react-router-dom";
+import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
 import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
-import "./HomePage.scss";
-import React from "react";
 import blood1 from "../../assets/images/blood1.jpg";
-import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
 import hospitalImg from "../../assets/images/hospital.jpg";
+import "../../styles/pages/HomePage.scss";
 
 // Dữ liệu giả lập
 const hospitalInfo = {
@@ -19,7 +19,6 @@ const hospitalInfo = {
 const GuestHomePage = () => {
   return (
     <div className="guest-home-page">
-      {/* Header */}
       <Header />
 
       {/* Hero Section */}

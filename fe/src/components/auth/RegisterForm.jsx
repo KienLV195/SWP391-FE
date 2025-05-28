@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './RegisterForm.scss';
+import "../../styles/components/RegisterForm.scss";
 
 export default function RegisterForm() {
     const [phone, setPhone] = useState('');

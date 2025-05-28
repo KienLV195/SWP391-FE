@@ -1,3 +1,5 @@
+@use "./variables" as vars;
+
 @mixin flex-center {
   display: flex;
   justify-content: center;
@@ -5,13 +7,45 @@
 }
 
 @mixin responsive($breakpoint) {
-  @if $breakpoint == "tablet" {
+  @if $breakpoint =="tablet" {
     @media (max-width: 768px) {
       @content;
     }
-  } @else if $breakpoint == "mobile" {
+  }
+
+  @else if $breakpoint =="mobile" {
     @media (max-width: 480px) {
       @content;
     }
+  }
+}
+
+@mixin primary-button {
+  display: inline-block;
+  padding: 12px 32px;
+  background: vars.$primary-color;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+
+  &:hover {
+    background: darken(vars.$primary-color, 10%);
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 991.98px) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: 575.98px) {
+    @content;
   }
 }

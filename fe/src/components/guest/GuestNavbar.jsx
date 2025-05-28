@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./GuestNavbar.scss";
+import "../../styles/components/guest/GuestNavbar.scss";
 
 const GuestNavbar = () => {
   return (

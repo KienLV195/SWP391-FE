@@ -1,0 +1,65 @@
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: vars.$background-light;
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: vars.$spacing-xxl vars.$spacing-lg;
+    }
+
+    &__container {
+        width: 100%;
+        max-width: 400px;
+        background: white;
+        padding: vars.$spacing-xl;
+        border-radius: vars.$border-radius-lg;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &__title {
+        font-size: vars.$font-size-xlarge;
+        color: vars.$text-color;
+        margin-bottom: vars.$spacing-xl;
+        text-align: center;
+    }
+}
+
+@include mix.tablet {
+    .auth-page {
+        &__content {
+            padding: vars.$spacing-xl vars.$spacing-md;
+        }
+
+        &__container {
+            padding: vars.$spacing-lg;
+        }
+
+        &__title {
+            font-size: vars.$font-size-large;
+        }
+    }
+}
+
+@include mix.mobile {
+    .auth-page {
+        &__content {
+            padding: vars.$spacing-lg vars.$spacing-sm;
+        }
+
+        &__container {
+            padding: vars.$spacing-md;
+        }
+
+        &__title {
+            font-size: vars.$font-size-base;
+        }
+    }
+}

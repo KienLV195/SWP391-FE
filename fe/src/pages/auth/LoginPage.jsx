@@ -1,6 +1,6 @@
 import React from 'react';
-import LoginForm from '../../components/auth/LoginForm';
-import './LoginPage.scss';
+import LoginForm from "../../components/auth/LoginForm";
+import "../../styles/pages/LoginPage.scss";
 
 export default function LoginPage() {
     return (
