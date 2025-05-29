@@ -8,6 +8,7 @@ import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/HomePage.scss";
 
+
 const GuestHomePage = () => {
   const [emergencyRequests, setEmergencyRequests] = useState([]);
 
@@ -22,7 +23,7 @@ const GuestHomePage = () => {
         id_internal: 1,
         location: "Bệnh viện Chợ Rẫy",
         urgency: "Rất khẩn cấp",
-        details: "Cần gấp 2 đơn vị máu O+ cho ca phẫu thuật tim.",
+        details: "Cần gấp 2 đơn vị máu O+",
         details_original: "Cần gấp 2 đơn vị máu O+ cho ca phẫu thuật tim.",
         postedDate: "10/07/2024",
       },
@@ -35,7 +36,7 @@ const GuestHomePage = () => {
         id_internal: 2,
         location: "Bệnh viện Nhi Đồng 1",
         urgency: "Khẩn cấp",
-        details: "Bé gái 5 tuổi cần máu A- để điều trị bệnh hiểm nghèo.",
+        details: "Bé gái 5 tuổi cần máu A-",
         details_original:
           "Bé gái 5 tuổi cần máu A- để điều trị bệnh hiểm nghèo.",
         postedDate: "09/07/2024",
@@ -48,8 +49,7 @@ const GuestHomePage = () => {
         id_internal: 3,
         location: "Bệnh viện Truyền máu Diarrhea",
         urgency: "Cao",
-        details:
-          "Cần cho bệnh nhân Thalassemia, ưu tiên người đã hiến nhắc lại.",
+        details: "Cần cho bệnh nhân Thalassemia",
         details_original:
           "Cần cho bệnh nhân Thalassemia, ưu tiên người đã hiến nhắc lại.",
         postedDate: "11/07/2024",
@@ -77,6 +77,20 @@ const GuestHomePage = () => {
       onFilter: (value, record) => record.bloodType.includes(value),
       sorter: (a, b) => a.bloodType.localeCompare(b.bloodType),
       width: "15%",
+      render: (bloodType) => {
+        // Xác định nhóm máu dương hay âm
+        const isPositive = bloodType.includes("+");
+        const badgeClass = isPositive ? "positive" : "negative";
+
+        return (
+          <span
+            className={`blood-type-badge ${badgeClass}`}
+            data-blood-type={bloodType}
+          >
+            {bloodType}
+          </span>
+        );
+      },
     },
     {
       title: "Số lượng (đv)",
@@ -87,18 +101,15 @@ const GuestHomePage = () => {
       align: "center",
     },
     {
-      title: "Thông tin chi tiết & Địa điểm",
-      dataIndex: "note",
-      key: "note",
+      title: "Ghi chú",
+      dataIndex: "details",
+      key: "details",
     },
     {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-        <Link
-          to={`/requests/${record.id_internal}`}
-          className="cta-button tertiary table-action-button"
-        >
+        <Link to="/login" className="cta-button tertiary table-action-button">
           Hỗ trợ
         </Link>
       ),
@@ -128,7 +139,7 @@ const GuestHomePage = () => {
               <Link to="/register" className="cta-button">
                 ĐĂNG KÝ HIẾN MÁU
               </Link>
-              <Link to="/register" className="cta-button secondary">
+              <Link to="/receive" className="cta-button secondary">
                 ĐĂNG KÝ NHẬN MÁU
               </Link>
             </div>
@@ -188,35 +199,13 @@ const GuestHomePage = () => {
         </div>
       </section>
 
-      {/* Emergency Requests */}
+      {/* Emergency Requests - Chỉ hiển thị bảng */}
       <section className="emergency-section">
-        <h2 className="section-title merriweather-title">
-          YÊU CẦU HIẾN MÁU KHẨN CẤP
-        </h2>
-        <div className="requests-grid">
-          {emergencyRequests.map((request) => (
-            <div key={request.key} className="request-card">
-              <h3 className="request-blood-type">
-                Nhóm máu: {request.bloodType}
-              </h3>
-              <p className="request-location">
-                <FiMapPin /> {request.location}
-              </p>
-              <p className="request-urgency">Độ khẩn cấp: {request.urgency}</p>
-              <p className="request-details">{request.details}</p>
-              <p className="request-date">
-                <FiClock /> Ngày đăng: {request.postedDate}
-              </p>
-              <Link
-                to={`/requests/${request.id_internal}`}
-                className="cta-button tertiary"
-              >
-                Xem chi tiết & Hỗ trợ
-              </Link>
-            </div>
-          ))}
+        <div className="section-title-wrapper">
+          <h2 className="section-title merriweather-title">
+            YÊU CẦU HIẾN MÁU KHẨN CẤP
+          </h2>
         </div>
-
         <Table
           columns={columns}
           dataSource={emergencyRequests}

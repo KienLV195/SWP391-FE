@@ -63,7 +63,7 @@
         margin-top: 20px;
 
         .cta-button {
-          background: #d32f2f;
+          background: #C21121;
           color: #fff;
           border: none;
           border-radius: 25px;
@@ -111,14 +111,14 @@
 
           &:hover {
             background: #ffffff;
-            color: #d32f2f;
+            color: #C21121;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
           }
 
           &:active {
             background: #ffffff;
-            color: #d32f2f;
+            color: #C21121;
             transform: translateY(2px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           }
@@ -130,7 +130,7 @@
       display: none;
     }
 
-    /* Add a grayish overlay instead of blur */
+
     &::before {
       content: '';
       position: absolute;
@@ -138,7 +138,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5); /* Grayish overlay with 50% opacity */
+      background: rgba(0, 0, 0, 0.5);
       z-index: 1;
     }
 
@@ -181,10 +181,10 @@
 
   .hospital-info-section {
     display: flex;
-    align-items: stretch; /* Đảm bảo các phần tử con có chiều cao bằng nhau */
+    align-items: stretch;
     justify-content: center;
     gap: 48px;
-    background: #fff; /* Giữ nền trắng cho toàn section */
+    background: #fff;
     padding: 64px 40px;
     max-width: 100%;
     margin: 0 auto;
@@ -203,15 +203,15 @@
       flex: 1;
       max-width: 480px;
       display: flex;
-      align-items: stretch; /* Đảm bảo hình ảnh kéo dài theo chiều cao của phần chữ */
+      align-items: stretch;
       justify-content: center;
       position: relative;
 
       .hospital-img-box {
         width: 100%;
         height: 90%;
-        background: #f28c82; /* Thêm background đỏ nhạt cho phần hình ảnh */
-        border-radius: 30px; /* Tăng border-radius để viền lồi ra */
+        background: #d32f2f;
+        border-radius: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -223,7 +223,7 @@
           width: 100%;
           height: 100%;
           object-fit: cover;
-          border-radius: 20px; /* Border-radius nhỏ hơn để viền lồi ra */
+          border-radius: 20px;
           display: block;
         }
       }
@@ -259,8 +259,8 @@
       line-height: 1.6;
       text-align: justify;
 
-      & + & {
-        margin-top: 16px; /* Khoảng cách giữa hai đoạn văn */
+      &+& {
+        margin-top: 16px;
       }
     }
 
@@ -279,8 +279,8 @@
         .icon {
           margin-right: 10px;
           font-size: 1.2em;
-          width: 32px; /* Tăng kích thước nền tròn */
-          height: 32px; /* Đảm bảo hình tròn đều */
+          width: 32px;
+          height: 32px;
           background-color: #02314B;
           color: #fff;
           border-radius: 50%;
@@ -312,8 +312,8 @@
 
       .hospital-img-box {
         width: 100%;
-        height: 300px; /* Giữ chiều cao cố định cho màn hình nhỏ */
-        background: #f28c82; /* Giữ background đỏ nhạt */
+        height: 300px;
+        background: #f28c82;
       }
     }
   }
@@ -329,61 +329,91 @@
 
   .emergency-section {
     padding: 64px 40px;
-    background: #fff;
-    max-width: 1300px;
+    background: #02314B;
+    max-width: 100%;
     margin: 0 auto;
+
+    .section-title-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
 
     .section-title {
       font-family: "Montserrat", Arial, Helvetica, sans-serif;
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      color: #102f53;
+      color: #fff;
       text-align: center;
-      margin-bottom: 40px;
       text-transform: uppercase;
+      background: #C21121;
+      padding: 20px 20px;
+      border-radius: 20px;
+      display: inline-block;
     }
 
-    .requests-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
-      margin-bottom: 40px;
-      justify-content: center;
-
-      .request-card {
-        background: #f6fbfd;
+    /* Tùy chỉnh bảng Ant Design */
+    .ant-table-wrapper {
+      .ant-table {
         border-radius: 12px;
-        padding: 24px;
+        overflow: hidden;
         box-shadow: 0 2px 12px rgba(25, 118, 210, 0.1);
-        width: 100%;
-        max-width: 380px;
-        text-align: left;
 
-        .request-blood-type {
-          font-family: "Montserrat", Arial, Helvetica, sans-serif;
-          font-size: 1.2rem;
-          font-weight: 700;
-          color: #d32f2f;
-          margin-bottom: 12px;
-        }
-
-        .request-location,
-        .request-urgency,
-        .request-details,
-        .request-date {
-          font-family: "Open Sans", "Roboto", Arial, sans-serif;
-          font-size: 1rem;
-          color: #6c757d;
-          margin-bottom: 8px;
-          line-height: 1.5;
-
-          svg {
-            margin-right: 8px;
-            color: #1976d2;
+        .ant-table-thead {
+          th {
+            background: #f6fbfd;
+            color: #102f53;
+            font-family: "Montserrat", Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 16px;
+            border-bottom: 2px solid #e8ecef;
+            text-align: center;
           }
         }
 
-        .cta-button.tertiary {
+        .ant-table-tbody {
+          td {
+            font-family: "Open Sans", "Roboto", Arial, sans-serif;
+            font-size: 1rem;
+            color: #21272A;
+            padding: 16px;
+            border-bottom: 1px solid #e8ecef;
+            text-align: center;
+          }
+
+          tr:hover td {
+            background: #f6fbfd;
+          }
+
+          // Styling cho nhóm máu
+          .blood-type-badge {
+            display: inline-block;
+            padding: 6px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 20px;
+            text-align: center;
+            min-width: 50px;
+
+            // Nhóm máu dương (+) - màu xanh
+            &.positive {
+              background-color: #e3f2fd;
+              color: #1976d2;
+              border: 1px solid #bbdefb;
+            }
+
+            // Nhóm máu âm (-) - màu đỏ  
+            &.negative {
+              background-color: #ffebee;
+              color: #d32f2f;
+              border: 1px solid #ffcdd2;
+            }
+          }
+        }
+
+        /* Tùy chỉnh nút Hỗ trợ */
+        .table-action-button {
           background: #1976d2;
           color: #fff;
           border: none;
@@ -399,7 +429,6 @@
           align-items: center;
           justify-content: center;
           text-decoration: none;
-          margin-top: 12px;
 
           &:hover {
             background: #1565c0;
@@ -410,19 +439,44 @@
           }
         }
       }
+
+      /* Tùy chỉnh phân trang */
+      .ant-pagination {
+        margin-top: 20px;
+
+        .ant-pagination-item {
+          border-radius: 8px;
+
+          a {
+            color: #1976d2;
+          }
+        }
+
+        .ant-pagination-item-active {
+          background: #1976d2;
+          border-color: #1976d2;
+
+          a {
+            color: #fff;
+          }
+        }
+
+        .ant-pagination-prev,
+        .ant-pagination-next {
+          .ant-pagination-item-link {
+            border-radius: 8px;
+            color: #1976d2;
+          }
+        }
+      }
     }
 
     @media (max-width: 900px) {
       padding: 32px 8px;
 
       .section-title {
-        font-size: 1.5rem;
-      }
-
-      .requests-grid {
-        .request-card {
-          max-width: 100%;
-        }
+        font-size: 1.2rem;
+        padding: 8px 16px;
       }
     }
   }
