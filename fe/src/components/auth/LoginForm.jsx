@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import "../../styles/components/LoginForm.scss";
+import { auth, googleProvider } from '../../services/firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function LoginForm() {
     const [phone, setPhone] = useState('');
-
+    const handleLoginGoogle = () => {
+        signInWithPopup(auth, googleProvider)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                console.log(credential);
+            }).catch((error) => {
+                console.log(error)
+            });
+    }
     return (
         <div className="login-form__container">
             <div className="login-form__box">
                 <div className="login-form__logo">LOGO</div>
                 <div className="login-form__welcome">CHÀO MỪNG BẠN ĐÃ TRỞ LẠI</div>
-                <button className="login-form__google-btn">
+                <button className="login-form__google-btn" onClick={handleLoginGoogle} type="button"                                            >
                     <span className="login-form__google-icon">
                         {/* Google icon SVG */}
                         <svg width="22" height="22" viewBox="0 0 48 48">
@@ -21,11 +32,11 @@ export default function LoginForm() {
                             </g>
                         </svg>
                     </span>
-                    LOGIN WITH GOOGLE
+                    ĐĂNG NHẬP BẰNG GOOGLE
                 </button>
                 <div className="login-form__divider">
                     <span />
-                    <span className="login-form__divider-text">OR LOGIN WITH YOUR PHONE NUMBER</span>
+                    <span className="login-form__divider-text">HOẶC ĐĂNG NHẬP BẰNG SỐ ĐIỆN THOẠI</span>
                     <span />
                 </div>
                 <form className="login-form__form">
@@ -35,7 +46,7 @@ export default function LoginForm() {
                         type="tel"
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
-                        placeholder="HÃY NHẬP SỐ ĐIỆN THOẠI BẠN VÀO ĐÂY"
+                        placeholder="NHẬP SỐ ĐIỆN THOẠI VÀO ĐÂY"
                         required
                     />
                     <button className="login-form__submit" type="submit">ĐĂNG NHẬP</button>

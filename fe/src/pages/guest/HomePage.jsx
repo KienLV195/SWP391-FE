@@ -38,7 +38,7 @@ const GuestHomePage = () => {
               <Link to="/register" className="cta-button">
                 ĐĂNG KÝ HIẾN MÁU
               </Link>
-              <Link to="/receive" className="cta-button secondary">
+              <Link to="/register" className="cta-button secondary">
                 ĐĂNG KÝ NHẬN MÁU
               </Link>
             </div>

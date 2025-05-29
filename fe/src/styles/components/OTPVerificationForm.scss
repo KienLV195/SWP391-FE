@@ -1,0 +1,195 @@
+.otp-page__container {
+    min-height: 100vh;
+    background: #F3F6FB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+}
+
+.auth-page__content {
+    display: flex;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    width: 800px;
+    max-width: 99vw;
+    min-height: 400px;
+    overflow: hidden;
+    transition: border-radius 0.2s;
+}
+
+.auth-page__left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e5e5;
+    border-radius: 32px 0 0 32px;
+    min-height: 340px;
+    padding: 0;
+}
+
+.auth-page__image-placeholder {
+    width: 140px;
+    height: 140px;
+    background: #d9d9d9;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-page__right {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 32px 32px 0;
+    min-height: 340px;
+    padding: 0;
+}
+
+@media (max-width: 900px) {
+    .auth-page__content {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 700px) {
+    .auth-page__content {
+        flex-direction: column;
+        border-radius: 20px;
+        min-height: unset;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .auth-page__left {
+        border-radius: 20px 20px 0 0;
+        min-height: 120px;
+        padding: 24px 0 0 0;
+    }
+
+    .auth-page__right {
+        border-radius: 0 0 20px 20px;
+        min-height: 220px;
+        padding: 0 0 24px 0;
+    }
+
+    .auth-page__image-placeholder {
+        width: 90px;
+        height: 90px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 500px) {
+    .auth-page__content {
+        border-radius: 10px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .auth-page__left {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .auth-page__right {
+        border-radius: 0 0 10px 10px;
+    }
+}
+
+.otp-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+
+    .otp-title {
+        color: #1b2b41;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+
+    .otp-description {
+        color: #6b7280;
+        font-size: 17px;
+        text-align: center;
+        margin-bottom: 35px;
+        line-height: 1.5;
+    }
+
+    .otp-inputs {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 22px;
+        justify-content: center;
+
+        .otp-input {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #222;
+            border-radius: 6px;
+            font-size: 22px;
+            text-align: center;
+            background: #fff;
+            color: #1b2b41;
+            font-weight: 600;
+            transition: border-color 0.2s, box-shadow 0.2s;
+
+            &:focus {
+                border-color: #d81928;
+                box-shadow: 0 0 0 2px rgba(216, 25, 40, 0.15);
+                outline: none;
+            }
+        }
+    }
+
+    .verify-button {
+        background: #d81928;
+        color: #fff;
+        border: none;
+        border-radius: 24px;
+        padding: 10px 36px;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+            background: #b91620;
+        }
+    }
+
+    .resend-text {
+        font-size: 12px;
+        color: #222;
+        text-align: center;
+        margin-top: 100px;
+        margin-bottom: 0;
+
+        .resend-button {
+            background: none;
+            border: none;
+            color: #d81928;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 2px;
+            font-size: 12px;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

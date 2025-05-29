@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import "../../styles/components/RegisterForm.scss";
+import { auth, googleProvider } from '../../services/firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function RegisterForm() {
     const [phone, setPhone] = useState('');
 
+    const handleRegisterGoogle = () => {
+        signInWithPopup(auth, googleProvider)
+            .then((result) => {
+                console.log(result);
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
     return (
         <div className="register-form__container">
             <div className="register-form__box">
                 <div className="register-form__logo">LOGO</div>
-                <div className="register-form__welcome">
-                    CHÀO MỪNG BẠN ĐẾN VỚI<br />CHÚNG TÔI
-                </div>
-                <button className="register-form__google-btn">
+                <div className="register-form__welcome">CHÀO MỪNG BẠN ĐẾN VỚI CHÚNG TÔI</div>
+                <button className="register-form__google-btn" type="button" onClick={handleRegisterGoogle} >
                     <span className="register-form__google-icon">
                         <svg width="22" height="22" viewBox="0 0 48 48">
                             <g>
@@ -22,11 +30,11 @@ export default function RegisterForm() {
                             </g>
                         </svg>
                     </span>
-                    LOGIN WITH GOOGLE
+                    ĐĂNG KÝ BẰNG GOOGLE
                 </button>
                 <div className="register-form__divider">
                     <span />
-                    <span className="register-form__divider-text">OR LOGIN WITH YOUR PHONE NUMBER</span>
+                    <span className="register-form__divider-text">HOẶC ĐĂNG KÝ BẰNG SỐ ĐIỆN THOẠI</span>
                     <span />
                 </div>
                 <form className="register-form__form">
@@ -36,10 +44,10 @@ export default function RegisterForm() {
                         type="tel"
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
-                        placeholder="HÃY NHẬP SỐ ĐIỆN THOẠI BẠN VÀO ĐÂY"
+                        placeholder="NHẬP SỐ ĐIỆN THOẠI VÀO ĐÂY"
                         required
                     />
-                    <button className="register-form__submit" type="submit">GỬI</button>
+                    <button className="register-form__submit" type="submit">ĐĂNG KÝ</button>
                 </form>
                 <div className="register-form__login">
                     BẠN ĐÃ CÓ TÀI KHOẢN? <a href="/login">ĐĂNG NHẬP</a>

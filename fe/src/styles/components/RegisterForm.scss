@@ -2,16 +2,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: #f6f6f6;
+    min-height: unset;
+    background: transparent;
+    width: 100%;
 }
 
 .register-form__box {
-    background: #fff;
-    border-radius: 32px;
-    padding: 48px 40px 32px 40px;
-    width: 420px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 370px;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;

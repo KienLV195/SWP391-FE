@@ -4,6 +4,7 @@ import ForbiddenPage from "../pages/error/ForbiddenPage";
 import HomePage from "../pages/guest/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import OTPVerificationPage from "../pages/auth/OTPVerificationPage";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/otpverification",
+    element: <OTPVerificationPage />,
   },
   {
     path: "/403",

@@ -1,12 +1,11 @@
-// Gợi ý: Thêm vào src/pages/auth/LoginPage.scss (nếu muốn tách riêng)
-// Hoặc thêm vào global styles nếu dùng chung cho cả RegisterPage
-
 .auth-page__container {
     min-height: 100vh;
-    background: #f6f6f6;
+    background: #F3F6FB;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 8px;
+    background: #F3F6FB;
 }
 
 .auth-page__content {
@@ -14,35 +13,119 @@
     background: #fff;
     border-radius: 40px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
-    width: 950px;
-    max-width: 98vw;
+    width: 1100px;
+    max-width: 99vw;
     min-height: 600px;
     overflow: hidden;
+    transition: border-radius 0.2s;
 }
 
 .auth-page__left {
     flex: 1;
-    background: #ddd;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #fff;
     border-radius: 40px 0 0 40px;
+    min-height: 600px;
+    padding: 0 32px;
+    border-right: 2px solid #e0e0e0;
+}
+
+.auth-page__right {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 40px 40px 0;
+    min-height: 600px;
+    padding: 0 32px;
+    border-left: 2px solid #e0e0e0;
 }
 
 .auth-page__image-placeholder {
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
     background: #ccc;
     border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #bbb;
+    border: 1.5px solid #fff;
+    margin-bottom: 18px;
 }
 
-.auth-page__right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.auth-page__image-real {
+    width: 80%;
+    max-width: 380px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    background: transparent;
+}
+
+// Responsive styles
+@media (max-width: 1200px) {
+    .auth-page__content {
+        width: 98vw;
+    }
+
+    .auth-page__image-real {
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 900px) {
+    .auth-page__content {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 700px) {
+    .auth-page__content {
+        flex-direction: column;
+        border-radius: 20px;
+        min-height: unset;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .auth-page__left {
+        border-radius: 20px 20px 0 0;
+        min-height: 220px;
+        padding: 24px 0 0 0;
+        border-right: none;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .auth-page__right {
+        border-radius: 0 0 20px 20px;
+        min-height: 320px;
+        padding: 0 0 24px 0;
+        border-left: none;
+        border-top: 2px solid #e0e0e0;
+    }
+
+    .auth-page__image-real {
+        max-width: 90vw;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 500px) {
+    .auth-page__content {
+        border-radius: 10px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .auth-page__left {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .auth-page__right {
+        border-radius: 0 0 10px 10px;
+    }
 }
