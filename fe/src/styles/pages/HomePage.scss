@@ -130,7 +130,7 @@
       display: none;
     }
 
-
+    
     &::before {
       content: '';
       position: absolute;
@@ -138,7 +138,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.5); 
       z-index: 1;
     }
 
@@ -181,10 +181,10 @@
 
   .hospital-info-section {
     display: flex;
-    align-items: stretch;
+    align-items: stretch; 
     justify-content: center;
     gap: 48px;
-    background: #fff;
+    background: #fff; 
     padding: 64px 40px;
     max-width: 100%;
     margin: 0 auto;
@@ -203,15 +203,15 @@
       flex: 1;
       max-width: 480px;
       display: flex;
-      align-items: stretch;
+      align-items: stretch; 
       justify-content: center;
       position: relative;
 
       .hospital-img-box {
         width: 100%;
         height: 90%;
-        background: #d32f2f;
-        border-radius: 30px;
+        background: #d32f2f; 
+        border-radius: 30px; 
         display: flex;
         align-items: center;
         justify-content: center;
@@ -259,8 +259,8 @@
       line-height: 1.6;
       text-align: justify;
 
-      &+& {
-        margin-top: 16px;
+      & + & {
+        margin-top: 16px; 
       }
     }
 
@@ -279,8 +279,8 @@
         .icon {
           margin-right: 10px;
           font-size: 1.2em;
-          width: 32px;
-          height: 32px;
+          width: 32px; 
+          height: 32px; 
           background-color: #02314B;
           color: #fff;
           border-radius: 50%;
@@ -312,8 +312,8 @@
 
       .hospital-img-box {
         width: 100%;
-        height: 300px;
-        background: #f28c82;
+        height: 300px; 
+        background: #f28c82; 
       }
     }
   }
@@ -335,7 +335,7 @@
 
     .section-title-wrapper {
       display: flex;
-      justify-content: center;
+      justify-content: center; 
       margin-bottom: 40px;
     }
 
@@ -395,17 +395,17 @@
             font-size: 20px;
             text-align: center;
             min-width: 50px;
-
+            
             // Nhóm máu dương (+) - màu xanh
             &.positive {
-              background-color: #e3f2fd;
-              color: #1976d2;
+              background-color: #e3f2fd; 
+              color: #1976d2; 
               border: 1px solid #bbdefb;
             }
-
+            
             // Nhóm máu âm (-) - màu đỏ  
             &.negative {
-              background-color: #ffebee;
+              background-color: #ffebee; 
               color: #d32f2f;
               border: 1px solid #ffcdd2;
             }
@@ -443,10 +443,8 @@
       /* Tùy chỉnh phân trang */
       .ant-pagination {
         margin-top: 20px;
-
         .ant-pagination-item {
           border-radius: 8px;
-
           a {
             color: #1976d2;
           }
@@ -455,7 +453,6 @@
         .ant-pagination-item-active {
           background: #1976d2;
           border-color: #1976d2;
-
           a {
             color: #fff;
           }

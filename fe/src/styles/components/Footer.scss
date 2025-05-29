@@ -2,35 +2,65 @@
 @import "../base/mixin";
 
 .footer {
-  background: #e3f2fd;
-  border-top: 1px solid #b3e5fc;
-  color: #1976d2;
-  text-align: center;
+  background: #20374E; /* Nền xanh đậm */
+  color: #fff; /* Chữ trắng cho tiêu đề */
   font-family: "Open Sans", "Roboto", Arial, sans-serif;
-  padding: 32px 0 24px 0;
+  padding: 45px 0; /* Điều chỉnh padding cho khớp với hình */
+  display: flex;
+  justify-content: space-around; /* Phân bố đều 3 cột */
+  align-items: flex-start; /* Căn trên cùng */
+
+  .footer-column {
+    text-align: left; /* Căn trái nội dung */
+  }
 
   .footer-brand {
-    font-size: 1.3rem;
+    font-size: 1.5rem; /* Kích thước logo */
     font-weight: 700;
-    color: #1976d2;
-    margin-bottom: 8px;
+    color: #fff;
+    margin-bottom: 10px; /* Khoảng cách dưới logo */
     letter-spacing: 1px;
   }
 
-  .footer-content {
-    font-size: 15px;
-    color: #6c757d;
-    margin-bottom: 4px;
+  .footer-title {
+    font-size: 1.3rem; /* Kích thước tiêu đề */
+    font-weight: 900; /* In đậm tiêu đề */
+    margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+    text-transform: uppercase; /* Chữ in hoa */
+  }
+
+  .footer-item {
+    font-size: 1rem; /* Kích thước nội dung */
+    color: #fff; /* Chữ đỏ */
+    margin-bottom: 5px; /* Khoảng cách giữa các mục */
+    display: flex;
+    align-items: center; /* Căn giữa icon và text */
+    gap: 5px; /* Khoảng cách giữa icon và text */
+    background: transparent; /* Không có khung trắng */
+
+    &:last-child {
+      margin-bottom: 0; /* Loại bỏ margin dưới mục cuối */
+    }
   }
 
   .footer-link {
-    color: #1976d2;
+    color: #fff; /* Chữ đỏ */
     text-decoration: none;
-    font-weight: 600;
-    margin: 0 8px;
+    font-weight: normal; /* Không đậm */
+    cursor: pointer; /* Hiển thị con trỏ pointer khi hover */
+    background: transparent; /* Loại bỏ nền của button */
+    border: none; /* Loại bỏ viền của button */
+    padding: 0; /* Loại bỏ padding mặc định của button */
+    font-size: inherit; /* Kế thừa font-size từ parent */
+    line-height: inherit; /* Kế thừa line-height từ parent */
 
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .footer-icon {
+    font-size: 1rem; /* Kích thước icon */
+    color: #d32f2f; /* Màu đỏ cho icon */
   }
 }
