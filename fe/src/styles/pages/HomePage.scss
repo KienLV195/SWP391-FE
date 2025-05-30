@@ -1,5 +1,29 @@
-@use "../base/variables" as vars;
-@use "../base/mixin" as mix;
+// src/styles/pages/HomePage.scss
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+// Typography
+.main-title,
+.merriweather-title,
+h1,
+h2,
+h3 {
+  @include mix.heading();
+}
+
+.main-desc,
+.merriweather-content,
+p,
+li {
+  @include mix.text();
+}
+
+.button,
+.cta-button {
+  font-family: vars.$font-primary;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
 .guest-home-page {
   width: 100%;
@@ -7,50 +31,55 @@
 
   .hero-section {
     min-height: 70dvh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    @include mix.flex-align(flex-start, center);
     position: relative;
     overflow: hidden;
-    color: #fff;
+    color: vars.$white;
+    // Background sẽ được set từ inline style trong React component
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
 
     .hero-container {
-      display: flex;
+      @include mix.flex-align(flex-start, center);
       flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px 40px;
+      padding: vars.$spacing-md 40px;
       text-align: left;
       z-index: 2;
       position: relative;
+      align-items: flex-start;
     }
 
     .hero-content {
       flex: 1;
       max-width: 600px;
-      color: #fff;
+      color: vars.$white;
       text-align: left;
 
       .merriweather-title {
-        font-family: "Montserrat", Arial, Helvetica, sans-serif;
-        font-size: 2.5rem;
+        @include mix.heading(2.5rem, vars.$white);
         font-weight: 900;
         line-height: 1.2;
-        margin-bottom: 20px;
+        margin-bottom: vars.$spacing-md;
         letter-spacing: -1px;
-        color: #fff;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         white-space: nowrap;
       }
 
       .merriweather-content {
-        font-size: 1.3rem;
-        color: #fff;
-        margin-bottom: 40px;
-        font-family: "Open Sans", "Roboto", Arial, sans-serif;
+        @include mix.text(1.3rem, vars.$white);
+        margin-bottom: vars.$spacing-xl;
         line-height: 1.6;
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         font-weight: 400;
@@ -58,69 +87,39 @@
       }
 
       .cta-row {
-        display: flex;
-        gap: 20px;
-        margin-top: 20px;
+        @include mix.flex-align(flex-start, center);
+        gap: vars.$spacing-md;
+        margin-top: vars.$spacing-md;
 
         .cta-button {
-          background: #C21121;
-          color: #fff;
-          border: none;
+          @include mix.primary-button(vars.$secondary-color, vars.$secondary-hover);
           border-radius: 25px;
-          font-weight: 700;
-          padding: 12px 32px;
           font-size: 1.2rem;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          outline: none;
-          text-align: center;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          transition: transform 0.1s, box-shadow 0.1s;
+          box-shadow: 0 4px 8px vars.$shadow-color;
 
           &:hover {
-            background: #d32f2f;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 12px vars.$shadow-color;
           }
 
           &:active {
-            background: #d32f2f;
             transform: translateY(2px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px vars.$shadow-color;
           }
         }
 
         .cta-button.secondary {
-          background: #ffffff;
-          color: #d32f2f;
-          border: 2px solid #d32f2f;
+          @include mix.primary-button(vars.$white, vars.$white);
+          color: vars.$secondary-color;
+          border: 2px solid vars.$secondary-color;
           border-radius: 25px;
-          font-weight: 700;
-          padding: 12px 32px;
-          font-size: 1.2rem;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          outline: none;
-          text-align: center;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          transition: transform 0.1s, box-shadow 0.1s;
 
           &:hover {
-            background: #ffffff;
-            color: #C21121;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            color: vars.$secondary-hover;
           }
 
           &:active {
-            background: #ffffff;
-            color: #C21121;
-            transform: translateY(2px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: vars.$secondary-hover;
           }
         }
       }
@@ -130,22 +129,7 @@
       display: none;
     }
 
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5); 
-      z-index: 1;
-    }
-
-    /* Set the background image on the main element */
-    background: url('../../assets/images/blood1.jpg') no-repeat center center/cover;
-
-    @media (max-width: 900px) {
+    @include mix.tablet {
       min-height: 80vh;
 
       .hero-container {
@@ -171,7 +155,7 @@
           .cta-button,
           .cta-button.secondary {
             width: 100%;
-            padding: 10px 20px;
+            padding: 10px vars.$spacing-md;
             font-size: 1.1rem;
           }
         }
@@ -180,12 +164,10 @@
   }
 
   .hospital-info-section {
-    display: flex;
-    align-items: stretch; 
-    justify-content: center;
-    gap: 48px;
-    background: #fff; 
-    padding: 64px 40px;
+    @include mix.flex-align(center, stretch);
+    gap: vars.$spacing-xl;
+    background: vars.$white;
+    padding: vars.$spacing-xxl 40px;
     max-width: 100%;
     margin: 0 auto;
 
@@ -202,19 +184,15 @@
     .hospital-left {
       flex: 1;
       max-width: 480px;
-      display: flex;
-      align-items: stretch; 
-      justify-content: center;
+      @include mix.flex-align(center, stretch);
       position: relative;
 
       .hospital-img-box {
         width: 100%;
         height: 90%;
-        background: #d32f2f; 
-        border-radius: 30px; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: vars.$secondary-color;
+        border-radius: 30px;
+        @include mix.flex-center();
         overflow: hidden;
         padding-left: 30px;
         padding-top: 25px;
@@ -230,79 +208,69 @@
     }
 
     .hospital-title {
-      font-family: "Montserrat", Arial, Helvetica, sans-serif;
-      font-size: 1.15rem;
-      color: #d32f2f;
+      @include mix.heading(1.15rem, vars.$secondary-color);
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: vars.$spacing-xs;
       letter-spacing: 0.5px;
       text-transform: none;
-      border-bottom: 2px solid #d32f2f;
-      padding-bottom: 4px;
+      border-bottom: 2px solid vars.$secondary-color;
+      padding-bottom: vars.$spacing-xxs;
     }
 
     .hospital-name {
-      font-size: 1.6rem;
+      @include mix.heading(1.6rem, vars.$dark-blue);
       font-weight: 900;
-      color: #02314B;
       margin-bottom: 18px;
-      font-family: "Montserrat", Arial, Helvetica, sans-serif;
       letter-spacing: 0.5px;
       text-transform: uppercase;
     }
 
     .hospital-desc {
-      font-family: "Open Sans", "Roboto", Arial, sans-serif;
-      color: #6c757d;
-      font-size: 1.08rem;
+      @include mix.text(1.08rem);
       margin-bottom: 18px;
       line-height: 1.6;
       text-align: justify;
 
       & + & {
-        margin-top: 16px; 
+        margin-top: vars.$spacing-base;
       }
     }
 
     .hospital-contact {
-      list-style: none;
       padding: 0;
       margin: 0;
 
       li {
-        display: flex;
-        align-items: center;
+        @include mix.flex-align(flex-start, center);
         font-size: 1.05rem;
-        color: black;
-        margin-bottom: 10px;
+        color: vars.$black;
+        margin-bottom: vars.$spacing-xs;
 
         .icon {
-          margin-right: 10px;
+          margin-right: vars.$spacing-xs;
           font-size: 1.2em;
-          width: 32px; 
-          height: 32px; 
-          background-color: #02314B;
-          color: #fff;
+          width: 32px;
+          height: 32px;
+          background-color: vars.$dark-blue;
+          color: vars.$white;
           border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid #02314B;
+          @include mix.flex-center();
+          border: 1px solid vars.$dark-blue;
 
           &.phone,
           &.email,
           &.address,
           &.clock {
-            color: #fff;
+            color: vars.$white;
           }
         }
       }
     }
 
-    @media (max-width: 900px) {
+    @include mix.tablet {
       flex-direction: column;
-      padding: 32px 8px;
-      gap: 32px;
+      padding: vars.$spacing-lg vars.$spacing-xs;
+      gap: vars.$spacing-lg;
 
       .hospital-left,
       .hospital-right {
@@ -312,8 +280,8 @@
 
       .hospital-img-box {
         width: 100%;
-        height: 300px; 
-        background: #f28c82; 
+        height: 300px;
+        background: vars.$secondary-color;
       }
     }
   }
@@ -323,70 +291,62 @@
     height: 60dvh;
     object-fit: cover;
     border-radius: 0;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+    box-shadow: 0 4px 24px vars.$shadow-color;
     display: block;
   }
 
   .emergency-section {
-    padding: 64px 40px;
-    background: #02314B;
+    padding: vars.$spacing-xxl 40px;
+    background: vars.$dark-blue;
     max-width: 100%;
     margin: 0 auto;
 
     .section-title-wrapper {
-      display: flex;
-      justify-content: center; 
-      margin-bottom: 40px;
+      @include mix.flex-center();
+      margin-bottom: vars.$spacing-xl;
     }
 
     .section-title {
-      font-family: "Montserrat", Arial, Helvetica, sans-serif;
-      font-size: 1.5rem;
+      @include mix.heading(1.5rem, vars.$white);
       font-weight: 900;
-      color: #fff;
       text-align: center;
       text-transform: uppercase;
-      background: #C21121;
-      padding: 20px 20px;
+      background: vars.$secondary-color;
+      padding: vars.$spacing-md vars.$spacing-md;
       border-radius: 20px;
       display: inline-block;
     }
 
-    /* Tùy chỉnh bảng Ant Design */
     .ant-table-wrapper {
       .ant-table {
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 2px 12px rgba(25, 118, 210, 0.1);
+        box-shadow: 0 2px 12px rgba(vars.$primary-color, 0.1);
 
         .ant-table-thead {
           th {
-            background: #f6fbfd;
-            color: #102f53;
-            font-family: "Montserrat", Arial, Helvetica, sans-serif;
+            background: vars.$background-main;
+            color: vars.$dark-blue;
+            @include mix.heading(1.1rem);
             font-weight: 700;
-            font-size: 1.1rem;
-            padding: 16px;
-            border-bottom: 2px solid #e8ecef;
+            padding: vars.$spacing-base;
+            border-bottom: 2px solid vars.$border-light;
             text-align: center;
           }
         }
 
         .ant-table-tbody {
           td {
-            font-family: "Open Sans", "Roboto", Arial, sans-serif;
-            font-size: 1rem;
-            color: #21272A;
-            padding: 16px;
-            border-bottom: 1px solid #e8ecef;
+            @include mix.text(1rem, vars.$text-color);
+            padding: vars.$spacing-base;
+            border-bottom: 1px solid vars.$border-light;
             text-align: center;
           }
 
           tr:hover td {
-            background: #f6fbfd;
+            background: vars.$background-main;
           }
 
-          // Styling cho nhóm máu
           .blood-type-badge {
             display: inline-block;
             padding: 6px 25px;
@@ -395,66 +355,51 @@
             font-size: 20px;
             text-align: center;
             min-width: 50px;
-            
-            // Nhóm máu dương (+) - màu xanh
+
             &.positive {
-              background-color: #e3f2fd; 
-              color: #1976d2; 
+              background-color: vars.$background-box;
+              color: vars.$primary-color;
               border: 1px solid #bbdefb;
             }
-            
-            // Nhóm máu âm (-) - màu đỏ  
+
             &.negative {
-              background-color: #ffebee; 
-              color: #d32f2f;
+              background-color: vars.$background-box-secondary;
+              color: vars.$secondary-color;
               border: 1px solid #ffcdd2;
             }
           }
         }
 
-        /* Tùy chỉnh nút Hỗ trợ */
         .table-action-button {
-          background: #1976d2;
-          color: #fff;
-          border: none;
-          border-radius: 8px;
-          font-weight: 700;
-          padding: 10px 20px;
+          @include mix.primary-button(vars.$primary-color, vars.$primary-hover);
+          padding: vars.$spacing-xs vars.$spacing-md;
           font-size: 1rem;
-          transition: background 0.3s;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-          outline: none;
-          text-align: center;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-
-          &:hover {
-            background: #1565c0;
-          }
+          border-radius: 8px;
+          box-shadow: 0 2px 6px vars.$shadow-color;
 
           &:active {
-            background: #0d47a1;
+            background: darken(vars.$primary-color, 20%);
           }
         }
       }
 
-      /* Tùy chỉnh phân trang */
       .ant-pagination {
-        margin-top: 20px;
+        margin-top: vars.$spacing-md;
+
         .ant-pagination-item {
           border-radius: 8px;
+
           a {
-            color: #1976d2;
+            color: vars.$primary-color;
           }
         }
 
         .ant-pagination-item-active {
-          background: #1976d2;
-          border-color: #1976d2;
+          background: vars.$primary-color;
+          border-color: vars.$primary-color;
+
           a {
-            color: #fff;
+            color: vars.$white;
           }
         }
 
@@ -462,19 +407,163 @@
         .ant-pagination-next {
           .ant-pagination-item-link {
             border-radius: 8px;
-            color: #1976d2;
+            color: vars.$primary-color;
           }
         }
       }
     }
 
-    @media (max-width: 900px) {
-      padding: 32px 8px;
+    @include mix.tablet {
+      padding: vars.$spacing-lg vars.$spacing-xs;
 
       .section-title {
         font-size: 1.2rem;
-        padding: 8px 16px;
+        padding: vars.$spacing-xs vars.$spacing-base;
       }
     }
+  }
+}
+
+// Achievement Section
+.achievement-section {
+  padding: 80px 0;
+  background-color: #f8f9fa;
+  
+  .achievement-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .achievement-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    gap: 20px;
+
+    .achievement-line {
+      width: 60px;
+      height: 2px;
+      background-color: vars.$secondary-hover;
+    }
+
+    .achievement-subtitle {
+      font-size: vars.$font-size-large;
+      font-weight: 600;
+      color: vars.$secondary-color;
+      letter-spacing: 2px;
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+
+  .achievement-title {
+    text-align: center;
+    font-size: vars.$font-size-xlarge;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 60px;
+    letter-spacing: -0.5px;
+  }
+
+  .achievement-grid {
+    .ant-col {
+      display: flex;
+    }
+  }
+
+  .achievement-card {
+    height: 100%;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .ant-card-body {
+      padding: 40px 24px;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &.achievement-card-red {
+      border-top: 4px solid #dc3545;
+      
+      .achievement-icon-wrapper {
+        background-color: #dc3545;
+      }
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #dc3545, #c82333);
+      }
+    }
+
+    &.achievement-card-blue {
+      border-top: 4px solid #1e3a8a;
+      
+      .achievement-icon-wrapper {
+        background-color: #1e3a8a;
+      }
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #1e3a8a, #1e40af);
+      }
+    }
+  }
+
+  .achievement-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    transition: all 0.3s ease;
+
+    .achievement-icon {
+      font-size: 36px;
+      color: white;
+    }
+  }
+
+  .achievement-card-title {
+    font-size: vars.$font-size-large;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  .achievement-card-desc {
+    font-size: vars.$font-size-base;
+    line-height: 1.6;
+    color: #6c757d;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
   }
 }

@@ -1,13 +1,12 @@
-@import "../base/variables";
-@import "../base/mixin";
+// src/styles/components/Header.scss
+@use '../base/variables' as *;
+@use '../base/mixin' as *;
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  @include flex-align(space-between, center); // Sử dụng mixin flex-align
+  padding: $spacing-base; // 16px
+  background-color: $white;
+  box-shadow: 0 2px 4px $shadow-color;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -19,50 +18,43 @@
   }
 
   .header-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
+    @include flex-align(center, center); // Sử dụng mixin flex-align
+    gap: $spacing-xl; // 48px
     height: 100%;
 
     a {
       text-decoration: none;
-      color: $text-color;
-      font-size: 17px;
-      font-family: "Poppins", "Montserrat", Arial, sans-serif;
+      @include text(1.0625rem, $text-color); // 17px
+      font-family: $font-primary;
       font-weight: 500;
-      padding: 10px 18px;
+      padding: $spacing-xs $spacing-md; // 8px 20px
       border-radius: 8px;
       position: relative;
       transition: color 0.3s, background 0.3s;
 
       &.active {
-        background: #f0f0f0;
+        background: $background-light;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         color: $primary-color;
       }
 
       &:hover {
         color: $primary-color;
-        background: #f5f5f5;
+        background: #f5f5f5; // Giữ giá trị cố định vì không có biến phù hợp
       }
     }
   }
 
   .header-actions {
-    display: flex;
-    gap: 16px;
+    @include flex-align(flex-start, center); // Sử dụng mixin flex-align
+    gap: $spacing-base; // 16px
 
     .btn-login,
     .btn-register {
-      padding: 10px 28px;
+      @include primary-button($bg-color: transparent, $hover-bg: transparent); // Sử dụng mixin primary-button
+      padding: $spacing-sm $spacing-xl; // 12px 48px
       border-radius: 24px;
-      text-decoration: none;
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-      border: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px $shadow-color;
       transition: background 0.3s, box-shadow 0.3s;
 
       &:hover {
@@ -73,34 +65,25 @@
 
     .btn-login {
       background: transparent !important;
-      color: #2563eb !important;
+      color: $primary-color !important;
       font-weight: 700;
-      border-radius: 24px;
-      padding: 12px 32px;
-      border: none;
       box-shadow: none !important;
       transition: color 0.2s;
 
       &:hover {
-        color: #e53935 !important;
+        color: $secondary-color !important;
         text-decoration: underline;
         background: transparent !important;
       }
     }
 
     .btn-register {
-      background: #e53935 !important;
-      color: #fff !important;
-      font-weight: 700;
-      border-radius: 24px;
-      padding: 12px 32px;
-      border: none;
-      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.13);
-      transition: background 0.2s;
+      @include primary-button($bg-color: $secondary-color, $hover-bg: $secondary-hover);
+      box-shadow: 0 2px 8px rgba($secondary-color, 0.13);
 
       &:hover {
-        background: #b71c1c !important;
-        color: #fff !important;
+        background: $secondary-hover !important;
+        color: $white !important;
       }
     }
   }

@@ -1,3 +1,13 @@
-@import "./base/variables";
-@import "./base/mixin";
-@import "./base/reset";
+// src/styles/index.scss
+@use './base/variables' as vars;
+@use './base/mixin' as mix;
+@use './pages/HomePage' as homepage;
+
+// Áp dụng reset và base cho toàn cục
+* {
+  @include mix.reset();
+}
+
+body {
+  @include mix.body-base();
+}

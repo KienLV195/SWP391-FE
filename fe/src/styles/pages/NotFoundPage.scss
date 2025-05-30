@@ -1,76 +1,72 @@
-@use "../../styles/base/variables" as vars;
-@use "../../styles/base/mixin" as mix;
+// src/styles/pages/NotFoundPage.scss
+@use '../base/variables' as *;
+@use '../base/mixin' as *;
 
 .not-found-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: vars.$background-light;
+  background-color: $background-light;
 
   &__content {
     flex: 1;
-    display: flex;
+    @include flex-align(center, center); // Sử dụng mixin flex-align
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: vars.$spacing-xxl vars.$spacing-lg;
+    padding: $spacing-xxl $spacing-lg;
     text-align: center;
   }
 
   &__error-code {
-    font-size: 120px;
+    @include heading(120px, $primary-color); // Sử dụng mixin heading
     font-weight: 800;
-    color: vars.$primary-color;
-    margin-bottom: vars.$spacing-lg;
+    margin-bottom: $spacing-lg;
   }
 
   &__title {
-    font-size: vars.$font-size-xlarge;
-    color: vars.$text-color;
-    margin-bottom: vars.$spacing-md;
+    @include heading($font-size-xlarge, $text-color); // Sử dụng mixin heading
+    margin-bottom: $spacing-md;
   }
 
   &__message {
-    font-size: vars.$font-size-large;
-    color: vars.$text-secondary;
-    margin-bottom: vars.$spacing-xl;
+    @include text($font-size-large, $text-secondary); // Sử dụng mixin text
+    margin-bottom: $spacing-xl;
     max-width: 600px;
   }
 
   &__button {
-    @include mix.primary-button;
+    @include primary-button; // Sử dụng mixin primary-button
     text-decoration: none;
   }
 }
 
-@include mix.tablet {
+@include tablet {
   .not-found-page {
     &__error-code {
       font-size: 100px;
     }
 
     &__title {
-      font-size: vars.$font-size-large;
+      font-size: $font-size-large;
     }
 
     &__message {
-      font-size: vars.$font-size-base;
+      font-size: $font-size-base;
     }
   }
 }
 
-@include mix.mobile {
+@include mobile {
   .not-found-page {
     &__error-code {
       font-size: 80px;
     }
 
     &__title {
-      font-size: vars.$font-size-base;
+      font-size: $font-size-base;
     }
 
     &__message {
-      font-size: vars.$font-size-small;
+      font-size: $font-size-small;
     }
   }
 }

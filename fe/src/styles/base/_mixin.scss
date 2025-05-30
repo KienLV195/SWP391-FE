@@ -1,43 +1,36 @@
-@use "./variables" as vars;
+@use './variables' as vars;
 
+// Reset CSS
+@mixin reset {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  list-style: none;
+  text-decoration: none;
+}
+
+@mixin body-base {
+  font-family: vars.$font-secondary;
+  color: vars.$text-color;
+  background: vars.$background-main;
+}
+
+// Flexbox
 @mixin flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-@mixin responsive($breakpoint) {
-  @if $breakpoint =="tablet" {
-    @media (max-width: 768px) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint =="mobile" {
-    @media (max-width: 480px) {
-      @content;
-    }
-  }
+@mixin flex-align($justify: center, $align: center) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
 }
 
-@mixin primary-button {
-  display: inline-block;
-  padding: 12px 32px;
-  background: vars.$primary-color;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: center;
-
-  &:hover {
-    background: darken(vars.$primary-color, 10%);
-  }
-}
-
+// Responsive
 @mixin tablet {
   @media (max-width: 991.98px) {
     @content;
@@ -47,5 +40,41 @@
 @mixin mobile {
   @media (max-width: 575.98px) {
     @content;
+  }
+}
+
+// Typography
+@mixin heading($size: vars.$font-size-xlarge, $color: vars.$primary-color) {
+  font-family: vars.$font-primary;
+  font-weight: 800;
+  font-size: $size;
+  color: $color;
+}
+
+@mixin text($size: vars.$font-size-base, $color: vars.$text-secondary) {
+  font-family: vars.$font-secondary;
+  font-size: $size;
+  color: $color;
+}
+
+// Button
+@mixin primary-button($bg-color: vars.$primary-color, $hover-bg: vars.$primary-hover) {
+  @include reset();
+  display: inline-flex;
+  padding: 12px vars.$spacing-lg;
+  background: $bg-color;
+  color: vars.$white;
+  font-family: vars.$font-primary;
+  font-weight: 600;
+  font-size: vars.$font-size-base;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  &:hover {
+    background: $hover-bg;
   }
 }

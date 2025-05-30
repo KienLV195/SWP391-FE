@@ -1,65 +1,65 @@
-@use "../base/variables" as vars;
-@use "../base/mixin" as mix;
+@use "../base/mixins";
+@use "../base/variables";
 
 .auth-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: vars.$background-light;
+    background-color: $background-light;
 
     &__content {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: vars.$spacing-xxl vars.$spacing-lg;
+        padding: $spacing-xxl $spacing-lg;
     }
 
     &__container {
         width: 100%;
         max-width: 400px;
         background: white;
-        padding: vars.$spacing-xl;
-        border-radius: vars.$border-radius-lg;
+        padding: $spacing-xl;
+        border-radius: $border-radius-lg;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     &__title {
-        font-size: vars.$font-size-xlarge;
-        color: vars.$text-color;
-        margin-bottom: vars.$spacing-xl;
+        font-size: $font-size-xlarge;
+        color: $text-color;
+        margin-bottom: $spacing-xl;
         text-align: center;
     }
 }
 
-@include mix.tablet {
+@include tablet {
     .auth-page {
         &__content {
-            padding: vars.$spacing-xl vars.$spacing-md;
+            padding: $spacing-xl $spacing-md;
         }
 
         &__container {
-            padding: vars.$spacing-lg;
+            padding: $spacing-lg;
         }
 
         &__title {
-            font-size: vars.$font-size-large;
+            font-size: $font-size-large;
         }
     }
 }
 
-@include mix.mobile {
+@include mobile {
     .auth-page {
         &__content {
-            padding: vars.$spacing-lg vars.$spacing-sm;
+            padding: $spacing-lg $spacing-sm;
         }
 
         &__container {
-            padding: vars.$spacing-md;
+            padding: $spacing-md;
         }
 
         &__title {
-            font-size: vars.$font-size-base;
+            font-size: $font-size-base;
         }
     }
 }

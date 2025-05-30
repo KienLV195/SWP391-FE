@@ -1,12 +1,21 @@
-$primary-color: #1976d2;
-$primary-hover: #1565c0;
-$secondary-color: #00b894;
-$background-main: #f6fbfd;
-$background-box: #e3f2fd;
-$text-color: #222;
-$text-secondary: #6c757d;
-$background-light: #f6f6f6;
+// Màu sắc
+$primary-color: #1976d2; // Xanh dương chính
+$primary-hover: #1565c0; // Xanh dương khi hover
+$secondary-color: #d32f2f; // Đỏ chính
+$secondary-hover: #C21121; // Đỏ khi hover
+$dark-blue: #02314B; // Xanh đậm cho nền section
+$background-main: #f6fbfd; // Nền chính
+$background-box: #e3f2fd; // Nền hộp (nhóm máu dương)
+$background-box-secondary: #ffebee; // Nền hộp (nhóm máu âm)
+$background-light: #f6f6f6; // Nền sáng
+$text-color: #222; // Màu chữ chính
+$text-secondary: #6c757d; // Màu chữ phụ
+$white: #fff; // Trắng
+$black: #000; // Đen
+$border-light: #e8ecef; // Viền sáng
+$shadow-color: rgba(0, 0, 0, 0.2); // Màu bóng
 
+// Khoảng cách
 $spacing-xxl: 64px;
 $spacing-xl: 48px;
 $spacing-lg: 32px;
@@ -16,7 +25,12 @@ $spacing-sm: 12px;
 $spacing-xs: 8px;
 $spacing-xxs: 4px;
 
+// Font size
 $font-size-xlarge: 2.25rem; // 36px
 $font-size-large: 1.5rem; // 24px
 $font-size-base: 1rem; // 16px
 $font-size-small: 0.875rem; // 14px
+
+// Font family
+$font-primary: "Montserrat", "Poppins", Arial, Helvetica, sans-serif;
+$font-secondary: "Open Sans", "Roboto", "Inter", Arial, Helvetica, sans-serif;
