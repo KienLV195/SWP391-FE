@@ -5,6 +5,9 @@ import HomePage from "../pages/guest/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import OTPVerificationPage from "../pages/auth/OTPVerificationPage";
+import BloodInfoPage from "../pages/guest/BloodInfoPage";
+import BlogPage from "../pages/guest/BlogPage";
+import UrgentBloodRequestsPage from "../pages/guest/UrgentBloodRequestsPage";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +33,18 @@ const router = createBrowserRouter([
   {
     path: "/404",
     element: <NotFoundPage />,
+  },
+  {
+    path: "/blood-info",
+    element: <BloodInfoPage />,
+  },
+  {
+    path: "/blog",
+    element: <BlogPage />,
+  },
+  {
+    path: "/urgent-blood-requests",
+    element: <UrgentBloodRequestsPage />,
   },
   {
     path: "*",

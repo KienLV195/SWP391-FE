@@ -1,101 +1,118 @@
-@use "../base/variables" as vars;
-@use "../base/mixin" as mix;
+@use '../base/variables' as *;
+@use '../base/mixin' as *;
 
 .guest-navbar {
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: vars.$spacing-base 0;
+  @include flex-align(space-between, center);
+  padding: 0 $spacing-xl;
+  background-color: $white;
+  border-bottom: 1px solid #e0e0e0;
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 70px;
 
-  .navbar-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 0 vars.$spacing-lg;
+  .guest-navbar-logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: $text-color;
   }
 
-  .navbar-logo {
-    .logo-img {
-      height: 40px;
-      width: auto;
-    }
-  }
+  .guest-navbar-nav {
+    @include flex-align(center, center);
+    gap: 40px;
+    height: 100%;
 
-  .navbar-menu {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: vars.$spacing-lg;
-  }
-
-  .navbar-item {
-    position: relative;
-  }
-
-  .navbar-link {
-    font-family: "Montserrat", Arial, Helvetica, sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: vars.$text-color;
-    text-decoration: none;
-    text-transform: uppercase;
-    padding: vars.$spacing-sm 0;
-    transition: color 0.3s;
-
-    &:hover {
-      color: vars.$primary-color;
-    }
-
-    &.active {
-      color: vars.$primary-color;
+    a {
+      text-decoration: none;
+      color: $text-color;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 24px 0;
       position: relative;
+      transition: color 0.3s;
 
-      &:after {
-        content: "";
-        position: absolute;
-        bottom: -5px; // Đường gạch ngang nằm ngay dưới chữ
-        left: 0;
-        width: 100%; // Độ dài bằng chiều rộng của chữ
-        height: 3px; // Độ dày của đường gạch ngang
-        background-color: vars.$primary-color; // Màu xanh đậm
-        display: block; // Đảm bảo hiển thị
+      &.active {
+        color: $secondary-color;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 15px;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background-color: $secondary-color;
+        }
+      }
+
+      &:hover:not(.active) {
+        color: $secondary-color;
       }
     }
   }
 
-  @include mix.tablet {
-    .navbar-container {
-      padding: 0 vars.$spacing-base;
+  .guest-navbar-actions {
+    @include flex-align(flex-end, center);
+    gap: $spacing-base;
+
+    .btn-login {
+      text-decoration: none;
+      color: $secondary-color;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 8px 16px;
+      transition: color 0.3s;
+
+      &:hover {
+        color: $secondary-hover;
+      }
     }
 
-    .navbar-menu {
-      gap: vars.$spacing-base;
-    }
+    .btn-register {
+      text-decoration: none;
+      background-color: $secondary-color;
+      color: $white;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 25px;
+      transition: background-color 0.3s;
 
-    .navbar-link {
-      font-size: 0.9rem;
+      &:hover {
+        background-color: $secondary-hover;
+      }
     }
   }
 
-  @include mix.mobile {
-    .navbar-container {
-      flex-direction: column;
-      gap: vars.$spacing-base;
+  // Responsive Design
+  @include tablet {
+    padding: 0 $spacing-lg;
+    
+    .guest-navbar-nav {
+      gap: 24px;
     }
 
-    .navbar-menu {
-      flex-direction: column;
-      gap: vars.$spacing-sm;
-      text-align: center;
+    .guest-navbar-actions {
+      gap: $spacing-sm;
+    }
+  }
+
+  @include mobile {
+    flex-direction: column;
+    height: auto;
+    padding: $spacing-sm;
+    
+    .guest-navbar-nav {
+      gap: $spacing-lg;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: $spacing-sm 0;
     }
 
-    .navbar-link {
-      font-size: 0.85rem;
+    .guest-navbar-actions {
+      width: 100%;
+      justify-content: center;
+      padding-bottom: $spacing-sm;
     }
   }
 }

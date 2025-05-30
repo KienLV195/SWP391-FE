@@ -11,7 +11,7 @@ import {
   FiTrendingUp,
 } from "react-icons/fi";
 import { Table, Row, Col, Card } from "antd";
-import Header from "../../components/common/Header";
+import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
@@ -157,136 +157,137 @@ const GuestHomePage = () => {
   ];
 
   return (
-    <div className="guest-home-page">
-      <Header />
-
-      {/* Hero Section */}
-      <section
-        className="hero-section"
-        style={{
-          backgroundImage: `url(${blood1})`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center center",
-          backgroundSize: "cover",
-        }}
-      >
-        <div className="hero-container">
-          <div className="hero-content">
-            <h1 className="merriweather-title">
-              HIẾN MÁU CỨU NGƯỜI
-              <br />
-              NHẬN MÁU CỨU MÌNH
-            </h1>
-            <p className="merriweather-content">
-              Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết nối
-              sự sống bằng từng giọt máu yêu thương.
-            </p>
-            <div className="cta-row">
-              <Link to="/register" className="cta-button">
-                ĐĂNG KÝ HIẾN MÁU
-              </Link>
-              <Link to="/receive" className="cta-button secondary">
-                ĐĂNG KỦ NHẬN MÁU
-              </Link>
+    <>
+      <GuestNavbar />
+      <div className="guest-home-page">
+        {/* Hero Section */}
+        <section
+          className="hero-section"
+          style={{
+            backgroundImage: `url(${blood1})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
+            backgroundSize: "cover",
+          }}
+        >
+          <div className="hero-container">
+            <div className="hero-content">
+              <h1 className="merriweather-title">
+                HIẾN MÁU CỨU NGƯỜI
+                <br />
+                NHẬN MÁU CỨU MÌNH
+              </h1>
+              <p className="merriweather-content">
+                Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
+                nối sự sống bằng từng giọt máu yêu thương.
+              </p>
+              <div className="cta-row">
+                <Link to="/register" className="cta-button">
+                  ĐĂNG KÝ HIẾN MÁU
+                </Link>
+                <Link to="/receive" className="cta-button secondary">
+                  ĐĂNG KÝ NHẬN MÁU
+                </Link>
+              </div>
+            </div>
+            <div className="hero-image">
+              <div className="hero-image-bg"></div>
+              <img src={blood1} alt="Truyền máu" className="hero-img" />
             </div>
           </div>
-          <div className="hero-image">
-            <div className="hero-image-bg"></div>
-            <img src={blood1} alt="Truyền máu" className="hero-img" />
+        </section>
+
+        {/* Hospital Info */}
+        <section className="hospital-info-section">
+          <div className="hospital-left">
+            <div className="hospital-img-box">
+              <img
+                src={hospitalImg}
+                alt="Bệnh viện Ánh Dương"
+                className="hospital-img"
+              />
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Hospital Info */}
-      <section className="hospital-info-section">
-        <div className="hospital-left">
-          <div className="hospital-img-box">
-            <img
-              src={hospitalImg}
-              alt="Bệnh viện Ánh Dương"
-              className="hospital-img"
-            />
+          <div className="hospital-right">
+            <h3 className="hospital-title">GIỚI THIỆU VỀ CHÚNG TÔI</h3>
+            <h2 className="hospital-name">Bệnh viện Đa khoa Ánh Dương</h2>
+            <p className="hospital-desc">
+              Đơn vị y tế hàng đầu, cam kết cung cấp dịch vụ chăm sóc sức khỏe
+              chất lượng cao. Với cơ sở vật chất hiện đại, đội ngũ chuyên môn
+              giàu kinh nghiệm và quy trình minh bạch, chúng tôi luôn là điểm
+              tựa vững chắc cho cộng đồng.
+            </p>
+            <p className="hospital-desc">
+              Đặc biệt chú trọng xây dựng và vận hành hệ thống tiếp nhận, điều
+              phối máu tiên tiến. Nguồn máu được hiến tặng không chỉ phục vụ nhu
+              cầu điều trị nội bộ mà còn sẵn sàng hỗ trợ các bệnh nhân có nhu
+              cầu, góp phần cứu sống nhiều sinh mạng. Ánh Dương tự hào là cầu
+              nối tin cậy giữa lòng nhân ái và sự sống.
+            </p>
+            <ul className="hospital-contact">
+              <li>
+                <FiPhone className="icon phone" /> (028) 3957 1343
+              </li>
+              <li>
+                <FiMail className="icon email" /> anhduonghospital@gmail.com
+              </li>
+              <li>
+                <FiMapPin className="icon address" /> 123 Đường ABC, Quận 1, TP.
+                Hồ Chí Minh
+              </li>
+              <li>
+                <FiClock className="icon clock" /> Thứ 2 - Chủ nhật: 07:00 -
+                12:00, Chiều: 13:00 - 16:30
+              </li>
+            </ul>
           </div>
-        </div>
-        <div className="hospital-right">
-          <h3 className="hospital-title">GIỚI THIỆU VỀ CHÚNG TÔI</h3>
-          <h2 className="hospital-name">Bệnh viện Đa khoa Ánh Dương</h2>
-          <p className="hospital-desc">
-            Đơn vị y tế hàng đầu, cam kết cung cấp dịch vụ chăm sóc sức khỏe
-            chất lượng cao. Với cơ sở vật chất hiện đại, đội ngũ chuyên môn giàu
-            kinh nghiệm và quy trình minh bạch, chúng tôi luôn là điểm tựa vững
-            chắc cho cộng đồng.
-          </p>
-          <p className="hospital-desc">
-            Đặc biệt chú trọng xây dựng và vận hành hệ thống tiếp nhận, điều
-            phối máu tiên tiến. Nguồn máu được hiến tặng không chỉ phục vụ nhu
-            cầu điều trị nội bộ mà còn sẵn sàng hỗ trợ các bệnh nhân có nhu cầu,
-            góp phần cứu sống nhiều sinh mạng. Ánh Dương tự hào là cầu nối tin
-            cậy giữa lòng nhân ái và sự sống.
-          </p>
-          <ul className="hospital-contact">
-            <li>
-              <FiPhone className="icon phone" /> (028) 3957 1343
-            </li>
-            <li>
-              <FiMail className="icon email" /> anhduonghospital@gmail.com
-            </li>
-            <li>
-              <FiMapPin className="icon address" /> 123 Đường ABC, Quận 1, TP.
-              Hồ Chí Minh
-            </li>
-            <li>
-              <FiClock className="icon clock" /> Thứ 2 - Chủ nhật: 07:00 -
-              12:00, Chiều: 13:00 - 16:30
-            </li>
-          </ul>
-        </div>
-      </section>
+        </section>
 
-      {/* Emergency Requests */}
-      <section className="emergency-section">
-        <div className="section-title-wrapper">
-          <h2 className="section-title merriweather-title">
-            YÊU CẦU HIẾN MÁU KHẨN CẤP
-          </h2>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={emergencyRequests}
-          pagination={{ pageSize: 5 }}
-          scroll={{ x: "max-content" }}
-        />
-      </section>
-
-      {/* Achievement Section */}
-      <section className="achievement-section">
-        <div className="achievement-container">
-          <div className="achievement-header">
-            <div className="achievement-line"></div>
-            <h3 className="achievement-subtitle">THÀNH TỰU NỔI BẬT</h3>
+        {/* Emergency Requests */}
+        <section className="emergency-section">
+          <div className="section-title-wrapper">
+            <h2 className="section-title merriweather-title">
+              YÊU CẦU HIẾN MÁU KHẨN CẤP
+            </h2>
           </div>
-          <h2 className="achievement-title merriweather-title">
-            THÀNH TỰU CỦA CHÚNG TÔI
-          </h2>
+          <Table
+            columns={columns}
+            dataSource={emergencyRequests}
+            pagination={{ pageSize: 5 }}
+            scroll={{ x: "max-content" }}
+          />
+        </section>
 
-          <Row gutter={[24, 24]} className="achievement-grid">
-            {achievementData.map((item, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
-                <Card
-                  className={`achievement-card achievement-card-${item.color}`}
-                >
-                  <div className="achievement-icon-wrapper">{item.icon}</div>
-                  <h3 className="achievement-card-title">{item.title}</h3>
-                  <p className="achievement-card-desc">{item.description}</p>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </div>
-      </section>
+        {/* Achievement Section */}
+        <section className="achievement-section">
+          <div className="achievement-container">
+            <div className="achievement-header">
+              <div className="achievement-line"></div>
+              <h3 className="achievement-subtitle">THÀNH TỰU NỔI BẬT</h3>
+            </div>
+            <h2 className="achievement-title merriweather-title">
+              THÀNH TỰU CỦA CHÚNG TÔI
+            </h2>
 
-      <Footer />
-    </div>
+            <Row gutter={[24, 24]} className="achievement-grid">
+              {achievementData.map((item, index) => (
+                <Col xs={24} sm={12} lg={6} key={index}>
+                  <Card
+                    className={`achievement-card achievement-card-${item.color}`}
+                  >
+                    <div className="achievement-icon-wrapper">{item.icon}</div>
+                    <h3 className="achievement-card-title">{item.title}</h3>
+                    <p className="achievement-card-desc">{item.description}</p>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+        </section>
+
+        <Footer />
+      </div>
+    </>
   );
 };
 
