@@ -1,8 +1,6 @@
-// src/styles/pages/HomePage.scss
 @use '../base/variables' as vars;
 @use '../base/mixin' as mix;
 
-// Typography
 .main-title,
 .merriweather-title,
 h1,
@@ -35,7 +33,6 @@ li {
     position: relative;
     overflow: hidden;
     color: vars.$white;
-    // Background sẽ được set từ inline style trong React component
 
     &::before {
       content: '';
@@ -111,7 +108,6 @@ li {
         .cta-button.secondary {
           @include mix.primary-button(vars.$white, vars.$white);
           color: vars.$secondary-color;
-          border: 2px solid vars.$secondary-color;
           border-radius: 25px;
 
           &:hover {
@@ -248,7 +244,7 @@ li {
 
         .icon {
           margin-right: vars.$spacing-xs;
-          font-size: 1.2em;
+          font-size: 0.9em; // Giảm kích thước icon
           width: 32px;
           height: 32px;
           background-color: vars.$dark-blue;
@@ -256,12 +252,19 @@ li {
           border-radius: 50%;
           @include mix.flex-center();
           border: 1px solid vars.$dark-blue;
+          padding: 8px; // Tăng padding để tạo khoảng cách
+          transition: background-color 0.3s ease, transform 0.3s ease;
 
           &.phone,
           &.email,
           &.address,
           &.clock {
             color: vars.$white;
+          }
+
+          &:hover {
+            background-color: lighten(vars.$dark-blue, 10%);
+            transform: scale(1.1);
           }
         }
       }
@@ -325,8 +328,8 @@ li {
 
         .ant-table-thead {
           th {
-            background: vars.$background-main;
-            color: vars.$dark-blue;
+            background: vars.$background-main !important; // Đảm bảo ưu tiên
+            color: vars.$dark-blue !important; // Đảm bảo màu xanh đậm
             @include mix.heading(1.1rem);
             font-weight: 700;
             padding: vars.$spacing-base;
@@ -341,6 +344,15 @@ li {
             padding: vars.$spacing-base;
             border-bottom: 1px solid vars.$border-light;
             text-align: center;
+          }
+
+          // Xen kẽ background cho các hàng
+          tr:nth-child(odd) {
+            background: #ffffff;
+          }
+
+          tr:nth-child(even) {
+            background: #f9f9f9;
           }
 
           tr:hover td {
@@ -385,29 +397,79 @@ li {
 
       .ant-pagination {
         margin-top: vars.$spacing-md;
+        text-align: center;
 
         .ant-pagination-item {
-          border-radius: 8px;
+          border-radius: 50%; // Bo tròn hoàn toàn
+          background: #e3f2fd; // Nền nhạt như hình mẫu
+          border: 1px solid vars.$primary-color; // Viền mỏng hơn
+          margin: 0 4px; // Giảm khoảng cách giữa các nút
+          width: 36px; // Điều chỉnh kích thước nhỏ hơn
+          height: 36px;
+          line-height: 34px;
+          transition: all 0.3s ease;
+          box-shadow: none; // Loại bỏ bóng để giống hình
 
           a {
             color: vars.$primary-color;
+            font-weight: 600;
+            font-size: 1rem;
+          }
+
+          &:hover {
+            background: vars.$primary-color;
+            a {
+              color: vars.$white;
+            }
           }
         }
 
         .ant-pagination-item-active {
-          background: vars.$primary-color;
-          border-color: vars.$primary-color;
+          background: vars.$secondary-color;
+          border-color: vars.$secondary-color;
 
           a {
             color: vars.$white;
+          }
+
+          &:hover {
+            background: vars.$secondary-hover;
+            border-color: vars.$secondary-hover;
           }
         }
 
         .ant-pagination-prev,
         .ant-pagination-next {
           .ant-pagination-item-link {
-            border-radius: 8px;
+            border-radius: 50%; // Bo tròn hoàn toàn
             color: vars.$primary-color;
+            border: 1px solid vars.$primary-color; // Viền mỏng
+            background: #e3f2fd; // Nền nhạt
+            width: 36px;
+            height: 36px;
+            line-height: 34px;
+            transition: all 0.3s ease;
+            box-shadow: none;
+
+            &:hover {
+              background: vars.$primary-color;
+              color: vars.$white;
+            }
+          }
+        }
+
+        .ant-pagination-disabled {
+          .ant-pagination-item-link {
+            color: vars.$text-secondary;
+            border-color: vars.$border-light;
+            background: vars.$background-light;
+            box-shadow: none;
+
+            &:hover {
+              background: vars.$background-light;
+              color: vars.$text-secondary;
+              box-shadow: none;
+            }
           }
         }
       }
@@ -422,148 +484,469 @@ li {
       }
     }
   }
-}
 
-// Achievement Section
-.achievement-section {
-  padding: 80px 0;
-  background-color: #f8f9fa;
-  
-  .achievement-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
+  .news-section {
+    padding: vars.$spacing-xl vars.$spacing-md;
+    background: vars.$background-light;
+    text-align: center;
 
-  .achievement-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    gap: 20px;
-
-    .achievement-line {
-      width: 60px;
-      height: 2px;
-      background-color: vars.$secondary-hover;
+    .news-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
 
-    .achievement-subtitle {
-      font-size: vars.$font-size-large;
-      font-weight: 600;
-      color: vars.$secondary-color;
-      letter-spacing: 2px;
-      margin: 0;
+    .news-header {
+      margin-bottom: vars.$spacing-lg;
+
+      .news-subtitle-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        gap: 20px;
+
+        .news-line {
+          width: 60px;
+          height: 2px;
+          background-color: vars.$secondary-hover;
+        }
+
+        .news-subtitle {
+          font-size: vars.$font-size-large;
+          font-weight: 600;
+          color: vars.$secondary-color;
+          letter-spacing: 2px;
+          margin: 0;
+          text-transform: uppercase;
+        }
+      }
+
+      .news-title {
+        @include mix.heading(2rem, vars.$dark-blue);
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 60px;
+        text-transform: uppercase;
+      }
+    }
+
+    .news-grid {
+      @include mix.flex-center();
+      gap: vars.$spacing-md;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .news-card {
+        background: vars.$white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px vars.$shadow-color;
+        width: 30%;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: translateY(-5px);
+        }
+
+        a {
+          text-decoration: none;
+          color: inherit;
+          display: block;
+        }
+
+        .news-image {
+          height: 200px;
+          background: #b0b0b0;
+          display: block;
+          width: 100%;
+        }
+
+        .news-content {
+          padding: vars.$spacing-md;
+
+          .news-date {
+            font-size: vars.$font-size-small;
+            color: vars.$text-secondary;
+            margin-bottom: vars.$spacing-xs;
+          }
+
+          .news-desc {
+            @include mix.text(vars.$font-size-base, vars.$text-color);
+            margin-bottom: vars.$spacing-md;
+            text-align: left;
+          }
+
+          .news-button {
+            @include mix.primary-button(vars.$secondary-color, vars.$secondary-hover);
+            padding: vars.$spacing-xs vars.$spacing-md;
+            font-size: vars.$font-size-base;
+            border-radius: 4px;
+            display: inline-block;
+          }
+        }
+      }
+    }
+
+    @include mix.tablet {
+      padding: vars.$spacing-md vars.$spacing-sm;
+
+      .news-grid {
+        flex-direction: column;
+
+        .news-card {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .achievement-section {
+    padding: 80px 0;
+    background-color: #f8f9fa;
+
+    .achievement-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .achievement-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      gap: 20px;
+
+      .achievement-line {
+        width: 60px;
+        height: 2px;
+        background-color: vars.$secondary-hover;
+      }
+
+      .achievement-subtitle {
+        font-size: vars.$font-size-large;
+        font-weight: 600;
+        color: vars.$secondary-color;
+        letter-spacing: 2px;
+        margin: 0;
+        text-transform: uppercase;
+      }
+    }
+
+    .achievement-title {
+      @include mix.heading(2rem, vars.$dark-blue);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 60px;
       text-transform: uppercase;
     }
-  }
 
-  .achievement-title {
-    text-align: center;
-    font-size: vars.$font-size-xlarge;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 60px;
-    letter-spacing: -0.5px;
-  }
-
-  .achievement-grid {
-    .ant-col {
-      display: flex;
-    }
-  }
-
-  .achievement-card {
-    height: 100%;
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    .achievement-grid {
+      .ant-col {
+        display: flex;
+      }
     }
 
-    .ant-card-body {
-      padding: 40px 24px;
-      text-align: center;
+    .achievement-card {
       height: 100%;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .ant-card-body {
+        padding: 40px 24px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      &.achievement-card-red {
+        border-top: 4px solid #dc3545;
+
+        .achievement-icon-wrapper {
+          background-color: #dc3545;
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #dc3545, #c82333);
+        }
+      }
+
+      &.achievement-card-blue {
+        border-top: 4px solid #1e3a8a;
+
+        .achievement-icon-wrapper {
+          background-color: #1e3a8a;
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #1e3a8a, #1e40af);
+        }
+      }
+    }
+
+    .achievement-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      transition: all 0.3s ease;
+
+      .achievement-icon {
+        font-size: 36px;
+        color: white;
+      }
+    }
+
+    .achievement-card-title {
+      font-size: vars.$font-size-large;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    .achievement-card-desc {
+      font-size: vars.$font-size-base;
+      line-height: 1.6;
+      color: #6c757d;
+      margin: 0;
+      flex-grow: 1;
+      display: flex;
       align-items: center;
     }
+  }
 
-    &.achievement-card-red {
-      border-top: 4px solid #dc3545;
-      
-      .achievement-icon-wrapper {
-        background-color: #dc3545;
+  .faq-section {
+    padding: vars.$spacing-xxl 40px;
+    background: vars.$dark-blue;
+    max-width: 100%;
+    margin: 0 auto;
+
+    .faq-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .faq-header {
+      @include mix.flex-center();
+      margin-bottom: vars.$spacing-xl;
+    }
+
+    .faq-title {
+      @include mix.heading(1.5rem, vars.$white);
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      background: vars.$secondary-color;
+      padding: vars.$spacing-md vars.$spacing-md;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .faq-content {
+      .faq-collapse {
+        .faq-panel {
+          background: vars.$white;
+          border: none;
+          border-radius: 8px;
+          margin-bottom: vars.$spacing-base;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          .faq-question {
+            @include mix.text(vars.$font-size-large, vars.$text-color);
+            font-weight: 600;
+            padding: vars.$spacing-base vars.$spacing-md;
+
+            .question-number {
+              font-weight: 700;
+              margin-right: vars.$spacing-xs;
+            }
+
+            .question-text {
+              flex: 1;
+            }
+          }
+
+          .faq-expand-icon {
+            font-size: vars.$font-size-base;
+            color: vars.$text-color;
+            transition: transform 0.3s ease;
+          }
+
+          .faq-answer {
+            @include mix.text(vars.$font-size-base, vars.$text-secondary);
+            padding: 0 vars.$spacing-md vars.$spacing-base;
+            line-height: 1.6;
+
+            ul {
+              padding-left: vars.$spacing-md;
+              margin: 0;
+
+              li {
+                margin-bottom: vars.$spacing-xs;
+              }
+            }
+          }
+        }
       }
-      
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #dc3545, #c82333);
+
+      .faq-pagination {
+        margin-top: vars.$spacing-xl;
+        text-align: center;
+
+        .ant-pagination {
+          justify-content: end;
+          .ant-pagination-item {
+            border-radius: 50%; // Bo tròn hoàn toàn
+            margin: 0 4px; // Giảm khoảng cách
+            width: 36px;
+            height: 36px;
+            line-height: 34px;
+            // transition: all 0.3s ease;
+            box-shadow: none;
+
+            a {
+              color: vars.$primary-color;
+              font-weight: 600;
+              font-size: 1rem;
+            }
+
+            &:hover {
+              background: vars.$primary-color;
+              a {
+                color: vars.$white;
+              }
+            }
+          }
+
+          .ant-pagination-item-active {
+            background: vars.$secondary-color;
+            border-color: vars.$secondary-color;
+
+            a {
+              color: vars.$white;
+            }
+
+            &:hover {
+              background: vars.$secondary-hover;
+              border-color: vars.$secondary-hover;
+            }
+          }
+
+          .ant-pagination-prev,
+          .ant-pagination-next {
+            .ant-pagination-item-link {
+              border-radius: 50%; // Bo tròn hoàn toàn
+              // color: vars.$primary-color;
+              background: vars.$background-light; // Nền nhạt
+              width: 36px;
+              height: 36px;
+              line-height: 34px;
+              transition: all 0.3s ease;
+              box-shadow: none;
+
+              &:hover {
+                background: vars.$primary-color;
+                color: vars.$white;
+              }
+            }
+          }
+
+          .ant-pagination-disabled {
+            .ant-pagination-item-link {
+              color: vars.$text-secondary;
+              border-color: vars.$border-light;
+              background: vars.$background-light;
+              box-shadow: none;
+
+              &:hover {
+                background: vars.$background-light;
+                color: vars.$text-secondary;
+                box-shadow: none;
+              }
+            }
+          }
+        }
       }
     }
 
-    &.achievement-card-blue {
-      border-top: 4px solid #1e3a8a;
-      
-      .achievement-icon-wrapper {
-        background-color: #1e3a8a;
+    @include mix.tablet {
+      padding: vars.$spacing-lg vars.$spacing-xs;
+
+      .faq-title {
+        font-size: 1.2rem;
+        padding: vars.$spacing-xs vars.$spacing-base;
       }
-      
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #1e3a8a, #1e40af);
+
+      .faq-content {
+        .faq-collapse {
+          .faq-panel {
+            .faq-question {
+              padding: vars.$spacing-sm vars.$spacing-base;
+            }
+
+            .faq-answer {
+              padding: 0 vars.$spacing-base vars.$spacing-sm;
+            }
+          }
+        }
       }
     }
   }
 
-  .achievement-icon-wrapper {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 24px;
-    transition: all 0.3s ease;
-
-    .achievement-icon {
-      font-size: 36px;
-      color: white;
-    }
-  }
-
-  .achievement-card-title {
-    font-size: vars.$font-size-large;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 16px;
-    letter-spacing: 1px;
-  }
-
-  .achievement-card-desc {
-    font-size: vars.$font-size-base;
-    line-height: 1.6;
-    color: #6c757d;
+  .map-section {
+    padding: 0;
     margin: 0;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
+    background: transparent;
+
+    .map-container {
+      margin: 0;
+      padding: 0;
+
+      iframe {
+        width: 100%;
+        height: 300px;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        display: block;
+      }
+    }
+
+    @include mix.tablet {
+      .map-container {
+        iframe {
+          height: 200px;
+        }
+      }
+    }
   }
 }

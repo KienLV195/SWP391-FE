@@ -1,24 +1,155 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  FiPhone,
-  FiMail,
-  FiMapPin,
-  FiClock,
-  FiShield,
-  FiAward,
-  FiShare2,
-  FiTrendingUp,
-} from "react-icons/fi";
-import { Table, Row, Col, Card } from "antd";
+  FaPhoneAlt, // Icon cho phone
+  FaEnvelope, // Icon cho email
+  FaMapMarkerAlt, // Icon cho địa chỉ
+  FaClock, // Icon cho thời gian
+} from "react-icons/fa"; // Bộ FontAwesome
+import { FiShield, FiAward, FiShare2, FiTrendingUp } from "react-icons/fi"; // Bộ Feather Icons
+import { Table, Row, Col, Card, Collapse, Pagination } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/HomePage.scss";
 
+const { Panel } = Collapse;
+
 const GuestHomePage = () => {
   const [emergencyRequests, setEmergencyRequests] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const questionsPerPage = 5;
+
+  const faqData = [
+    {
+      id: 1,
+      question: "Ai có thể tham gia hiến máu?",
+      answer: (
+        <ul>
+          <li>
+            Công dân từ 18 đến 60 tuổi, có cân nặng ≥ 45kg, tình nguyện và đủ
+            sức khỏe.
+          </li>
+          <li>Khoảng cách giữa hai lần hiến máu là ít nhất 12 tuần.</li>
+          <li>
+            Không mắc hoặc có hành vi nguy cơ lây truyền các bệnh qua đường máu.
+          </li>
+          <li>Cần mang theo giấy tờ tùy thân khi đi hiến máu.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 2,
+      question: "Ai không nên hiến máu?",
+      answer: (
+        <ul>
+          <li>Người nhiễm HIV, viêm gan B/C hoặc có hành vi nguy cơ.</li>
+          <li>
+            Người mắc bệnh mãn tính: tim mạch, huyết áp, dạ dày, hô hấp,...
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: 3,
+      question: "Máu sẽ được làm các xét nghiệm nào?",
+      answer: (
+        <ul>
+          <li>Nhóm máu (ABO, Rh), HIV, viêm gan B/C, giang mai, sốt rét.</li>
+          <li>
+            Kết quả được giữ bí mật và có tư vấn miễn phí nếu phát hiện bệnh.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: 4,
+      question: "Thành phần và chức năng của máu:",
+      answer: (
+        <ul>
+          <li>Hồng cầu: vận chuyển oxy.</li>
+          <li>Bạch cầu: bảo vệ cơ thể.</li>
+          <li>Tiểu cầu: đông cầm máu.</li>
+          <li>
+            Huyết tương: chứa kháng thể, yếu tố đông máu, chất dinh dưỡng.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: 5,
+      question: "Vì sao cần truyền máu?",
+      answer: (
+        <ul>
+          <li>Mất máu do tai nạn, phẫu thuật, chảy máu nội tạng,...</li>
+          <li>Bệnh lý: ung thư máu, suy tủy, máu khó đông,...</li>
+          <li>Các kỹ thuật y học hiện đại cần truyền máu.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 6,
+      question: "Nhu cầu máu tại Việt Nam",
+      answer: (
+        <ul>
+          <li>Cần khoảng 1.800.000 đơn vị máu/năm.</li>
+          <li>Hiện đáp ứng được khoảng 54% nhu cầu.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 7,
+      question: "Hiến máu có ảnh hưởng sức khỏe không?",
+      answer: (
+        <ul>
+          <li>Không ảnh hưởng nếu thực hiện đúng hướng dẫn.</li>
+          <li>Máu được cơ thể tái tạo mỗi ngày.</li>
+          <li>Nhiều người hiến máu nhiều lần vẫn khỏe mạnh.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 8,
+      question: "Có thể bị nhiễm bệnh khi hiến máu không?",
+      answer: (
+        <ul>
+          <li>Không. Dụng cụ lấy máu vô trùng, dùng một lần.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 9,
+      question: "Cần chuẩn bị gì trước khi hiến máu?",
+      answer: (
+        <ul>
+          <li>Ngủ đủ, không thức khuya.</li>
+          <li>Không uống rượu/bia trước hiến máu.</li>
+          <li>Ăn nhẹ, mang giấy tờ tùy thân.</li>
+        </ul>
+      ),
+    },
+    {
+      id: 10,
+      question: "Những trường hợp cần trì hoãn hiến máu:",
+      answer: (
+        <ul>
+          <li>12 tháng: sau phẫu thuật, mắc bệnh nặng, sinh con,...</li>
+          <li>6 tháng: xăm trổ, bấm lỗ cơ thể, phơi nhiễm dịch máu,...</li>
+          <li>
+            4 tuần: mắc các bệnh truyền nhiễm thông thường, tiêm vắc xin thông
+            dụng.
+          </li>
+          <li>7 ngày: cúm, cảm, dị ứng, đau đầu, tiêm một số vắc xin.</li>
+          <li>
+            Nghề nghiệp đặc thù (lái xe, leo núi, công nhân trên cao, thể thao
+            chuyên nghiệp...) chỉ hiến máu vào ngày nghỉ hoặc sau 12 giờ.
+          </li>
+        </ul>
+      ),
+    },
+  ];
 
   useEffect(() => {
     const fakeData = [
@@ -66,6 +197,30 @@ const GuestHomePage = () => {
 
     setEmergencyRequests(fakeData);
   }, []);
+
+  const newsData = [
+    {
+      id: 1,
+      date: "30 MARCH, 2024",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      image: "placeholder.jpg",
+      link: "/blog/1",
+    },
+    {
+      id: 2,
+      date: "30 MARCH, 2024",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      image: "placeholder.jpg",
+      link: "/blog/2",
+    },
+    {
+      id: 3,
+      date: "30 MARCH, 2024",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      image: "placeholder.jpg",
+      link: "/blog/3",
+    },
+  ];
 
   const achievementData = [
     {
@@ -156,11 +311,18 @@ const GuestHomePage = () => {
     },
   ];
 
+  const startIndex = (currentPage - 1) * questionsPerPage;
+  const endIndex = startIndex + questionsPerPage;
+  const currentQuestions = faqData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <>
       <GuestNavbar />
       <div className="guest-home-page">
-        {/* Hero Section */}
         <section
           className="hero-section"
           style={{
@@ -197,7 +359,6 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        {/* Hospital Info */}
         <section className="hospital-info-section">
           <div className="hospital-left">
             <div className="hospital-img-box">
@@ -226,24 +387,23 @@ const GuestHomePage = () => {
             </p>
             <ul className="hospital-contact">
               <li>
-                <FiPhone className="icon phone" /> (028) 3957 1343
+                <FaPhoneAlt className="icon phone" /> (028) 3957 1343
               </li>
               <li>
-                <FiMail className="icon email" /> anhduonghospital@gmail.com
+                <FaEnvelope className="icon email" /> anhduonghospital@gmail.com
               </li>
               <li>
-                <FiMapPin className="icon address" /> 123 Đường ABC, Quận 1, TP.
-                Hồ Chí Minh
+                <FaMapMarkerAlt className="icon address" /> 123 Đường ABC, Quận
+                1, TP. Hồ Chí Minh
               </li>
               <li>
-                <FiClock className="icon clock" /> Thứ 2 - Chủ nhật: 07:00 -
+                <FaClock className="icon clock" /> Thứ 2 - Chủ nhật: 07:00 -
                 12:00, Chiều: 13:00 - 16:30
               </li>
             </ul>
           </div>
         </section>
 
-        {/* Emergency Requests */}
         <section className="emergency-section">
           <div className="section-title-wrapper">
             <h2 className="section-title merriweather-title">
@@ -258,16 +418,14 @@ const GuestHomePage = () => {
           />
         </section>
 
-        {/* Achievement Section */}
         <section className="achievement-section">
           <div className="achievement-container">
             <div className="achievement-header">
               <div className="achievement-line"></div>
               <h3 className="achievement-subtitle">THÀNH TỰU NỔI BẬT</h3>
+              <div className="achievement-line"></div>
             </div>
-            <h2 className="achievement-title merriweather-title">
-              THÀNH TỰU CỦA CHÚNG TÔI
-            </h2>
+            <h2 className="achievement-title">THÀNH TỰU CỦA CHÚNG TÔI</h2>
 
             <Row gutter={[24, 24]} className="achievement-grid">
               {achievementData.map((item, index) => (
@@ -282,6 +440,100 @@ const GuestHomePage = () => {
                 </Col>
               ))}
             </Row>
+          </div>
+        </section>
+
+        {/* Questions Section */}
+        <section className="faq-section">
+          <div className="faq-container">
+            <div className="faq-header">
+              <h2 className="faq-title">NHỮNG CÂU HỎI THƯỜNG GẶP</h2>
+            </div>
+
+            <div className="faq-content">
+              <Collapse
+                className="faq-collapse"
+                expandIcon={({ isActive }) => (
+                  <PlusOutlined
+                    rotate={isActive ? 45 : 0}
+                    className="faq-expand-icon"
+                  />
+                )}
+                expandIconPosition="end"
+                ghost
+              >
+                {currentQuestions.map((item, index) => (
+                  <Panel
+                    header={
+                      <div className="faq-question">
+                        <span className="question-number">
+                          {startIndex + index + 1}:
+                        </span>{" "}
+                        {item.question}
+                      </div>
+                    }
+                    key={item.id}
+                    className="faq-panel"
+                  >
+                    <div className="faq-answer">{item.answer}</div>
+                  </Panel>
+                ))}
+              </Collapse>
+
+              <div className="faq-pagination">
+                <Pagination
+                  current={currentPage}
+                  total={faqData.length}
+                  pageSize={questionsPerPage}
+                  onChange={handlePageChange}
+                  showSizeChanger={false}
+                  showQuickJumper={false}
+                  showTotal={false}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* News Section*/}
+        <section className="news-section">
+          <div className="news-container">
+            <div className="news-header">
+              <div className="news-subtitle-wrapper">
+                <div className="news-line"></div>
+                <h3 className="news-subtitle">TIN TỨC HÔM NAY</h3>
+                <div className="news-line"></div>
+              </div>
+              <h2 className="news-title">TIN TỨC CỦA BỆNH VIỆN</h2>
+            </div>
+            <div className="news-grid">
+              {newsData.map((news) => (
+                <div className="news-card" key={news.id}>
+                  <Link to={news.link}>
+                    <div className="news-image"></div>
+                    <div className="news-content">
+                      <div className="news-date">{news.date}</div>
+                      <div className="news-desc">{news.title}</div>
+                      <div className="news-button">READ MORE</div>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="map-section">
+          <div className="map-container">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447732221159!2d106.68383951480076!3d10.775123762287596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzMwLjQiTiAxMDbCsDQxJzExLjQiRQ!5e0!3m2!1sen!2s!4v1634567890123"
+              width="100%"
+              height="300"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              title="Bệnh viện Ánh Dương Location"
+            ></iframe>
           </div>
         </section>
 
