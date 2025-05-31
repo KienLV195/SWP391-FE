@@ -2,7 +2,7 @@ import React from "react";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 
-const UrgentBloodRequestsPage = () => {
+const BloodDonationGuide = () => {
   return (
     <>
       <GuestNavbar />
@@ -20,4 +20,4 @@ const UrgentBloodRequestsPage = () => {
   );
 };
 
-export default UrgentBloodRequestsPage;
+export default BloodDonationGuide;

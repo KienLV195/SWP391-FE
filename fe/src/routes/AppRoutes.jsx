@@ -7,7 +7,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import OTPVerificationPage from "../pages/auth/OTPVerificationPage";
 import BloodInfoPage from "../pages/guest/BloodInfoPage";
 import BlogPage from "../pages/guest/BlogPage";
-import UrgentBloodRequestsPage from "../pages/guest/UrgentBloodRequestsPage";
+import BloodDonationGuide from "../pages/guest/DonationGuide";
 
 const router = createBrowserRouter([
   {
@@ -43,8 +43,8 @@ const router = createBrowserRouter([
     element: <BlogPage />,
   },
   {
-    path: "/urgent-blood-requests",
-    element: <UrgentBloodRequestsPage />,
+    path: "/donation-guide",
+    element: <BloodDonationGuide />,
   },
   {
     path: "*",

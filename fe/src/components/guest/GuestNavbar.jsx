@@ -8,7 +8,7 @@ const GuestNavbar = () => {
     { path: "/", label: "Trang chủ" },
     { path: "/blood-info", label: "Tài liệu" },
     { path: "/blog", label: "Tin tức" },
-    { path: "/urgent-blood-requests", label: "Hướng dẫn hiến máu" },
+    { path: "/donation-guide", label: "Hướng dẫn hiến máu" },
   ];
 
   return (
