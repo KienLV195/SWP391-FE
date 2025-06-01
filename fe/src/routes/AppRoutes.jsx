@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
-    path: "/otpverification",
+    path: "/:authType/otpverification",
     element: <OTPVerificationPage />,
   },
   {

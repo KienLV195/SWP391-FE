@@ -344,10 +344,10 @@ const GuestHomePage = () => {
                 nối sự sống bằng từng giọt máu yêu thương.
               </p>
               <div className="cta-row">
-                <Link to="/register" className="cta-button">
+                <Link to="/login" className="cta-button">
                   ĐĂNG KÝ HIẾN MÁU
                 </Link>
-                <Link to="/receive" className="cta-button secondary">
+                <Link to="/login" className="cta-button secondary">
                   ĐĂNG KÝ NHẬN MÁU
                 </Link>
               </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import "../../styles/components/RegisterForm.scss";
 import { auth, googleProvider } from '../../services/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { Link } from "react-router-dom";
 
 export default function RegisterForm() {
     const [phone, setPhone] = useState('');
@@ -47,10 +48,10 @@ export default function RegisterForm() {
                         placeholder="NHẬP SỐ ĐIỆN THOẠI VÀO ĐÂY"
                         required
                     />
-                    <button className="register-form__submit" type="submit">ĐĂNG KÝ</button>
+                    <Link to="otpverification"> <button className="register-form__submit" type="submit">ĐĂNG KÝ</button></Link>
                 </form>
                 <div className="register-form__login">
-                    BẠN ĐÃ CÓ TÀI KHOẢN? <a href="/login">ĐĂNG NHẬP</a>
+                    BẠN ĐÃ CÓ TÀI KHOẢN? <Link to="/login"><span>ĐĂNG NHẬP</span></Link>
                 </div>
             </div>
         </div>

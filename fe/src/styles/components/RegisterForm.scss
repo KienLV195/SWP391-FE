@@ -1,3 +1,6 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
 .register-form__container {
     display: flex;
     justify-content: center;
@@ -20,14 +23,14 @@
 }
 
 .register-form__logo {
-    font-size: 2rem;
+    font-size: vars.$font-size-large;
     font-weight: 700;
     margin-bottom: 18px;
     letter-spacing: 2px;
 }
 
 .register-form__welcome {
-    font-size: 1.4rem;
+    font-size: vars.$font-size-xlarge;
     font-weight: 700;
     margin-bottom: 32px;
     text-align: center;
@@ -70,7 +73,7 @@
     max-width: 320px;
     margin: 16px 0 24px 0;
     color: #bbb;
-    font-size: 13px;
+    font-size: vars.$font-size-small;
     gap: 8px;
 
     span:first-child,
@@ -84,6 +87,10 @@
 .register-form__divider-text {
     padding: 0 8px;
     white-space: nowrap;
+    color: #bbb;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.5px;
 }
 
 .register-form__form {
@@ -95,41 +102,48 @@
 }
 
 .register-form__label {
-    font-weight: 500;
+    font-family: vars.$font-secondary;
+    font-weight: 700;
     font-size: 15px;
     margin-bottom: 4px;
+    letter-spacing: 0.5px;
 }
 
 .register-form__input {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
     font-size: 15px;
     outline: none;
     margin-bottom: 8px;
     transition: border 0.2s;
+    background: #fafafa;
+    font-family: vars.$font-secondary;
 
     &:focus {
-        border: 1.5px solid #4285F4;
+        border: 1.5px solid vars.$secondary-color;
     }
 }
 
 .register-form__submit {
-    width: 100%;
+    width: 50%;
     padding: 12px 0;
-    background: #bbb;
-    color: #222;
+    background: vars.$secondary-color;
+    color: #fff;
     border: none;
-    border-radius: 6px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-family: vars.$font-secondary;
+    font-weight: 700;
     font-size: 16px;
     margin-top: 8px;
     cursor: pointer;
+    letter-spacing: 1px;
     transition: background 0.2s;
+    margin-left: 60px;
 
     &:hover {
-        background: #888;
+        background: vars.$secondary-hover;
     }
 }
 
@@ -137,11 +151,13 @@
     text-align: center;
     margin-top: 36px;
     font-size: 15px;
+    font-family: vars.$font-secondary;
+    color: vars.$text-color;
 
-    a {
+    span {
         font-weight: 700;
         text-decoration: underline;
-        color: #222;
+        color: vars.$secondary-color;
         margin-left: 4px;
     }
 }
