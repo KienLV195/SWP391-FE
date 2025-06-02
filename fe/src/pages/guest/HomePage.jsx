@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  FaPhoneAlt, // Icon cho phone
-  FaEnvelope, // Icon cho email
-  FaMapMarkerAlt, // Icon cho địa chỉ
-  FaClock, // Icon cho thời gian
-} from "react-icons/fa"; // Bộ FontAwesome
-import { FiShield, FiAward, FiShare2, FiTrendingUp } from "react-icons/fi"; // Bộ Feather Icons
-import { Table, Row, Col, Card, Collapse, Pagination } from "antd";
+  FaPhoneAlt,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaClock,
+} from "react-icons/fa";
+import { FiShield, FiAward, FiShare2, FiTrendingUp } from "react-icons/fi";
+import { Table, Row, Col, Card, Collapse, Pagination, Carousel } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import GuestNavbar from "../../components/guest/GuestNavbar";
-import Footer from "../../components/common/Footer";
+import Footer from "../../components/guest/FooterGuest";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/HomePage.scss";
@@ -125,7 +125,7 @@ const GuestHomePage = () => {
       answer: (
         <ul>
           <li>Ngủ đủ, không thức khuya.</li>
-          <li>Không uống rượu/bia trước hiến máu.</li>
+          <li>Không uống rượu/bia trước khi hiến máu.</li>
           <li>Ăn nhẹ, mang giấy tờ tùy thân.</li>
         </ul>
       ),
@@ -181,6 +181,7 @@ const GuestHomePage = () => {
         postedDate: "09/07/2024",
       },
       {
+        id: 3,
         key: "req3",
         bloodType: "B+",
         quantity: 3,
@@ -202,23 +203,44 @@ const GuestHomePage = () => {
     {
       id: 1,
       date: "30 MARCH, 2024",
-      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      image: "placeholder.jpg",
+      title: "Chiến dịch hiến máu nhân đạo thu hút hàng ngàn người tham gia",
+      image: "placeholder1.jpg",
       link: "/blog/1",
     },
     {
       id: 2,
-      date: "30 MARCH, 2024",
-      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      image: "placeholder.jpg",
+      date: "28 MARCH, 2024",
+      title: "Bệnh viện Ánh Dương triển khai công nghệ lưu trữ máu mới",
+      image: "placeholder2.jpg",
       link: "/blog/2",
     },
     {
       id: 3,
-      date: "30 MARCH, 2024",
-      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      image: "placeholder.jpg",
+      date: "25 MARCH, 2024",
+      title: "Hội thảo nâng cao nhận thức về tầm quan trọng của hiến máu",
+      image: "placeholder3.jpg",
       link: "/blog/3",
+    },
+    {
+      id: 4,
+      date: "20 MARCH, 2024",
+      title: "Câu chuyện cảm động về người hiến máu cứu sống bệnh nhân",
+      image: "placeholder4.jpg",
+      link: "/blog/4",
+    },
+    {
+      id: 5,
+      date: "15 MARCH, 2024",
+      title: "Bệnh viện Ánh Dương tổ chức ngày hội hiến máu cộng đồng",
+      image: "placeholder5.jpg",
+      link: "/blog/5",
+    },
+    {
+      id: 6,
+      date: "10 MARCH, 2024",
+      title: "Cập nhật tiến bộ y học trong điều trị bệnh lý máu",
+      image: "placeholder6.jpg",
+      link: "/blog/6",
     },
   ];
 
@@ -319,6 +341,13 @@ const GuestHomePage = () => {
     setCurrentPage(page);
   };
 
+  // Group news into chunks of 3 for each slide
+  const itemsPerSlide = 3;
+  const newsSlides = [];
+  for (let i = 0; i < newsData.length; i += itemsPerSlide) {
+    newsSlides.push(newsData.slice(i, i + itemsPerSlide));
+  }
+
   return (
     <>
       <GuestNavbar />
@@ -353,7 +382,6 @@ const GuestHomePage = () => {
               </div>
             </div>
             <div className="hero-image">
-              <div className="hero-image-bg"></div>
               <img src={blood1} alt="Truyền máu" className="hero-img" />
             </div>
           </div>
@@ -443,7 +471,6 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        {/* Questions Section */}
         <section className="faq-section">
           <div className="faq-container">
             <div className="faq-header">
@@ -495,7 +522,6 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        {/* News Section*/}
         <section className="news-section">
           <div className="news-container">
             <div className="news-header">
@@ -506,20 +532,34 @@ const GuestHomePage = () => {
               </div>
               <h2 className="news-title">TIN TỨC CỦA BỆNH VIỆN</h2>
             </div>
-            <div className="news-grid">
-              {newsData.map((news) => (
-                <div className="news-card" key={news.id}>
-                  <Link to={news.link}>
-                    <div className="news-image"></div>
-                    <div className="news-content">
-                      <div className="news-date">{news.date}</div>
-                      <div className="news-desc">{news.title}</div>
-                      <div className="news-button">READ MORE</div>
-                    </div>
-                  </Link>
+
+            <Carousel
+              autoplay
+              autoplaySpeed={3000}
+              draggable
+              swipeToSlide
+              dots={{ className: "news-carousel-dots" }}
+            >
+              {newsSlides.map((slide, index) => (
+                <div key={index}>
+                  <div className="news-grid">
+                    {slide.map((news) => (
+                      <Link key={news.id} to={news.link} className="news-card">
+                        <div
+                          className="news-image"
+                          style={{ backgroundImage: `url(${news.image})` }}
+                        ></div>
+                        <div className="news-content">
+                          <div className="news-date">{news.date}</div>
+                          <div className="news-desc">{news.title}</div>
+                          <div className="news-button">READ MORE</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               ))}
-            </div>
+            </Carousel>
           </div>
         </section>
 
