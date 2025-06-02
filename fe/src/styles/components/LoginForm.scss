@@ -165,6 +165,13 @@
     }
 }
 
+.login-form__error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
 // Responsive
 @media (max-width: 700px) {
     .login-form__box {

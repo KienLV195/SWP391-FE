@@ -5,6 +5,7 @@ import loginImg from "../../assets/images/loginImg.jpg";
 import GuestNavbar from '../../components/guest/GuestNavbar';
 
 export default function LoginPage() {
+
     return (
         <>
             <GuestNavbar />

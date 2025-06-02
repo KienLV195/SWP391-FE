@@ -9,7 +9,7 @@ export default function OTPVerificationForm() {
                 Chúng tôi đã gửi mã OTP vào số điện thoại của bạn, hãy nhập mã đó vào các ô bên dưới để xác thực
             </p>
             <div className="otp-inputs">
-                {[...Array(5)].map((_, i) => (
+                {[...Array(6)].map((_, i) => (
                     <input key={i} type="text" maxLength="1" className="otp-input" />
                 ))}
             </div>

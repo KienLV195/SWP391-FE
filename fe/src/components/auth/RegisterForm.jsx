@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/components/RegisterForm.scss";
-import { auth, googleProvider } from '../../services/firebase';
+import { auth, googleProvider, sendOTP } from '../../services/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { Link } from "react-router-dom";
 
 export default function RegisterForm() {
     const [phone, setPhone] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const submitButtonRef = useRef(null);
+
+    const validatePhoneNumber = (phoneNumber) => {
+        // Vietnamese phone number format: 10-11 digits starting with 0
+        const phoneRegex = /^0[0-9]{9,10}$/;
+        return phoneRegex.test(phoneNumber);
+    };
+
+    const handlePhoneChange = (e) => {
+        const value = e.target.value;
+        // Only allow numbers
+        if (/^\d*$/.test(value)) {
+            setPhone(value);
+            setError('');
+        }
+    };
 
     const handleRegisterGoogle = () => {
         signInWithPopup(auth, googleProvider)
@@ -14,13 +32,36 @@ export default function RegisterForm() {
             }).catch((error) => {
                 console.log(error);
             });
-    }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validatePhoneNumber(phone)) {
+            setError('Vui lòng nhập số điện thoại hợp lệ (10-11 số, bắt đầu bằng số 0)');
+            return;
+        }
+
+        try {
+            await sendOTP(phone, submitButtonRef.current);
+            // Navigate without passing confirmationResult
+            navigate('/register/otpverification', {
+                state: {
+                    phoneNumber: phone,
+                    isRegister: true
+                }
+            });
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            setError(error.message);
+        }
+    };
+
     return (
         <div className="register-form__container">
             <div className="register-form__box">
                 <div className="register-form__logo">LOGO</div>
                 <div className="register-form__welcome">CHÀO MỪNG BẠN ĐẾN VỚI CHÚNG TÔI</div>
-                <button className="register-form__google-btn" type="button" onClick={handleRegisterGoogle} >
+                <button className="register-form__google-btn" type="button" onClick={handleRegisterGoogle}>
                     <span className="register-form__google-icon">
                         <svg width="22" height="22" viewBox="0 0 48 48">
                             <g>
@@ -38,17 +79,25 @@ export default function RegisterForm() {
                     <span className="register-form__divider-text">HOẶC ĐĂNG KÝ BẰNG SỐ ĐIỆN THOẠI</span>
                     <span />
                 </div>
-                <form className="register-form__form">
+                <form className="register-form__form" onSubmit={handleSubmit}>
                     <label className="register-form__label">SỐ ĐIỆN THOẠI</label>
                     <input
                         className="register-form__input"
                         type="tel"
                         value={phone}
-                        onChange={e => setPhone(e.target.value)}
+                        onChange={handlePhoneChange}
                         placeholder="NHẬP SỐ ĐIỆN THOẠI VÀO ĐÂY"
                         required
+                        maxLength={11}
                     />
-                    <Link to="otpverification"> <button className="register-form__submit" type="submit">ĐĂNG KÝ</button></Link>
+                    {error && <div className="register-form__error">{error}</div>}
+                    <button
+                        ref={submitButtonRef}
+                        className="register-form__submit"
+                        type="submit"
+                    >
+                        ĐĂNG KÝ
+                    </button>
                 </form>
                 <div className="register-form__login">
                     BẠN ĐÃ CÓ TÀI KHOẢN? <Link to="/login"><span>ĐĂNG NHẬP</span></Link>
