@@ -14,6 +14,8 @@ import Footer from "../../components/guest/FooterGuest";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/HomePage.scss";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const { Panel } = Collapse;
 
@@ -348,12 +350,21 @@ const GuestHomePage = () => {
     newsSlides.push(newsData.slice(i, i + itemsPerSlide));
   }
 
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      once: true,
+      offset: 60,
+    });
+  }, []);
+
   return (
     <>
       <GuestNavbar />
       <div className="guest-home-page">
         <section
           className="hero-section"
+          data-aos="fade-up"
           style={{
             backgroundImage: `url(${blood1})`,
             backgroundRepeat: "no-repeat",
@@ -387,7 +398,7 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        <section className="hospital-info-section">
+        <section className="hospital-info-section" data-aos="fade-right">
           <div className="hospital-left">
             <div className="hospital-img-box">
               <img
@@ -432,7 +443,7 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        <section className="emergency-section">
+        <section className="emergency-section" data-aos="fade-up">
           <div className="section-title-wrapper">
             <h2 className="section-title merriweather-title">
               YÊU CẦU HIẾN MÁU KHẨN CẤP
@@ -446,7 +457,7 @@ const GuestHomePage = () => {
           />
         </section>
 
-        <section className="achievement-section">
+        <section className="achievement-section" data-aos="zoom-in">
           <div className="achievement-container">
             <div className="achievement-header">
               <div className="achievement-line"></div>
@@ -471,7 +482,7 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        <section className="faq-section">
+        <section className="faq-section" data-aos="fade-left">
           <div className="faq-container">
             <div className="faq-header">
               <h2 className="faq-title">NHỮNG CÂU HỎI THƯỜNG GẶP</h2>
@@ -522,7 +533,7 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        <section className="news-section">
+        <section className="news-section" data-aos="fade-up">
           <div className="news-container">
             <div className="news-header">
               <div className="news-subtitle-wrapper">
@@ -552,7 +563,7 @@ const GuestHomePage = () => {
                         <div className="news-content">
                           <div className="news-date">{news.date}</div>
                           <div className="news-desc">{news.title}</div>
-                          <div className="news-button">READ MORE</div>
+                          <div className="news-button">XEM THÊM</div>
                         </div>
                       </Link>
                     ))}
@@ -563,7 +574,7 @@ const GuestHomePage = () => {
           </div>
         </section>
 
-        <section className="map-section">
+        <section className="map-section" data-aos="fade-up">
           <div className="map-container">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447732221159!2d106.68383951480076!3d10.775123762287596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzMwLjQiTiAxMDbCsDQxJzExLjQiRQ!5e0!3m2!1sen!2s!4v1634567890123"
