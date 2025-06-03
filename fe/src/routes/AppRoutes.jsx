@@ -1,18 +1,19 @@
 import { createBrowserRouter } from "react-router-dom";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import ForbiddenPage from "../pages/error/ForbiddenPage";
-import HomePage from "../pages/guest/HomePage";
+import GuestHomePage from "../pages/guest/GuestHomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import OTPVerificationPage from "../pages/auth/OTPVerificationPage";
 import BloodInfoPage from "../pages/guest/BloodInfoPage";
 import BlogPage from "../pages/guest/BlogPage";
 import BloodDonationGuide from "../pages/guest/DonationGuide";
+import ManagerHomePage from "../pages/manager/ManagerHomePage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <GuestHomePage />,
   },
   {
     path: "/login",
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: "/donation-guide",
     element: <BloodDonationGuide />,
+  },
+  {
+    path: "/manager",
+    element: <ManagerHomePage />,
   },
   {
     path: "*",

@@ -1,0 +1,140 @@
+@use '../base/variables' as *;
+@use '../base/mixin' as *;
+
+.navbar {
+  @include flex-align(space-between, center);
+  padding: 0 $spacing-xl;
+  background-color: $white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 70px;
+
+  .navbar-logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: $text-color;
+  }
+
+  .navbar-nav {
+    @include flex-align(center, center);
+    gap: 40px;
+    height: 100%;
+
+    a {
+      text-decoration: none;
+      color: $text-color;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 24px 0;
+      position: relative;
+      transition: color 0.3s;
+
+      &.active {
+        color: $secondary-color;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 15px;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background-color: $secondary-color;
+        }
+      }
+
+      &:hover:not(.active) {
+        color: $secondary-color;
+      }
+    }
+  }
+
+  .navbar-actions {
+    @include flex-align(flex-end, center);
+    gap: $spacing-base;
+
+    a {
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 1rem;
+      transition: all 0.3s;
+
+      &.btn-login {
+        color: $secondary-color;
+
+        &:hover {
+          color: $secondary-hover;
+        }
+      }
+
+      &.btn-register,
+      &.btn-logout {
+        background-color: $secondary-color;
+        color: $white;
+        padding: 12px 24px;
+        border-radius: 25px;
+
+        &:hover {
+          background-color: $secondary-hover;
+        }
+      }
+    }
+
+    .user-info {
+      @include flex-align(center, center);
+      gap: $spacing-sm;
+
+      .user-name {
+        color: $text-color;
+        font-weight: 500;
+        font-size: 1rem;
+      }
+
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: $secondary-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $white;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  // Responsive Design
+  @include tablet {
+    padding: 0 $spacing-lg;
+
+    .navbar-nav {
+      gap: 24px;
+    }
+
+    .navbar-actions {
+      gap: $spacing-sm;
+    }
+  }
+
+  @include mobile {
+    flex-direction: column;
+    height: auto;
+    padding: $spacing-sm;
+
+    .navbar-nav {
+      gap: $spacing-lg;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: $spacing-sm 0;
+    }
+
+    .navbar-actions {
+      width: 100%;
+      justify-content: center;
+      padding-bottom: $spacing-sm;
+    }
+  }
+}

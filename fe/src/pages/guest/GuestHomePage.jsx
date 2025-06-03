@@ -13,7 +13,7 @@ import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/guest/FooterGuest";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
-import "../../styles/pages/HomePage.scss";
+import "../../styles/pages/GuestHomePage.scss";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ScrollToTop from "../../components/common/ScrollToTop";

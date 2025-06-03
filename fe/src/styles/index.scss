@@ -1,7 +1,8 @@
 // src/styles/index.scss
 @use './base/variables' as vars;
 @use './base/mixin' as mix;
-@use './pages/HomePage' as homepage;
+@use './pages/GuestHomePage' as homepage;
+
 
 // Áp dụng reset và base cho toàn cục
 * {

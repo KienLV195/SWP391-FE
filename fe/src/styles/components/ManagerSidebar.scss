@@ -1,0 +1,175 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+.manager-sidebar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e3a8a 0%, #2b6cb0 100%);
+  color: vars.$white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: vars.$spacing-lg 0;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+
+  .sidebar-header {
+    padding: 0 vars.$spacing-lg;
+    text-align: center;
+
+    .sidebar-logo {
+      margin-bottom: vars.$spacing-lg;
+
+      img {
+        width: 100px;
+        height: auto;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    .user-info {
+      @include mix.flex-align(center, center);
+      flex-direction: column;
+      gap: vars.$spacing-sm;
+      margin-bottom: vars.$spacing-lg;
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: vars.$secondary-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: vars.$white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        border: 2px solid vars.$white;
+      }
+
+      .user-name {
+        @include mix.text(1.1rem, vars.$white);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-sm;
+
+    .nav-item {
+      @include mix.text(1rem, vars.$white);
+      padding: vars.$spacing-md vars.$spacing-lg;
+      text-decoration: none;
+      display: block;
+      transition: all 0.3s ease;
+      position: relative;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        padding-left: calc(vars.$spacing-lg + 10px);
+      }
+
+      &.active {
+        background: rgba(255, 255, 255, 0.2);
+        font-weight: 700;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 4px;
+          background: vars.$secondary-color;
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 0 vars.$spacing-lg;
+
+    .logout-btn {
+      @include mix.flex-align(center, center);
+      gap: vars.$spacing-sm;
+      text-decoration: none;
+      background: vars.$secondary-color;
+      color: vars.$white;
+      padding: vars.$spacing-md;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+
+      &:hover {
+        background: vars.$secondary-hover;
+        transform: translateY(-2px);
+      }
+
+      svg {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // Responsive Design
+  @include mix.tablet {
+    width: 200px;
+
+    .sidebar-logo img {
+      width: 80px;
+    }
+
+    .user-info {
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      .user-name {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-item {
+      font-size: 0.9rem;
+      padding: vars.$spacing-sm vars.$spacing-md;
+    }
+
+    .logout-btn {
+      padding: vars.$spacing-sm;
+      font-size: 0.9rem;
+    }
+  }
+
+  @include mix.mobile {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: column;
+    padding: vars.$spacing-md 0;
+
+    .sidebar-nav {
+      display: none; // Ẩn menu trên mobile, có thể thêm toggle button nếu cần
+    }
+
+    .sidebar-footer {
+      padding: 0 vars.$spacing-md;
+    }
+  }
+}
