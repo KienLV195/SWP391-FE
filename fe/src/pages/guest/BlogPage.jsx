@@ -2,8 +2,9 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
+import ScrollToTop from "../../components/common/ScrollToTop";
 import { Input, Row, Col, Card, Button, Carousel, Pagination } from "antd";
-import { FaSearch, FaEye, FaCalendarAlt, FaArrowUp } from "react-icons/fa";
+import { FaSearch, FaEye, FaCalendarAlt } from "react-icons/fa";
 import Highlighter from "react-highlight-words";
 import "../../styles/pages/BlogPage.scss";
 
@@ -103,12 +104,7 @@ const BlogPage = () => {
   const handleKnowMore = (id) => {
     navigate(`/blog/${id}`);
   };
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+
   return (
     <>
       <GuestNavbar />
@@ -261,9 +257,7 @@ const BlogPage = () => {
           )}
         </section>
         <Footer />
-        <div className="scroll-to-top-btn" onClick={scrollToTop}>
-          <FaArrowUp />
-        </div>
+        <ScrollToTop />
       </div>
     </>
   );

@@ -4,14 +4,6 @@ import { IoIosArrowForward } from "react-icons/io"; // Icon mũi tên cho danh m
 import { FaMapMarkerAlt, FaPhone } from "react-icons/fa"; // Icon địa chỉ và điện thoại
 import { MdEmail } from "react-icons/md"; // Icon email
 
-// Hàm cuộn lên đầu trang
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
-
 // Hàm cuộn đến phần "Giới thiệu bệnh viện"
 const scrollToHospitalInfo = () => {
   const hospitalInfoSection = document.querySelector(".hospital-info-section");
@@ -30,12 +22,6 @@ const Footer = () => {
       </div>
       <div className="footer-column">
         <div className="footer-title">Danh mục</div>
-        <div className="footer-item">
-          <IoIosArrowForward className="footer-icon" />
-          <button className="footer-link" onClick={scrollToTop}>
-            Trang chủ
-          </button>
-        </div>
         <div className="footer-item">
           <IoIosArrowForward className="footer-icon" />
           <button className="footer-link" onClick={scrollToHospitalInfo}>

@@ -16,6 +16,7 @@ import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/HomePage.scss";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import ScrollToTop from "../../components/common/ScrollToTop";
 
 const { Panel } = Collapse;
 
@@ -589,6 +590,7 @@ const GuestHomePage = () => {
         </section>
 
         <Footer />
+        <ScrollToTop />
       </div>
     </>
   );

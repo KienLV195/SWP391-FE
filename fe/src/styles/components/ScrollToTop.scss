@@ -1,5 +1,5 @@
-@use '../../base/variables' as vars;
-@use '../../base/mixin' as mix;
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
 
 .scroll-to-top-btn {
   position: fixed;

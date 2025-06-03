@@ -3,7 +3,7 @@ import React from "react";
 import "../../styles/pages/DonationGuide.scss";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
-import { FaArrowUp } from "react-icons/fa";
+import ScrollToTop from "../../components/common/ScrollToTop";
 
 const BloodDonationGuide = () => {
   const guideSteps = [
@@ -44,13 +44,6 @@ const BloodDonationGuide = () => {
     },
   ];
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <>
       <GuestNavbar />
@@ -88,9 +81,7 @@ const BloodDonationGuide = () => {
           ))}
         </section>
         <Footer />
-        <div className="scroll-to-top-btn" onClick={scrollToTop}>
-          <FaArrowUp />
-        </div>
+        <ScrollToTop />
       </div>
     </>
   );
