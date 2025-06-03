@@ -57,9 +57,7 @@ li {
           text-align: center;
           margin: 0;
           text-transform: uppercase;
-          background: linear-gradient(90deg, #2b6cb0, #4299e1);
-          -webkit-background-clip: text;
-          color: transparent;
+          color: vars.$dark-blue; /* Sử dụng màu dark-blue từ variables */
           text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
         }
       }

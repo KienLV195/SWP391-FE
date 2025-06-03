@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 import { Input, Row, Col, Card, Button, Select, Space, Pagination } from "antd";
-import { FaSearch, FaTag, FaEye, FaFilter } from "react-icons/fa";
+import { FaSearch, FaTag, FaEye, FaFilter, FaArrowUp } from "react-icons/fa";
 import Highlighter from "react-highlight-words";
 import "../../styles/pages/BloodInfoPage.scss";
 
@@ -324,6 +324,13 @@ const BloodInfoPage = () => {
     }));
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
       <GuestNavbar />
@@ -479,6 +486,9 @@ const BloodInfoPage = () => {
           )}
         </section>
         <Footer />
+        <div className="scroll-to-top-btn" onClick={scrollToTop}>
+          <FaArrowUp />
+        </div>
       </div>
     </>
   );
