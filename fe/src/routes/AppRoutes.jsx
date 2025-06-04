@@ -13,7 +13,7 @@ import MemberHomePage from "../pages/member/MemberHomePage";
 import MemberBlogPage from "../pages/member/MemberBlogPage";
 import MemberBloodInfoPage from "../pages/member/MemberBloodInfoPage";
 import MemberDonationGuide from "../pages/member/MemberDonationGuide";
-import MemberInfo from "../pages/member/MemberInfo";
+import MemberInfoPage from "../pages/member/MemberInfoPage";
 import MemberNavbar from "../components/member/MemberNavbar";
 
 const router = createBrowserRouter([
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/member/profile",
-    element: <MemberInfo />,
+    element: <MemberInfoPage />,
   },
   {
     path: "/member/notifications",
