@@ -76,7 +76,7 @@ const blogPosts = [
   },
 ];
 
-const BlogPage = () => {
+const BlogPage = ({ CustomNavbar, hideNavbar }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -107,7 +107,7 @@ const BlogPage = () => {
 
   return (
     <>
-      <GuestNavbar />
+      {!hideNavbar && (CustomNavbar ? <CustomNavbar /> : <GuestNavbar />)}
       <div className="guest-home-page">
         <section className="content-section">
           <div className="page-header">

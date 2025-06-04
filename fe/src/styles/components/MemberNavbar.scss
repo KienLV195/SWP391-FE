@@ -1,0 +1,67 @@
+@use './NavbarCommon.scss' as *;
+
+.member-navbar {
+  @extend .navbar;
+  background-color: #fff;
+  .navbar-logo {
+    color: #c62828;
+    font-weight: bold;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+  .navbar-nav {
+    a {
+      color: black;
+      &.active {
+        color: #c62828 ;
+      }
+    }
+  }
+  .navbar-actions {
+    .user-info {
+      .user-name {
+        font-weight: 600;
+        margin-right: 8px;
+      }
+      .member-avatar-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #1565c0;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: box-shadow 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      }
+    }
+    .member-dropdown-menu {
+      position: absolute;
+      top: 60px;
+      right: 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      z-index: 2000;
+      min-width: 180px;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      a {
+        padding: 12px 24px;
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.2s;
+        &:hover {
+          background: #1565c0;
+          color: #fff;
+        }
+      }
+    }
+  }
+}

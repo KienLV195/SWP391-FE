@@ -1,0 +1,49 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+// Kế thừa toàn bộ style từ GuestHomePage
+.member-home-page {
+  @extend .guest-home-page !optional;
+}
+
+// Style cho avatar và dropdown menu cá nhân
+.member-avatar-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: vars.$secondary-color;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.member-dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 40px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 2000;
+  min-width: 180px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  a {
+    padding: 12px 24px;
+    color: vars.$text-color;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s;
+    &:hover {
+      background: vars.$secondary-color;
+      color: #fff;
+    }
+  }
+}
