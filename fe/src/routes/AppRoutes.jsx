@@ -15,6 +15,7 @@ import MemberBloodInfoPage from "../pages/member/MemberBloodInfoPage";
 import MemberDonationGuide from "../pages/member/MemberDonationGuide";
 import MemberInfoPage from "../pages/member/MemberInfoPage";
 import MemberNavbar from "../components/member/MemberNavbar";
+import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
 
 const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
   {
     path: "/member/profile",
     element: <MemberInfoPage />,
+  },
+  {
+    path: "/member/blood-donation",
+    element: <BloodDonationFormPage />,
   },
   {
     path: "/member/notifications",

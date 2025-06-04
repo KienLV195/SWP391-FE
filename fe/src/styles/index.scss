@@ -2,6 +2,7 @@
 @use './base/variables' as vars;
 @use './base/mixin' as mix;
 @use './pages/GuestHomePage' as homepage;
+@use './pages/BloodDonationFormPage' as bloodform;
 
 
 // Áp dụng reset và base cho toàn cục

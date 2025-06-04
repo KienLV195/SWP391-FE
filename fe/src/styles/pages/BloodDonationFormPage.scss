@@ -1,0 +1,279 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+.donation-form-wrapper {
+    display: flex;
+    background: #f4f4f4;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.donation-form-card {
+    display: flex;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    width: 1000px;
+    max-width: 98vw;
+    min-height: 600px;
+}
+
+.donation-form-content {
+    flex: 1;
+    padding: 40px;
+    min-width: 350px;
+}
+
+.donation-form-step {
+    .user-avatar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+
+            &.required::after {
+                content: " *";
+                color: vars.$secondary-color;
+            }
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+
+            &:focus {
+                border-color: vars.$primary-color;
+                box-shadow: none;
+                outline: none;
+            }
+
+            &.is-invalid {
+                border-color: vars.$secondary-color;
+            }
+        }
+
+        .invalid-feedback {
+            color: vars.$secondary-color;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+    }
+
+    .date-input-wrapper {
+        position: relative;
+
+        .date-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #666;
+            font-size: 18px;
+        }
+    }
+
+    .location-info-box {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        background: #f8f9fa;
+        margin-top: 8px;
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            font-size: 14px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            .info-icon {
+                margin-right: 12px;
+                font-size: 16px;
+                margin-top: 2px;
+                min-width: 20px;
+            }
+
+            .info-content {
+                flex: 1;
+                line-height: 1.4;
+
+                strong {
+                    font-weight: 600;
+                }
+
+                .schedule {
+                    margin-left: 0;
+
+                    .schedule-line {
+                        margin: 2px 0;
+                    }
+                }
+            }
+        }
+    }
+
+    .working-hours-input {
+        margin-top: 20px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 32px;
+        gap: 16px;
+
+        .btn {
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 120px;
+            transition: all 0.2s ease;
+
+            &.btn-outline-secondary {
+                border: 2px solid #6c757d;
+                color: #6c757d;
+                background: transparent;
+
+                &:hover {
+                    background: #6c757d;
+                    color: white;
+                }
+            }
+
+            &.btn-danger {
+                background: vars.$secondary-color;
+                border: 2px solid vars.$secondary-color;
+                color: white;
+
+                &:hover {
+                    background: vars.$secondary-hover;
+                    border-color: vars.$secondary-hover;
+                }
+
+                &:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+
+    .question-block {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+
+        .question-header {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .question-body {
+            padding: 20px;
+
+            input[type="checkbox"] {
+                margin-right: 10px;
+                transform: scale(1.2);
+            }
+
+            label {
+                font-size: 14px;
+                margin: 0;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .success-notification {
+        background: #d4edda;
+        border: 2px solid #c3e6cb;
+        color: #155724;
+        padding: 16px 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .donation-form-card {
+        flex-direction: column;
+        width: 95vw;
+
+        .donation-form-content {
+            padding: 24px;
+        }
+    }
+
+    .donation-form-step {
+        .form-actions {
+            flex-direction: column;
+
+            .btn {
+                width: 100%;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .donation-form-wrapper {
+        padding: 10px;
+    }
+
+    .donation-form-content {
+        padding: 20px;
+    }
+
+    .donation-form-step {
+        .user-avatar .avatar-circle {
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+        }
+    }
+}
