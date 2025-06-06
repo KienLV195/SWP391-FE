@@ -651,7 +651,8 @@ const BloodDonationFormPage = () => {
                         </div>
                     </div>
                 </div>
-            </div>            <div className="form-actions">
+            </div>
+            <div className="form-actions">
                 <button
                     className="btn btn-outline-secondary"
                     onClick={(e) => { e.preventDefault(); setQuestionnaireStep(1); }}
