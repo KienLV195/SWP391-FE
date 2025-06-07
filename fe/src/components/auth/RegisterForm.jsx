@@ -1,108 +1,199 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/components/RegisterForm.scss";
-import { auth, googleProvider, sendOTP } from '../../services/firebase';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function RegisterForm() {
-    const [phone, setPhone] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const submitButtonRef = useRef(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const validatePhoneNumber = (phoneNumber) => {
-        // Vietnamese phone number format: 10-11 digits starting with 0
-        const phoneRegex = /^0[0-9]{9,10}$/;
-        return phoneRegex.test(phoneNumber);
-    };
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-    const handlePhoneChange = (e) => {
-        const value = e.target.value;
-        // Only allow numbers
-        if (/^\d*$/.test(value)) {
-            setPhone(value);
-            setError('');
-        }
-    };
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
 
-    const handleRegisterGoogle = () => {
-        signInWithPopup(auth, googleProvider)
-            .then((result) => {
-                console.log(result);
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
+  const validateForm = () => {
+    const newErrors = {};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validatePhoneNumber(phone)) {
-            setError('Vui lòng nhập số điện thoại hợp lệ (10-11 số, bắt đầu bằng số 0)');
-            return;
-        }
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Vui lòng nhập họ và tên";
+    }
 
-        try {
-            await sendOTP(phone, submitButtonRef.current);
-            // Navigate without passing confirmationResult
-            navigate('/register/otpverification', {
-                state: {
-                    phoneNumber: phone,
-                    isRegister: true
-                }
-            });
-        } catch (error) {
-            console.error('Error sending OTP:', error);
-            setError(error.message);
-        }
-    };
+    if (!formData.email) {
+      newErrors.email = "Vui lòng nhập email";
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Email không hợp lệ";
+    }
 
-    return (
-        <div className="register-form__container">
-            <div className="register-form__box">
-                <div className="register-form__logo">LOGO</div>
-                <div className="register-form__welcome">CHÀO MỪNG BẠN ĐẾN VỚI CHÚNG TÔI</div>
-                <button className="register-form__google-btn" type="button" onClick={handleRegisterGoogle}>
-                    <span className="register-form__google-icon">
-                        <svg width="22" height="22" viewBox="0 0 48 48">
-                            <g>
-                                <path fill="#4285F4" d="M44.5 20H24v8.5h11.7C34.9 33.1 30.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.5 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.3-.1-2.7-.3-4z" />
-                                <path fill="#34A853" d="M6.3 14.7l7 5.1C15.5 16.1 19.4 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.5 5.1 29.6 3 24 3c-7.7 0-14.4 4.4-18 10.7z" />
-                                <path fill="#FBBC05" d="M24 45c5.2 0 10-1.7 13.7-4.7l-6.3-5.2C29.7 36.9 27 38 24 38c-6.1 0-11.3-4.1-13.1-9.6l-7 5.4C6.1 41.6 14.4 45 24 45z" />
-                                <path fill="#EA4335" d="M44.5 20H24v8.5h11.7c-1.2 3.2-4.2 5.5-7.7 5.5-2.2 0-4.2-.7-5.8-2l-7 5.4C18.7 43.9 21.2 45 24 45c10.5 0 20-7.6 20-21 0-1.3-.1-2.7-.3-4z" />
-                            </g>
-                        </svg>
-                    </span>
-                    ĐĂNG KÝ BẰNG GOOGLE
-                </button>
-                <div className="register-form__divider">
-                    <span />
-                    <span className="register-form__divider-text">HOẶC ĐĂNG KÝ BẰNG SỐ ĐIỆN THOẠI</span>
-                    <span />
-                </div>
-                <form className="register-form__form" onSubmit={handleSubmit}>
-                    <label className="register-form__label">SỐ ĐIỆN THOẠI</label>
-                    <input
-                        className="register-form__input"
-                        type="tel"
-                        value={phone}
-                        onChange={handlePhoneChange}
-                        placeholder="NHẬP SỐ ĐIỆN THOẠI VÀO ĐÂY"
-                        required
-                        maxLength={11}
-                    />
-                    {error && <div className="register-form__error">{error}</div>}
-                    <button
-                        ref={submitButtonRef}
-                        className="register-form__submit"
-                        type="submit"
-                    >
-                        ĐĂNG KÝ
-                    </button>
-                </form>
-                <div className="register-form__login">
-                    BẠN ĐÃ CÓ TÀI KHOẢN? <Link to="/login"><span>ĐĂNG NHẬP</span></Link>
-                </div>
-            </div>
+    if (!formData.password) {
+      newErrors.password = "Vui lòng nhập mật khẩu";
+    } else if (!validatePassword(formData.password)) {
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Simulate API call to register user
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Navigate to email verification page
+      navigate("/register/verify-email", {
+        state: {
+          email: formData.email,
+          fullName: formData.fullName,
+          password: formData.password,
+          isRegister: true,
+        },
+      });
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setErrors({ submit: "Đăng ký thất bại. Vui lòng thử lại." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="register-form__container">
+      <div className="register-form__box">
+        <div className="register-form__logo">LOGO</div>
+        <div className="register-form__welcome">
+          CHÀO MỪNG BẠN ĐẾN VỚI CHÚNG TÔI
         </div>
-    );
+
+        <form className="register-form__form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="register-form__label">HỌ VÀ TÊN</label>
+            <input
+              className={`register-form__input ${errors.fullName ? "error" : ""}`}
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="NHẬP HỌ VÀ TÊN"
+              required
+            />
+            {errors.fullName && (
+              <div className="register-form__error">{errors.fullName}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="register-form__label">EMAIL</label>
+            <input
+              className={`register-form__input ${errors.email ? "error" : ""}`}
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="NHẬP EMAIL"
+              required
+            />
+            {errors.email && (
+              <div className="register-form__error">{errors.email}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="register-form__label">MẬT KHẨU</label>
+            <input
+              className={`register-form__input ${errors.password ? "error" : ""}`}
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="NHẬP MẬT KHẨU (ÍT NHẤT 6 KÝ TỰ)"
+              required
+            />
+            {errors.password && (
+              <div className="register-form__error">{errors.password}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="register-form__label">XÁC NHẬN MẬT KHẨU</label>
+            <input
+              className={`register-form__input ${
+                errors.confirmPassword ? "error" : ""
+              }`}
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="NHẬP LẠI MẬT KHẨU"
+              required
+            />
+            {errors.confirmPassword && (
+              <div className="register-form__error">
+                {errors.confirmPassword}
+              </div>
+            )}
+          </div>
+
+          {errors.submit && (
+            <div className="register-form__error">{errors.submit}</div>
+          )}
+
+          <button
+            className="register-form__submit"
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ"}
+          </button>
+        </form>
+
+        <div className="register-form__login">
+          BẠN ĐÃ CÓ TÀI KHOẢN?{" "}
+          <Link to="/login">
+            <span>ĐĂNG NHẬP</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }

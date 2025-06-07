@@ -1,0 +1,108 @@
+@import '../base/variables';
+
+.member-sidebar {
+  width: 280px;
+  height: 100vh;
+  background: white;
+  border-right: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
+  &__header {
+    padding: 2rem 1.5rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, $primary-color, $secondary-color);
+    color: white;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  }
+
+  &__nav {
+    flex: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+  }
+
+  &__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    &-item {
+      margin: 0;
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: #f8f9fa;
+      color: $primary-color;
+      border-left-color: $primary-color;
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba($primary-color, 0.1), transparent);
+      color: $primary-color;
+      border-left-color: $primary-color;
+      font-weight: 600;
+    }
+  }
+
+  &__footer {
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .member-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    box-shadow: none;
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+
+    &__header {
+      padding: 1rem;
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+
+    &__nav {
+      max-height: 300px;
+    }
+
+    &__link {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    &__footer {
+      padding: 0.75rem;
+    }
+  }
+}

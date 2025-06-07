@@ -73,7 +73,20 @@ class AuthService {
     return this.currentUser?.role || ROLES.GUEST;
   }
 
-  // Removed getMemberType - no longer needed
+  // Update user profile
+  updateProfile(profileData) {
+    if (this.currentUser) {
+      this.currentUser.profile = { ...this.currentUser.profile, ...profileData };
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    }
+  }
+
+  // Logout method
+  logout() {
+    this.currentUser = null;
+    localStorage.removeItem('currentUser');
+    return { success: true };
+  }
 
   // Get user status
   getUserStatus() {
@@ -96,17 +109,25 @@ class AuthService {
       return '/';
     }
 
+    // Check if it's first login for member
+    if (this.currentUser?.role === ROLES.MEMBER && this.currentUser?.isFirstLogin) {
+      return '/member/profile';
+    }
+
     const role = this.getUserRole();
 
     switch (role) {
       case ROLES.MEMBER:
         return '/member';
 
-      case ROLES.DOCTOR:
+      case ROLES.STAFF_DOCTOR:
         return '/doctor';
 
-      case ROLES.MANAGER:
+      case ROLES.STAFF_BLOOD_MANAGER:
         return '/manager';
+
+      case ROLES.ADMIN:
+        return '/admin';
 
       default:
         return '/';

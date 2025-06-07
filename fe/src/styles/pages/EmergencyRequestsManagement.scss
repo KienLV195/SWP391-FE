@@ -1,0 +1,572 @@
+@import '../base/variables';
+
+.emergency-requests-management {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+
+  .emergency-requests-content {
+    flex: 1;
+    margin-left: 240px;
+    padding: 2rem;
+    transition: margin-left 0.3s ease;
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      
+      div {
+        h1 {
+          color: #dc3545;
+          margin-bottom: 0.5rem;
+          font-size: 2rem;
+          font-weight: 600;
+        }
+
+        p {
+          color: #666;
+          font-size: 1.1rem;
+          margin: 0;
+        }
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.btn-danger {
+          background: #dc3545;
+          color: white;
+
+          &:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+
+    .emergency-banner {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+
+      .banner-icon {
+        font-size: 3rem;
+        animation: pulse 2s infinite;
+      }
+
+      .banner-content {
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.3rem;
+        }
+
+        p {
+          margin: 0;
+          opacity: 0.9;
+        }
+      }
+    }
+
+    .requests-section {
+      margin-bottom: 3rem;
+
+      h2 {
+        color: $primary-color;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid #f8f9fa;
+        padding-bottom: 0.5rem;
+      }
+
+      .requests-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+
+        .request-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          border-left: 4px solid transparent;
+
+          &.warning {
+            border-left-color: #ffc107;
+          }
+
+          &.danger {
+            border-left-color: #dc3545;
+            animation: urgentPulse 3s infinite;
+          }
+
+          .card-header {
+            padding: 1rem;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .blood-type {
+              font-size: 1.2rem;
+              font-weight: 700;
+              color: $primary-color;
+            }
+
+            .urgency-badge {
+              padding: 0.25rem 0.5rem;
+              border-radius: 4px;
+              font-size: 0.8rem;
+              font-weight: 600;
+              text-transform: uppercase;
+
+              &.warning {
+                background: #fff3cd;
+                color: #856404;
+              }
+
+              &.danger {
+                background: #f8d7da;
+                color: #721c24;
+              }
+            }
+          }
+
+          .card-body {
+            padding: 1rem;
+
+            .quantity {
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: #333;
+              margin-bottom: 0.5rem;
+            }
+
+            .reason {
+              color: #666;
+              margin-bottom: 0.5rem;
+              font-size: 0.9rem;
+            }
+
+            .time {
+              font-size: 0.8rem;
+              color: #999;
+            }
+          }
+
+          .card-footer {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+
+            .doctor {
+              display: block;
+              font-weight: 600;
+              color: #333;
+              font-size: 0.9rem;
+            }
+
+            .department {
+              font-size: 0.8rem;
+              color: #666;
+            }
+          }
+        }
+      }
+
+      .public-requests {
+        .public-request-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          margin-bottom: 1.5rem;
+          overflow: hidden;
+          border: 2px solid #dc3545;
+
+          &.completed {
+            opacity: 0.7;
+            border-color: #28a745;
+          }
+
+          .card-main {
+            display: flex;
+            padding: 1.5rem;
+            gap: 2rem;
+
+            .blood-info {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              min-width: 120px;
+
+              .blood-type-large {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #dc3545;
+                margin-bottom: 0.5rem;
+              }
+
+              .rare-badge {
+                background: #6f42c1;
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+              }
+
+              .quantity-large {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #333;
+              }
+            }
+
+            .request-details {
+              flex: 1;
+
+              .urgency-level {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                margin-bottom: 1rem;
+
+                &.warning {
+                  background: #fff3cd;
+                  color: #856404;
+                }
+
+                &.danger {
+                  background: #f8d7da;
+                  color: #721c24;
+                }
+              }
+
+              .reason {
+                font-size: 1.1rem;
+                color: #333;
+                margin-bottom: 0.75rem;
+                font-weight: 500;
+              }
+
+              .contact {
+                color: #666;
+                margin-bottom: 0.75rem;
+                font-size: 0.9rem;
+              }
+
+              .deadline {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                .label {
+                  font-weight: 600;
+                  color: #333;
+                }
+
+                .time-remaining {
+                  padding: 0.25rem 0.5rem;
+                  background: #ffc107;
+                  color: #856404;
+                  border-radius: 4px;
+                  font-weight: 600;
+                  font-size: 0.9rem;
+
+                  &.expired {
+                    background: #dc3545;
+                    color: white;
+                  }
+                }
+              }
+            }
+          }
+
+          .card-actions {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+
+            .btn {
+              padding: 0.5rem 1rem;
+              border: none;
+              border-radius: 6px;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.3s ease;
+
+              &.btn-success {
+                background: #28a745;
+                color: white;
+
+                &:hover {
+                  background: #218838;
+                }
+              }
+            }
+
+            .status-completed {
+              color: #28a745;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+
+    .emergency-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+
+        h3 {
+          margin: 0 0 1rem 0;
+          color: #666;
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .stat-number {
+          font-size: 2rem;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        &.critical .stat-number {
+          color: #dc3545;
+        }
+
+        &.urgent .stat-number {
+          color: #ffc107;
+        }
+
+        &.public .stat-number {
+          color: $primary-color;
+        }
+
+        &.rare .stat-number {
+          color: #6f42c1;
+        }
+      }
+    }
+  }
+}
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        color: #dc3545;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
+          color: #333;
+        }
+
+        select, input, textarea {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: 0.9rem;
+
+          &:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+          }
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 80px;
+        }
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+
+        .btn {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 6px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &.btn-secondary {
+            background: #6c757d;
+            color: white;
+
+            &:hover {
+              background: #5a6268;
+            }
+          }
+
+          &.btn-danger {
+            background: #dc3545;
+            color: white;
+
+            &:hover {
+              background: #c82333;
+            }
+
+            &:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes urgentPulse {
+  0%, 100% { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .emergency-requests-management {
+    .emergency-requests-content {
+      margin-left: 0;
+      padding: 1rem;
+
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .emergency-banner {
+        flex-direction: column;
+        text-align: center;
+
+        .banner-icon {
+          font-size: 2rem;
+        }
+      }
+
+      .requests-section {
+        .requests-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .public-requests .public-request-card .card-main {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      .emergency-stats {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+
+        .stat-card {
+          padding: 1rem;
+
+          .stat-number {
+            font-size: 1.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  .modal-overlay .modal-content .modal-body .form-row {
+    grid-template-columns: 1fr;
+  }
+}

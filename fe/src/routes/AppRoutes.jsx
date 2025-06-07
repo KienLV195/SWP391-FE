@@ -4,12 +4,18 @@ import ForbiddenPage from "../pages/error/ForbiddenPage";
 import GuestHomePage from "../pages/guest/GuestHomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
-import OTPVerificationPage from "../pages/auth/OTPVerificationPage";
+import EmailVerificationPage from "../pages/auth/EmailVerificationPage";
 import BloodInfoPage from "../pages/guest/BloodInfoPage";
 import BlogPage from "../pages/guest/BlogPage";
 import BloodDonationGuide from "../pages/guest/DonationGuide";
 import ManagerHomePage from "../pages/manager/ManagerHomePage";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
+import BloodRequestsManagement from "../pages/manager/BloodRequestsManagement";
+import DonationProcessManagement from "../pages/manager/DonationProcessManagement";
+import BloodInventoryManagement from "../pages/manager/BloodInventoryManagement";
+import ReportsManagement from "../pages/manager/ReportsManagement";
+import EmergencyRequestsManagement from "../pages/manager/EmergencyRequestsManagement";
+import NotificationsManagement from "../pages/manager/NotificationsManagement";
 import MemberHomePage from "../pages/member/MemberHomePage";
 import MemberBlogPage from "../pages/member/MemberBlogPage";
 import MemberBloodInfoPage from "../pages/member/MemberBloodInfoPage";
@@ -20,11 +26,14 @@ import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
 import BloodRequestForm from "../pages/member/BloodRequestForm";
 import ActivityHistory from "../pages/member/ActivityHistory";
 import DoctorDashboard from "../pages/doctor/DoctorDashboard";
+import DoctorBloodRequestsPage from "../pages/doctor/DoctorBloodRequestsPage";
+import ExternalRequestsManagement from "../pages/doctor/ExternalRequestsManagement";
 import TestAccounts from "../pages/demo/TestAccounts";
 import ProtectedRoute, {
   MemberRoute,
   DoctorRoute,
   ManagerRoute,
+  AdminRoute,
 } from "../components/common/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -46,8 +55,8 @@ const router = createBrowserRouter([
     element: <TestAccounts />,
   },
   {
-    path: "/:authType/otpverification",
-    element: <OTPVerificationPage />,
+    path: "/register/verify-email",
+    element: <EmailVerificationPage />,
   },
   {
     path: "/403",
@@ -86,10 +95,74 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/manager/blood-requests",
+    element: (
+      <ManagerRoute>
+        <BloodRequestsManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/donation-process",
+    element: (
+      <ManagerRoute>
+        <DonationProcessManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/blood-inventory",
+    element: (
+      <ManagerRoute>
+        <BloodInventoryManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/reports",
+    element: (
+      <ManagerRoute>
+        <ReportsManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/emergency-requests",
+    element: (
+      <ManagerRoute>
+        <EmergencyRequestsManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/notifications",
+    element: (
+      <ManagerRoute>
+        <NotificationsManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
     path: "/doctor",
     element: (
       <DoctorRoute>
         <DoctorDashboard />
+      </DoctorRoute>
+    ),
+  },
+  {
+    path: "/doctor/blood-requests",
+    element: (
+      <DoctorRoute>
+        <DoctorBloodRequestsPage />
+      </DoctorRoute>
+    ),
+  },
+  {
+    path: "/doctor/external-requests",
+    element: (
+      <DoctorRoute>
+        <ExternalRequestsManagement />
       </DoctorRoute>
     ),
   },

@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
+import LogoutButton from "../common/LogoutButton";
 import "../../styles/components/ManagerSidebar.scss";
 
 const ManagerSidebar = () => {
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
-    { path: "/manager", label: "Trang chủ" },
-    { path: "/manager/request", label: "Yêu cầu" },
-    { path: "/manager/manage-blood", label: "Quản lý hiến máu" },
-    { path: "/manager/blood-bank", label: "Kho máu" },
-    { path: "/manager/report", label: "Báo cáo" },
-    { path: "/manager/notification", label: "Thông báo" },
+    { path: "/manager", label: "🏠 Dashboard", exact: true },
+    { path: "/manager/blood-requests", label: "📋 Quản lý yêu cầu máu" },
+    { path: "/manager/donation-process", label: "🩸 Quy trình hiến máu" },
+    { path: "/manager/blood-inventory", label: "🏦 Quản lý kho máu" },
+    { path: "/manager/reports", label: "📊 Báo cáo & Thống kê" },
+    { path: "/manager/emergency-requests", label: "🚨 Yêu cầu khẩn cấp" },
+    { path: "/manager/notifications", label: "🔔 Thông báo" },
   ];
 
   const userInfo = {
@@ -20,46 +23,81 @@ const ManagerSidebar = () => {
     avatar: null, // Có thể thay bằng URL ảnh avatar nếu có
   };
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
-    <aside className="manager-sidebar">
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <Link to="/manager">
-            <img
-              src="/assets/images/blood1.jpg"
-              alt="Manager Portal Logo"
-              className="logo-img"
-            />
-          </Link>
-        </div>
-        <div className="user-info">
-          <div className="user-avatar">
-            {userInfo.avatar || userInfo.name.charAt(0).toUpperCase()}
+    <>
+      <aside className={`manager-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+        <div className="sidebar-header">
+          <div className="toggle-btn" onClick={toggleSidebar}>
+            {isCollapsed ? <FaBars /> : <FaTimes />}
           </div>
-          <span className="user-name">{userInfo.name}</span>
+          {!isCollapsed && (
+            <>
+              <div className="sidebar-logo">
+                <Link to="/manager">
+                  <img
+                    src="/assets/images/blood1.jpg"
+                    alt="Manager Portal Logo"
+                    className="logo-img"
+                  />
+                </Link>
+              </div>
+              <div className="user-info">
+                <div className="user-avatar">
+                  {userInfo.avatar || userInfo.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="user-name">{userInfo.name}</span>
+              </div>
+            </>
+          )}
         </div>
-      </div>
 
-      <nav className="sidebar-nav">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`nav-item ${
-              location.pathname === item.path ? "active" : ""
-            }`}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+        <nav className="sidebar-nav">
+          {navItems.map((item) => {
+            const isActive = item.exact
+              ? location.pathname === item.path
+              : location.pathname.startsWith(item.path);
 
-      <div className="sidebar-footer">
-        <Link to="/logout" className="logout-btn">
-          <FaSignOutAlt /> Đăng xuất
-        </Link>
-      </div>
-    </aside>
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item ${isActive ? "active" : ""}`}
+                title={
+                  isCollapsed ? item.label.replace(/[^\w\s]/gi, "").trim() : ""
+                }
+              >
+                <span className="nav-icon">{item.label.split(" ")[0]}</span>
+                {!isCollapsed && (
+                  <span className="nav-text">
+                    {item.label.substring(item.label.indexOf(" ") + 1)}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {!isCollapsed && (
+          <div className="sidebar-footer">
+            <LogoutButton variant="sidebar" />
+          </div>
+        )}
+        {isCollapsed && (
+          <div className="sidebar-footer collapsed">
+            <LogoutButton variant="icon-only" />
+          </div>
+        )}
+      </aside>
+
+      {/* Overlay for mobile */}
+      {!isCollapsed && (
+        <div className="sidebar-overlay" onClick={toggleSidebar}></div>
+      )}
+    </>
   );
 };
 

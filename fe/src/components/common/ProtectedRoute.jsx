@@ -39,15 +39,25 @@ export const MemberRoute = ({ children }) => (
 );
 
 export const DoctorRoute = ({ children }) => (
-  <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>{children}</ProtectedRoute>
+  <ProtectedRoute allowedRoles={[ROLES.STAFF_DOCTOR]}>
+    {children}
+  </ProtectedRoute>
 );
 
 export const ManagerRoute = ({ children }) => (
-  <ProtectedRoute allowedRoles={[ROLES.MANAGER]}>{children}</ProtectedRoute>
+  <ProtectedRoute allowedRoles={[ROLES.STAFF_BLOOD_MANAGER]}>
+    {children}
+  </ProtectedRoute>
 );
 
 export const AdminRoute = ({ children }) => (
-  <ProtectedRoute allowedRoles={[ROLES.MANAGER, ROLES.DOCTOR]}>
+  <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>{children}</ProtectedRoute>
+);
+
+export const StaffRoute = ({ children }) => (
+  <ProtectedRoute
+    allowedRoles={[ROLES.STAFF_BLOOD_MANAGER, ROLES.STAFF_DOCTOR]}
+  >
     {children}
   </ProtectedRoute>
 );

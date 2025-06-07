@@ -33,12 +33,14 @@ const TestAccounts = () => {
     switch (user.role) {
       case ROLES.MEMBER:
         return "Thành viên";
-      case ROLES.DOCTOR:
+      case ROLES.STAFF_DOCTOR:
         return user.doctorType === DOCTOR_TYPES.BLOOD_DEPARTMENT
           ? "Bác sĩ Khoa Huyết học"
           : "Bác sĩ Khoa khác";
-      case ROLES.MANAGER:
-        return "Quản lý";
+      case ROLES.STAFF_BLOOD_MANAGER:
+        return "Quản lý Ngân hàng Máu";
+      case ROLES.ADMIN:
+        return "Quản trị viên";
       default:
         return "Khách";
     }
@@ -65,8 +67,12 @@ const TestAccounts = () => {
 
   const groupedUsers = {
     [ROLES.MEMBER]: mockUsers.filter((user) => user.role === ROLES.MEMBER),
-    [ROLES.DOCTOR]: mockUsers.filter((user) => user.role === ROLES.DOCTOR),
-    [ROLES.MANAGER]: mockUsers.filter((user) => user.role === ROLES.MANAGER),
+    [ROLES.STAFF_DOCTOR]: mockUsers.filter(
+      (user) => user.role === ROLES.STAFF_DOCTOR
+    ),
+    [ROLES.STAFF_BLOOD_MANAGER]: mockUsers.filter(
+      (user) => user.role === ROLES.STAFF_BLOOD_MANAGER
+    ),
   };
 
   return (
@@ -138,7 +144,7 @@ const TestAccounts = () => {
               Bác sĩ có thể xem và xử lý các yêu cầu máu từ bệnh nhân.
             </p>
             <div className="accounts-grid">
-              {groupedUsers[ROLES.DOCTOR].map((user) => (
+              {groupedUsers[ROLES.STAFF_DOCTOR].map((user) => (
                 <div key={user.id} className="account-card">
                   <div className="account-header">
                     <h3>{user.profile.fullName}</h3>
@@ -184,7 +190,7 @@ const TestAccounts = () => {
               động.
             </p>
             <div className="accounts-grid">
-              {groupedUsers[ROLES.MANAGER].map((user) => (
+              {groupedUsers[ROLES.STAFF_BLOOD_MANAGER].map((user) => (
                 <div key={user.id} className="account-card">
                   <div className="account-header">
                     <h3>{user.profile.fullName}</h3>

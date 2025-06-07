@@ -11,6 +11,7 @@ import { Table, Row, Col, Card, Collapse, Pagination, Carousel } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/guest/FooterGuest";
+import authService from "../../services/authService";
 import blood1 from "../../assets/images/blood1.jpg";
 import hospitalImg from "../../assets/images/hospital.jpg";
 import "../../styles/pages/GuestHomePage.scss";
@@ -278,6 +279,8 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
     },
   ];
 
+  const isAuthenticated = authService.isUserAuthenticated();
+
   const columns = [
     {
       title: "Nhóm máu",
@@ -327,7 +330,10 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
       title: "Hành động",
       key: "action",
       render: () => (
-        <Link to="/login" className="cta-button tertiary table-action-button">
+        <Link
+          to={isAuthenticated ? "/member/blood-donation-form" : "/login"}
+          className="cta-button tertiary table-action-button"
+        >
           Hỗ trợ
         </Link>
       ),

@@ -1,0 +1,220 @@
+.email-verification-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+
+  .verification-box {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+
+    .verification-header {
+      margin-bottom: 2rem;
+
+      .verification-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 1rem 0;
+        letter-spacing: 1px;
+      }
+
+      .verification-description {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0;
+
+        strong {
+          color: #007bff;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      border: 1px solid #f5c6cb;
+    }
+
+    .verification-inputs {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+
+      .verification-input {
+        width: 50px;
+        height: 60px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        &.error {
+          border-color: #dc3545;
+          background: #fff5f5;
+        }
+      }
+    }
+
+    .verify-button {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #0056b3, #004085);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+
+    .resend-section {
+      margin-bottom: 1.5rem;
+
+      .resend-text {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0;
+
+        .resend-button {
+          background: none;
+          border: none;
+          color: #007bff;
+          cursor: pointer;
+          font-weight: 600;
+          text-decoration: underline;
+          font-size: 0.9rem;
+          transition: color 0.3s ease;
+
+          &:hover:not(:disabled) {
+            color: #0056b3;
+          }
+
+          &:disabled {
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+
+    .back-to-register {
+      .back-button {
+        background: none;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #6c757d;
+          color: white;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .email-verification-container {
+    padding: 1rem;
+
+    .verification-box {
+      padding: 2rem;
+
+      .verification-header {
+        .verification-title {
+          font-size: 1.5rem;
+        }
+
+        .verification-description {
+          font-size: 0.9rem;
+        }
+      }
+
+      .verification-inputs {
+        gap: 0.5rem;
+
+        .verification-input {
+          width: 40px;
+          height: 50px;
+          font-size: 1.2rem;
+        }
+      }
+
+      .verify-button {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .email-verification-container {
+    .verification-box {
+      padding: 1.5rem;
+
+      .verification-inputs {
+        gap: 0.25rem;
+
+        .verification-input {
+          width: 35px;
+          height: 45px;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}

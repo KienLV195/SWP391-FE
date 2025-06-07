@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import MemberNavbar from "../../components/member/MemberNavbar";
+import authService from "../../services/authService";
 import "../../styles/pages/MemberInfoPage.scss";
 
 const documentTypes = [
@@ -15,23 +17,33 @@ const genders = [
   { value: "other", label: "Khác" },
 ];
 
-const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localStorage (nếu có)
+const MemberInfoPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentUser = authService.getCurrentUser();
+  const { isFirstTime, message } = location.state || {};
+
+  // Lấy thông tin từ user profile hoặc localStorage
   const storedInfo = JSON.parse(localStorage.getItem("memberInfo") || "{}");
+  const userProfile = currentUser?.profile || {};
+
   const [form, setForm] = useState({
-    documentType: storedInfo.documentType || "cccd",
-    documentNumber: storedInfo.documentNumber || "",
-    fullName: storedInfo.fullName || "",
-    dob: storedInfo.dob || "",
-    gender: storedInfo.gender || "male",
-    province: storedInfo.province || "",
-    district: storedInfo.district || "",
-    ward: storedInfo.ward || "",
-    provinceName: storedInfo.provinceName || "",
-    districtName: storedInfo.districtName || "",
-    wardName: storedInfo.wardName || "",
-    address: storedInfo.address || "",
-    email: storedInfo.email || "",
-    phone: storedInfo.phone || "",
+    documentType: userProfile.documentType || storedInfo.documentType || "cccd",
+    documentNumber:
+      userProfile.documentNumber || storedInfo.documentNumber || "",
+    fullName: userProfile.fullName || storedInfo.fullName || "",
+    dob: userProfile.dateOfBirth || storedInfo.dob || "",
+    gender: userProfile.gender || storedInfo.gender || "male",
+    province: userProfile.province || storedInfo.province || "",
+    district: userProfile.district || storedInfo.district || "",
+    ward: userProfile.ward || storedInfo.ward || "",
+    provinceName: userProfile.provinceName || storedInfo.provinceName || "",
+    districtName: userProfile.districtName || storedInfo.districtName || "",
+    wardName: userProfile.wardName || storedInfo.wardName || "",
+    address: userProfile.address || storedInfo.address || "",
+    email: userProfile.email || storedInfo.email || "",
+    phone: userProfile.phone || storedInfo.phone || "",
+    bloodType: userProfile.bloodType || storedInfo.bloodType || "",
   });
   const [errors, setErrors] = useState({});
   const [cityList, setCityList] = useState([]);
@@ -45,12 +57,15 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
 
   // Load city/district/ward data
   useEffect(() => {
-    axios.get("https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json")
-      .then(res => setCityList(res.data));
+    axios
+      .get(
+        "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+      )
+      .then((res) => setCityList(res.data));
   }, []);
   useEffect(() => {
     if (form.province) {
-      const city = cityList.find(c => c.Id === form.province);
+      const city = cityList.find((c) => c.Id === form.province);
       setDistrictList(city ? city.Districts : []);
     } else {
       setDistrictList([]);
@@ -60,7 +75,7 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
 
   useEffect(() => {
     if (form.district) {
-      const district = districtList.find(d => d.Id === form.district);
+      const district = districtList.find((d) => d.Id === form.district);
       setWardList(district ? district.Wards : []);
     } else {
       setWardList([]);
@@ -85,7 +100,10 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
           newErrors.documentNumber = "Căn cước công dân phải gồm đúng 12 số.";
         }
       } else if (form.documentType === "cmnd") {
-        if (!/^\d{9}$/.test(form.documentNumber) && !/^\d{12}$/.test(form.documentNumber)) {
+        if (
+          !/^\d{9}$/.test(form.documentNumber) &&
+          !/^\d{12}$/.test(form.documentNumber)
+        ) {
           newErrors.documentNumber = "CMND phải gồm đúng 9 hoặc 12 số.";
         }
       }
@@ -123,38 +141,39 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }; const handleChange = (e) => {
+  };
+  const handleChange = (e) => {
     const { name, value } = e.target;
 
     // Lưu tên thay vì ID cho province, district, ward
-    if (name === 'province') {
-      const selectedCity = cityList.find(c => c.Id === value);
+    if (name === "province") {
+      const selectedCity = cityList.find((c) => c.Id === value);
       setForm((prev) => ({
         ...prev,
         [name]: value,
-        provinceName: selectedCity ? selectedCity.Name : '',
+        provinceName: selectedCity ? selectedCity.Name : "",
         // Reset district và ward khi thay đổi province
-        district: '',
-        ward: '',
-        districtName: '',
-        wardName: ''
+        district: "",
+        ward: "",
+        districtName: "",
+        wardName: "",
       }));
-    } else if (name === 'district') {
-      const selectedDistrict = districtList.find(d => d.Id === value);
+    } else if (name === "district") {
+      const selectedDistrict = districtList.find((d) => d.Id === value);
       setForm((prev) => ({
         ...prev,
         [name]: value,
-        districtName: selectedDistrict ? selectedDistrict.Name : '',
+        districtName: selectedDistrict ? selectedDistrict.Name : "",
         // Reset ward khi thay đổi district
-        ward: '',
-        wardName: ''
+        ward: "",
+        wardName: "",
       }));
-    } else if (name === 'ward') {
-      const selectedWard = wardList.find(w => w.Id === value);
+    } else if (name === "ward") {
+      const selectedWard = wardList.find((w) => w.Id === value);
       setForm((prev) => ({
         ...prev,
         [name]: value,
-        wardName: selectedWard ? selectedWard.Name : ''
+        wardName: selectedWard ? selectedWard.Name : "",
       }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
@@ -168,17 +187,40 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
         form.address,
         form.wardName,
         form.districtName,
-        form.provinceName
-      ].filter(Boolean).join(', ');
+        form.provinceName,
+      ]
+        .filter(Boolean)
+        .join(", ");
 
       const dataToSave = {
         ...form,
-        fullAddress: fullAddress
+        fullAddress: fullAddress,
+        dateOfBirth: form.dob,
       };
 
+      // Lưu vào localStorage
       localStorage.setItem("memberInfo", JSON.stringify(dataToSave));
+
+      // Cập nhật profile của user hiện tại
+      if (currentUser) {
+        authService.updateProfile(dataToSave);
+
+        // Nếu là first-time setup, đánh dấu không còn là first login
+        if (isFirstTime) {
+          const updatedUser = { ...currentUser, isFirstLogin: false };
+          authService.setCurrentUser(updatedUser);
+        }
+      }
+
       alert("Lưu thông tin thành công!");
       console.log("Thông tin đã lưu:", dataToSave);
+
+      // Redirect based on context
+      if (isFirstTime) {
+        navigate("/member", {
+          state: { message: "Chào mừng bạn đến với hệ thống hiến máu!" },
+        });
+      }
     }
   };
 
@@ -192,139 +234,257 @@ const MemberInfoPage = () => {  // Lấy thông tin đã đăng ký từ localSt
           </div>
           <div>
             <h2>THÔNG TIN TÀI KHOẢN</h2>
-            <p style={{ fontSize: "1.15rem" }}>Các thông tin điền theo thông tin căn cước công dân để đảm bảo chính xác, nếu thông tin không chính xác, khi cần đến làm thủ tục trực tiếp sẽ phải làm lại để xác thực một lần nữa</p>
+            <p style={{ fontSize: "1.15rem" }}>
+              Các thông tin điền theo thông tin căn cước công dân để đảm bảo
+              chính xác, nếu thông tin không chính xác, khi cần đến làm thủ tục
+              trực tiếp sẽ phải làm lại để xác thực một lần nữa
+            </p>
           </div>
         </div>
         <div className="member-info-form-box">
-          <form className="member-info-form" onSubmit={handleSubmit} id="member-info-form">
+          <form
+            className="member-info-form"
+            onSubmit={handleSubmit}
+            id="member-info-form"
+          >
             <div className="form-col">
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>Chọn loại giấy tờ</label>
-                <select className="form-select form-select-lg" name="documentType" value={form.documentType} onChange={handleChange} style={{ fontSize: "1.1rem" }}>
+                <select
+                  className="form-select form-select-lg"
+                  name="documentType"
+                  value={form.documentType}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
                   {documentTypes.map((d) => (
-                    <option key={d.value} value={d.value}>{d.label}</option>
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
                   ))}
                 </select>
-              </div>              <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Số {form.documentType === "passport" ? "hộ chiếu" : form.documentType === "cmnd" ? "chứng minh nhân dân" : "căn cước công dân"} <span className="text-danger">*</span></label>
+              </div>{" "}
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>
+                  Số{" "}
+                  {form.documentType === "passport"
+                    ? "hộ chiếu"
+                    : form.documentType === "cmnd"
+                    ? "chứng minh nhân dân"
+                    : "căn cước công dân"}{" "}
+                  <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.documentNumber ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.documentNumber ? " is-invalid" : ""
+                  }`}
                   name="documentNumber"
                   value={form.documentNumber}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
-                  placeholder={`Nhập ${form.documentType === "passport" ? "số hộ chiếu" : form.documentType === "cmnd" ? "số CMND (9 hoặc 12 số)" : "số CCCD (12 số)"}`}
+                  placeholder={`Nhập ${
+                    form.documentType === "passport"
+                      ? "số hộ chiếu"
+                      : form.documentType === "cmnd"
+                      ? "số CMND (9 hoặc 12 số)"
+                      : "số CCCD (12 số)"
+                  }`}
                 />
-                {errors.documentNumber && <div className="invalid-feedback">{errors.documentNumber}</div>}
-              </div>              <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Họ và tên <span className="text-danger">*</span></label>
+                {errors.documentNumber && (
+                  <div className="invalid-feedback">
+                    {errors.documentNumber}
+                  </div>
+                )}
+              </div>{" "}
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>
+                  Họ và tên <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.fullName ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.fullName ? " is-invalid" : ""
+                  }`}
                   name="fullName"
                   value={form.fullName}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
                   placeholder="Nhập họ và tên đầy đủ"
                 />
-                {errors.fullName && <div className="invalid-feedback">{errors.fullName}</div>}
+                {errors.fullName && (
+                  <div className="invalid-feedback">{errors.fullName}</div>
+                )}
               </div>
               <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Ngày sinh <span className="text-danger">*</span></label>
+                <label style={{ fontSize: "1.1rem" }}>
+                  Ngày sinh <span className="text-danger">*</span>
+                </label>
                 <input
                   type="date"
-                  className={`form-control form-control-lg${errors.dob ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.dob ? " is-invalid" : ""
+                  }`}
                   name="dob"
                   value={form.dob}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
-                  max={new Date().toISOString().split('T')[0]}
+                  max={new Date().toISOString().split("T")[0]}
                 />
-                {errors.dob && <div className="invalid-feedback">{errors.dob}</div>}
+                {errors.dob && (
+                  <div className="invalid-feedback">{errors.dob}</div>
+                )}
               </div>
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>Giới tính</label>
-                <select className="form-select form-select-lg" name="gender" value={form.gender} onChange={handleChange} style={{ fontSize: "1.1rem" }}>
+                <select
+                  className="form-select form-select-lg"
+                  name="gender"
+                  value={form.gender}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
                   {genders.map((g) => (
-                    <option key={g.value} value={g.value}>{g.label}</option>
+                    <option key={g.value} value={g.value}>
+                      {g.label}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="form-col">
               <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Tỉnh/Thành Phố <span className="text-danger">*</span></label>
-                <select className="form-select form-select-lg" name="province" value={form.province} onChange={handleChange} style={{ fontSize: "1.1rem" }}>
+                <label style={{ fontSize: "1.1rem" }}>
+                  Tỉnh/Thành Phố <span className="text-danger">*</span>
+                </label>
+                <select
+                  className="form-select form-select-lg"
+                  name="province"
+                  value={form.province}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
                   <option value="">Chọn tỉnh thành</option>
-                  {cityList.map(city => (
-                    <option key={city.Id} value={city.Id}>{city.Name}</option>
+                  {cityList.map((city) => (
+                    <option key={city.Id} value={city.Id}>
+                      {city.Name}
+                    </option>
                   ))}
                 </select>
-                {errors.province && <div className="invalid-feedback">{errors.province}</div>}
+                {errors.province && (
+                  <div className="invalid-feedback">{errors.province}</div>
+                )}
               </div>
               <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Quận/Huyện <span className="text-danger">*</span></label>
-                <select className="form-select form-select-lg" name="district" value={form.district} onChange={handleChange} style={{ fontSize: "1.1rem" }} disabled={!form.province}>
+                <label style={{ fontSize: "1.1rem" }}>
+                  Quận/Huyện <span className="text-danger">*</span>
+                </label>
+                <select
+                  className="form-select form-select-lg"
+                  name="district"
+                  value={form.district}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                  disabled={!form.province}
+                >
                   <option value="">Chọn quận huyện</option>
-                  {districtList.map(d => (
-                    <option key={d.Id} value={d.Id}>{d.Name}</option>
+                  {districtList.map((d) => (
+                    <option key={d.Id} value={d.Id}>
+                      {d.Name}
+                    </option>
                   ))}
                 </select>
-                {errors.district && <div className="invalid-feedback">{errors.district}</div>}
+                {errors.district && (
+                  <div className="invalid-feedback">{errors.district}</div>
+                )}
               </div>
               <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Phường/Xã <span className="text-danger">*</span></label>
-                <select className="form-select form-select-lg" name="ward" value={form.ward} onChange={handleChange} style={{ fontSize: "1.1rem" }} disabled={!form.district}>
+                <label style={{ fontSize: "1.1rem" }}>
+                  Phường/Xã <span className="text-danger">*</span>
+                </label>
+                <select
+                  className="form-select form-select-lg"
+                  name="ward"
+                  value={form.ward}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                  disabled={!form.district}
+                >
                   <option value="">Chọn phường xã</option>
-                  {wardList.map(w => (
-                    <option key={w.Id} value={w.Id}>{w.Name}</option>
+                  {wardList.map((w) => (
+                    <option key={w.Id} value={w.Id}>
+                      {w.Name}
+                    </option>
                   ))}
                 </select>
-                {errors.ward && <div className="invalid-feedback">{errors.ward}</div>}
-              </div>              <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Số nhà, tên đường <span className="text-danger">*</span></label>
+                {errors.ward && (
+                  <div className="invalid-feedback">{errors.ward}</div>
+                )}
+              </div>{" "}
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>
+                  Số nhà, tên đường <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.address ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.address ? " is-invalid" : ""
+                  }`}
                   name="address"
                   value={form.address}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
                   placeholder="Nhập số nhà, tên đường"
                 />
-                {errors.address && <div className="invalid-feedback">{errors.address}</div>}
+                {errors.address && (
+                  <div className="invalid-feedback">{errors.address}</div>
+                )}
               </div>
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>Email</label>
                 <input
                   type="email"
-                  className={`form-control form-control-lg${errors.email ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.email ? " is-invalid" : ""
+                  }`}
                   name="email"
                   value={form.email}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
                   placeholder="Nhập địa chỉ email"
                 />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                {errors.email && (
+                  <div className="invalid-feedback">{errors.email}</div>
+                )}
               </div>
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>Số điện thoại</label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.phone ? " is-invalid" : ""}`}
+                  className={`form-control form-control-lg${
+                    errors.phone ? " is-invalid" : ""
+                  }`}
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
                   placeholder="Nhập số điện thoại (10 số, bắt đầu bằng 0)"
                 />
-                {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}              </div>
-
+                {errors.phone && (
+                  <div className="invalid-feedback">{errors.phone}</div>
+                )}{" "}
+              </div>
             </div>
           </form>
           <div className="member-info-actions">
-            <button type="submit" className="btn btn-primary" form="member-info-form" disabled={!isValid}>Xác Nhận</button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              form="member-info-form"
+              disabled={!isValid}
+            >
+              Xác Nhận
+            </button>
           </div>
         </div>
       </div>

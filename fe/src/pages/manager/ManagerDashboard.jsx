@@ -6,7 +6,9 @@ import {
   mockBloodRequests,
   mockDonationHistory,
   mockUsers,
+  mockBloodInventory,
   REQUEST_STATUS,
+  getBloodInventoryWithStatus,
 } from "../../services/mockData";
 import "../../styles/pages/ManagerDashboard.scss";
 
@@ -47,17 +49,8 @@ const ManagerDashboard = () => {
       (req) => req.status === REQUEST_STATUS.PENDING
     );
 
-    // Mock blood inventory
-    const bloodInventory = {
-      "O+": 45,
-      "O-": 12,
-      "A+": 38,
-      "A-": 8,
-      "B+": 25,
-      "B-": 6,
-      "AB+": 15,
-      "AB-": 3,
-    };
+    // Get blood inventory with status
+    const bloodInventory = getBloodInventoryWithStatus();
 
     // Recent activities
     const recentActivities = [
@@ -91,12 +84,7 @@ const ManagerDashboard = () => {
     });
   };
 
-  const getInventoryStatus = (quantity) => {
-    if (quantity < 10) return "critical";
-    if (quantity < 20) return "low";
-    if (quantity < 40) return "normal";
-    return "high";
-  };
+  // Removed getInventoryStatus - now handled in mockData
 
   const handleViewDonations = () => {
     navigate("/manager/manage-blood");
@@ -186,24 +174,18 @@ const ManagerDashboard = () => {
             </div>
 
             <div className="inventory-grid">
-              {Object.entries(dashboardData.bloodInventory).map(
-                ([bloodType, quantity]) => {
-                  const status = getInventoryStatus(quantity);
-                  return (
-                    <div key={bloodType} className={`inventory-item ${status}`}>
-                      <div className="blood-type">{bloodType}</div>
-                      <div className="quantity">{quantity}</div>
-                      <div className="unit">đơn vị</div>
-                      <div className={`status-indicator ${status}`}>
-                        {status === "critical" && "🔴"}
-                        {status === "low" && "🟡"}
-                        {status === "normal" && "🟢"}
-                        {status === "high" && "🔵"}
-                      </div>
-                    </div>
-                  );
-                }
-              )}
+              {dashboardData.bloodInventory.map((item) => (
+                <div
+                  key={item.inventoryID}
+                  className={`inventory-item ${item.status}`}
+                >
+                  <div className="blood-type">{item.bloodType}</div>
+                  <div className="quantity">{item.quantity}</div>
+                  <div className="unit">đơn vị</div>
+                  <div className="status-indicator">{item.statusIcon}</div>
+                  {item.isRare && <div className="rare-indicator">⭐ Hiếm</div>}
+                </div>
+              ))}
             </div>
           </div>
 
