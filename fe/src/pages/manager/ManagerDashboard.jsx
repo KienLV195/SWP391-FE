@@ -213,41 +213,6 @@ const ManagerDashboard = () => {
               ))}
             </div>
           </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            <h2>Thao tác nhanh</h2>
-            <div className="action-buttons">
-              <button
-                className="action-btn primary"
-                onClick={() => navigate("/manager/request")}
-              >
-                <i className="icon-request"></i>
-                Quản lý yêu cầu máu
-              </button>
-              <button
-                className="action-btn secondary"
-                onClick={() => navigate("/manager/manage-blood")}
-              >
-                <i className="icon-donation"></i>
-                Quản lý hiến máu
-              </button>
-              <button
-                className="action-btn info"
-                onClick={() => navigate("/manager/blood-bank")}
-              >
-                <i className="icon-inventory"></i>
-                Kho máu
-              </button>
-              <button
-                className="action-btn warning"
-                onClick={() => navigate("/manager/report")}
-              >
-                <i className="icon-report"></i>
-                Báo cáo
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

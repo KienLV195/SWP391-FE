@@ -10,11 +10,14 @@ const ManagerSidebar = () => {
 
   const navItems = [
     { path: "/manager", label: "🏠 Dashboard", exact: true },
+    {
+      path: "/manager/donation-schedule",
+      label: "📅 Lịch & Quy trình hiến máu",
+    },
+    { path: "/manager/eligible-donors", label: "👥 Người hiến đủ điều kiện" },
     { path: "/manager/blood-requests", label: "📋 Quản lý yêu cầu máu" },
-    { path: "/manager/donation-process", label: "🩸 Quy trình hiến máu" },
     { path: "/manager/blood-inventory", label: "🏦 Quản lý kho máu" },
     { path: "/manager/reports", label: "📊 Báo cáo & Thống kê" },
-    { path: "/manager/emergency-requests", label: "🚨 Yêu cầu khẩn cấp" },
     { path: "/manager/notifications", label: "🔔 Thông báo" },
   ];
 

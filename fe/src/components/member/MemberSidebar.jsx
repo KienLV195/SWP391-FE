@@ -10,28 +10,29 @@ const MemberSidebar = () => {
     {
       path: "/member",
       label: "🏠 Trang chủ",
-      exact: true
+      exact: true,
     },
     {
       path: "/member/profile",
-      label: "👤 Hồ sơ cá nhân"
+      label: "👤 Hồ sơ cá nhân",
     },
     {
-      path: "/member/donation-history",
-      label: "🩸 Lịch sử hiến máu"
+      path: "/member/blood-donation-form",
+      label: "🩸 Đăng ký hiến máu",
     },
     {
-      path: "/member/blood-requests",
-      label: "📋 Yêu cầu máu"
+      path: "/member/blood-request-form",
+      label: "📋 Yêu cầu máu",
+    },
+
+    {
+      path: "/member/notifications",
+      label: "🔔 Thông báo",
     },
     {
-      path: "/member/blood-compatibility",
-      label: "🔍 Tra cứu nhóm máu"
+      path: "/member/blood-info",
+      label: "🔍 Thông tin nhóm máu",
     },
-    {
-      path: "/member/emergency-support",
-      label: "🚨 Hỗ trợ khẩn cấp"
-    }
   ];
 
   const isActive = (path, exact = false) => {
@@ -46,7 +47,7 @@ const MemberSidebar = () => {
       <div className="member-sidebar__header">
         <h2>Member Panel</h2>
       </div>
-      
+
       <nav className="member-sidebar__nav">
         <ul className="member-sidebar__menu">
           {menuItems.map((item) => (

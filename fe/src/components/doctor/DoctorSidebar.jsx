@@ -8,35 +8,32 @@ import "../../styles/components/DoctorSidebar.scss";
 const DoctorSidebar = () => {
   const location = useLocation();
   const currentUser = authService.getCurrentUser();
-  
+
   // Determine doctor type and menu items
-  const isBloodDepartment = currentUser?.doctorType === DOCTOR_TYPES.BLOOD_DEPARTMENT;
-  
+  const isBloodDepartment =
+    currentUser?.doctorType === DOCTOR_TYPES.BLOOD_DEPARTMENT;
+
   const menuItems = [
     {
       path: "/doctor",
       label: "🏠 Dashboard",
-      exact: true
+      exact: true,
     },
     {
       path: "/doctor/blood-requests",
-      label: "📋 Yêu cầu máu"
+      label: "📋 Yêu cầu máu",
     },
     {
       path: "/doctor/blood-inventory",
-      label: "🏦 Xem kho máu"
-    }
+      label: "🏦 Xem kho máu",
+    },
   ];
 
   // Add specific items for blood department doctors
   if (isBloodDepartment) {
     menuItems.splice(2, 0, {
-      path: "/doctor/external-requests",
-      label: "🌐 Yêu cầu bên ngoài"
-    });
-    menuItems.splice(3, 0, {
       path: "/doctor/donor-management",
-      label: "👥 Quản lý người hiến"
+      label: "👨‍⚕️ Quản lý người hiến máu",
     });
   }
 
@@ -59,7 +56,7 @@ const DoctorSidebar = () => {
           )}
         </div>
       </div>
-      
+
       <nav className="doctor-sidebar__nav">
         <ul className="doctor-sidebar__menu">
           {menuItems.map((item) => (

@@ -162,9 +162,9 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
         key: "req1",
         bloodType: "O+",
         quantity: 2,
-        note: "Bệnh viện Chợ Rẫy. Cần gấp cho ca phẫu thuật tim. Độ khẩn cấp: Rất khẩn cấp. (Đăng ngày: 10/07/2024)",
+        note: "Bệnh viện Đa khoa Ánh Dương. Cần gấp cho ca phẫu thuật tim. Độ khẩn cấp: Rất khẩn cấp. (Đăng ngày: 10/07/2024)",
         id_internal: 1,
-        location: "Bệnh viện Chợ Rẫy",
+        location: "Bệnh viện Đa khoa Ánh Dương",
         urgency: "Rất khẩn cấp",
         details: "Cần gấp 2 đơn vị máu O+",
         details_original: "Cần gấp 2 đơn vị máu O+ cho ca phẫu thuật tim.",
@@ -448,8 +448,8 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
                 <FaEnvelope className="icon email" /> anhduonghospital@gmail.com
               </li>
               <li>
-                <FaMapMarkerAlt className="icon address" /> 123 Đường ABC, Quận
-                1, TP. Hồ Chí Minh
+                <FaMapMarkerAlt className="icon address" /> Đường Cách Mạng
+                Tháng 8, Quận 3, TP.HCM, Vietnam
               </li>
               <li>
                 <FaClock className="icon clock" /> Thứ 2 - Chủ nhật: 07:00 -

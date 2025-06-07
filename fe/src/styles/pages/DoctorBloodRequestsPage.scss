@@ -111,6 +111,43 @@
       }
     }
 
+    .tabs-section {
+      margin-bottom: 2rem;
+
+      .tabs-header {
+        display: flex;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        .tab-btn {
+          flex: 1;
+          padding: 1rem 1.5rem;
+          border: none;
+          border-radius: 8px;
+          background: transparent;
+          color: #6c757d;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 1rem;
+
+          &:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+          }
+
+          &.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+          }
+        }
+      }
+    }
+
     .requests-section {
       margin-bottom: 2rem;
 
@@ -453,5 +490,37 @@
 
   .modal-overlay .modal-content .modal-body .form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+// Action buttons styling
+.doctor-blood-requests .doctor-blood-requests-content .requests-section .requests-table-container .requests-table {
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .btn {
+      &.btn-success {
+        background: #28a745;
+        color: white;
+
+        &:hover {
+          background: #218838;
+          transform: translateY(-1px);
+        }
+      }
+
+      &.btn-danger {
+        background: #dc3545;
+        color: white;
+
+        &:hover {
+          background: #c82333;
+          transform: translateY(-1px);
+        }
+      }
+    }
   }
 }

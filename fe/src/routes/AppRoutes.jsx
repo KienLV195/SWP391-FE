@@ -11,10 +11,10 @@ import BloodDonationGuide from "../pages/guest/DonationGuide";
 import ManagerHomePage from "../pages/manager/ManagerHomePage";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import BloodRequestsManagement from "../pages/manager/BloodRequestsManagement";
-import DonationProcessManagement from "../pages/manager/DonationProcessManagement";
+
 import BloodInventoryManagement from "../pages/manager/BloodInventoryManagement";
 import ReportsManagement from "../pages/manager/ReportsManagement";
-import EmergencyRequestsManagement from "../pages/manager/EmergencyRequestsManagement";
+
 import NotificationsManagement from "../pages/manager/NotificationsManagement";
 import MemberHomePage from "../pages/member/MemberHomePage";
 import MemberBlogPage from "../pages/member/MemberBlogPage";
@@ -22,12 +22,20 @@ import MemberBloodInfoPage from "../pages/member/MemberBloodInfoPage";
 import MemberDonationGuide from "../pages/member/MemberDonationGuide";
 import MemberInfoPage from "../pages/member/MemberInfoPage";
 import MemberNavbar from "../components/member/MemberNavbar";
-import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
-import BloodRequestForm from "../pages/member/BloodRequestForm";
-import ActivityHistory from "../pages/member/ActivityHistory";
+
 import DoctorDashboard from "../pages/doctor/DoctorDashboard";
 import DoctorBloodRequestsPage from "../pages/doctor/DoctorBloodRequestsPage";
 import ExternalRequestsManagement from "../pages/doctor/ExternalRequestsManagement";
+import DoctorDonorManagementPage from "../pages/doctor/DoctorDonorManagementPage";
+
+import BloodInventoryViewPage from "../pages/doctor/BloodInventoryViewPage";
+import DonationSchedulePage from "../pages/manager/DonationSchedulePage";
+import EligibleDonorsPage from "../pages/manager/EligibleDonorsPage";
+
+import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
+import BloodRequestFormPage from "../pages/member/BloodRequestFormPage";
+import ActivityHistoryPage from "../pages/member/ActivityHistoryPage";
+import NotificationsPage from "../pages/member/NotificationsPage";
 import TestAccounts from "../pages/demo/TestAccounts";
 import ProtectedRoute, {
   MemberRoute,
@@ -102,14 +110,7 @@ const router = createBrowserRouter([
       </ManagerRoute>
     ),
   },
-  {
-    path: "/manager/donation-process",
-    element: (
-      <ManagerRoute>
-        <DonationProcessManagement />
-      </ManagerRoute>
-    ),
-  },
+
   {
     path: "/manager/blood-inventory",
     element: (
@@ -126,19 +127,28 @@ const router = createBrowserRouter([
       </ManagerRoute>
     ),
   },
-  {
-    path: "/manager/emergency-requests",
-    element: (
-      <ManagerRoute>
-        <EmergencyRequestsManagement />
-      </ManagerRoute>
-    ),
-  },
+
   {
     path: "/manager/notifications",
     element: (
       <ManagerRoute>
         <NotificationsManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/donation-schedule",
+    element: (
+      <ManagerRoute>
+        <DonationSchedulePage />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/eligible-donors",
+    element: (
+      <ManagerRoute>
+        <EligibleDonorsPage />
       </ManagerRoute>
     ),
   },
@@ -158,11 +168,21 @@ const router = createBrowserRouter([
       </DoctorRoute>
     ),
   },
+
   {
-    path: "/doctor/external-requests",
+    path: "/doctor/donor-management",
     element: (
       <DoctorRoute>
-        <ExternalRequestsManagement />
+        <DoctorDonorManagementPage />
+      </DoctorRoute>
+    ),
+  },
+
+  {
+    path: "/doctor/blood-inventory",
+    element: (
+      <DoctorRoute>
+        <BloodInventoryViewPage />
       </DoctorRoute>
     ),
   },
@@ -174,22 +194,7 @@ const router = createBrowserRouter([
       </MemberRoute>
     ),
   },
-  {
-    path: "/member/activity-history",
-    element: (
-      <MemberRoute>
-        <ActivityHistory />
-      </MemberRoute>
-    ),
-  },
-  {
-    path: "/member/blood-request-form",
-    element: (
-      <MemberRoute>
-        <BloodRequestForm />
-      </MemberRoute>
-    ),
-  },
+
   {
     path: "/member/blood-info",
     element: (
@@ -230,17 +235,29 @@ const router = createBrowserRouter([
       </MemberRoute>
     ),
   },
+
+  {
+    path: "/member/blood-request-form",
+    element: (
+      <MemberRoute>
+        <BloodRequestFormPage />
+      </MemberRoute>
+    ),
+  },
+  {
+    path: "/member/activity-history",
+    element: (
+      <MemberRoute>
+        <ActivityHistoryPage />
+      </MemberRoute>
+    ),
+  },
+
   {
     path: "/member/notifications",
     element: (
       <MemberRoute>
-        <>
-          <MemberNavbar />
-          <div style={{ padding: 32 }}>
-            <h2>Thông báo cá nhân</h2>
-            <p>Trang này đang phát triển.</p>
-          </div>
-        </>
+        <NotificationsPage />
       </MemberRoute>
     ),
   },

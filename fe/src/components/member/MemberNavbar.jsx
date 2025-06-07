@@ -14,6 +14,7 @@ const MemberNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+
   const user = authService.getCurrentUser();
 
   const handleLogout = () => {
@@ -50,10 +51,19 @@ const MemberNavbar = () => {
         </div>
         {showMenu && (
           <div className="member-dropdown-menu">
-            <Link to="/member/activity-history">Lịch sử hoạt động</Link>
-            <Link to="/member/notifications">Thông báo cá nhân</Link>
-            <Link to="/member/profile">Hồ sơ cá nhân</Link>
-            <button onClick={handleLogout} className="logout-btn">
+            <Link to="/member/activity-history" className="dropdown-item">
+              Lịch sử hoạt động
+            </Link>
+            <Link to="/member/notifications" className="dropdown-item">
+              Thông báo cá nhân
+            </Link>
+            <Link to="/member/profile" className="dropdown-item">
+              Hồ sơ cá nhân
+            </Link>
+
+            <div className="dropdown-divider"></div>
+
+            <button onClick={handleLogout} className="dropdown-item logout-btn">
               Đăng xuất
             </button>
           </div>

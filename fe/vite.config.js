@@ -5,16 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0',
+    host: 'localhost',
     port: 5173,
-    strictPort: true,
+    strictPort: false,
     hmr: {
-      overlay: false,
-      port: 5173
+      overlay: false
     },
-    watch: {
-      usePolling: true
-    }
+    open: true
   },
   build: {
     rollupOptions: {

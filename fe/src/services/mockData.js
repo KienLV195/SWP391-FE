@@ -452,7 +452,7 @@ export const mockDonationHistory = [
     notes: 'Hiến máu thành công, kết quả xét nghiệm tốt',
     // Additional fields for display
     bloodType: 'O+',
-    location: 'Bệnh viện XYZ',
+    location: 'Bệnh viện Đa khoa Ánh Dương',
     status: 'completed',
     testResults: {
       hiv: 'negative',
@@ -579,14 +579,14 @@ export const mockBloodInventory = [
 // Mock hospital info matching database HospitalInfo table
 export const mockHospitalInfo = {
   id: 1,
-  name: 'Bệnh viện Đa khoa Thành phố',
-  address: '123 Đường Nguyễn Văn Cừ, Quận 1, TP.HCM',
+  name: 'Bệnh viện Đa khoa Ánh Dương',
+  address: 'Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam',
   phone: '(028) 3957 1343',
-  email: 'info@hospital.com',
+  email: 'anhduonghospital@gmail.com',
   workingHours: 'Thứ 2 - Chủ nhật: 07:00 - 17:00',
-  mapImageUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=10.762622,106.660172&zoom=15&size=600x400&key=YOUR_API_KEY',
-  latitude: 10.762622,
-  longitude: 106.660172
+  mapImageUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=10.7751237,106.6862143&zoom=15&size=600x400&key=YOUR_API_KEY',
+  latitude: 10.7751237,
+  longitude: 106.6862143
 };
 
 // Function to get user by email and password
