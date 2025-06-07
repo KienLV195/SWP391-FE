@@ -1,0 +1,299 @@
+.blood-request-form {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+
+  .form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 3rem;
+
+      h1 {
+        color: #333;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+      }
+
+      p {
+        color: #666;
+        font-size: 1.1rem;
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+
+    .request-form {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+      .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+        }
+
+        h2 {
+          color: #333;
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin: 0 0 1.5rem 0;
+          padding-bottom: 0.5rem;
+          border-bottom: 2px solid #007bff;
+          display: inline-block;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+
+          label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+
+            &.required::after {
+              content: " *";
+              color: #dc3545;
+            }
+          }
+
+          input,
+          select,
+          textarea {
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+
+            &:focus {
+              outline: none;
+              border-color: #007bff;
+              box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            }
+
+            &.error {
+              border-color: #dc3545;
+              box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+            }
+
+            &::placeholder {
+              color: #999;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 100px;
+          }
+
+          input[type="file"] {
+            padding: 0.5rem;
+            border: 2px dashed #e9ecef;
+            background: #f8f9fa;
+
+            &:hover {
+              border-color: #007bff;
+              background: #e3f2fd;
+            }
+          }
+
+          .error-message {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+          }
+
+          .help-text {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            line-height: 1.4;
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+
+        .btn {
+          padding: 0.75rem 2rem;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 1rem;
+          min-width: 120px;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+          }
+
+          &.btn-outline {
+            background: transparent;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+
+            &:hover:not(:disabled) {
+              background: #6c757d;
+              color: white;
+              transform: translateY(-2px);
+            }
+          }
+
+          &.btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: 2px solid transparent;
+
+            &:hover:not(:disabled) {
+              background: linear-gradient(135deg, #0056b3, #004085);
+              transform: translateY(-2px);
+              box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Blood type specific styling
+.blood-type-select {
+  option {
+    padding: 0.5rem;
+    
+    &[value="A+"], &[value="A-"] {
+      background-color: #e3f2fd;
+    }
+    
+    &[value="B+"], &[value="B-"] {
+      background-color: #f3e5f5;
+    }
+    
+    &[value="AB+"], &[value="AB-"] {
+      background-color: #fff3e0;
+    }
+    
+    &[value="O+"], &[value="O-"] {
+      background-color: #e8f5e8;
+    }
+  }
+}
+
+// Urgency indicator styling
+.urgency-select {
+  option[value="emergency"] {
+    background-color: #ffebee;
+    color: #c62828;
+    font-weight: 600;
+  }
+  
+  option[value="normal"] {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+  }
+}
+
+// File upload styling
+.file-upload-area {
+  position: relative;
+  
+  &::before {
+    content: "📎";
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  input[type="file"] {
+    padding-left: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .blood-request-form {
+    .form-container {
+      padding: 1rem;
+
+      .form-header {
+        margin-bottom: 2rem;
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        p {
+          font-size: 1rem;
+        }
+      }
+
+      .request-form {
+        padding: 1.5rem;
+
+        .form-section {
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .form-actions {
+          flex-direction: column;
+
+          .btn {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .blood-request-form {
+    .form-container {
+      padding: 0.5rem;
+
+      .request-form {
+        padding: 1rem;
+        border-radius: 8px;
+
+        .form-section {
+          h2 {
+            font-size: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+}

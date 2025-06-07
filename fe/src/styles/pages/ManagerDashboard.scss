@@ -1,0 +1,409 @@
+.manager-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+
+  .dashboard-main {
+    flex: 1;
+    margin-left: 250px; // Space for sidebar
+    padding: 2rem;
+
+    .dashboard-header {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+    }
+
+    .dashboard-content {
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+
+        .stat-card {
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease;
+          position: relative;
+          overflow: hidden;
+
+          &:hover {
+            transform: translateY(-2px);
+          }
+
+          .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+          }
+
+          .stat-info {
+            h3 {
+              margin: 0 0 0.5rem 0;
+              font-size: 0.9rem;
+              color: #666;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .stat-number {
+              font-size: 2.5rem;
+              font-weight: 700;
+              margin: 0 0 0.5rem 0;
+            }
+
+            .stat-subtitle {
+              font-size: 0.8rem;
+              color: #888;
+              margin: 0;
+            }
+          }
+
+          .stat-action {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: #007bff;
+              color: white;
+            }
+          }
+
+          &.donors {
+            border-left: 4px solid #28a745;
+            .stat-number { color: #28a745; }
+          }
+
+          &.recipients {
+            border-left: 4px solid #dc3545;
+            .stat-number { color: #dc3545; }
+          }
+
+          &.pending-donations {
+            border-left: 4px solid #ffc107;
+            .stat-number { color: #ffc107; }
+          }
+
+          &.pending-requests {
+            border-left: 4px solid #17a2b8;
+            .stat-number { color: #17a2b8; }
+          }
+        }
+      }
+
+      .blood-inventory-overview {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+
+          h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+          }
+
+          .btn-outline {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid #007bff;
+            color: #007bff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: #007bff;
+              color: white;
+            }
+          }
+        }
+
+        .inventory-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 1rem;
+
+          .inventory-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+
+            &:hover {
+              transform: translateY(-2px);
+            }
+
+            .blood-type {
+              font-size: 1.2rem;
+              font-weight: 700;
+              color: #333;
+              margin-bottom: 0.5rem;
+            }
+
+            .quantity {
+              font-size: 1.8rem;
+              font-weight: 700;
+              margin-bottom: 0.25rem;
+            }
+
+            .unit {
+              font-size: 0.8rem;
+              color: #666;
+              margin-bottom: 0.5rem;
+            }
+
+            .status-indicator {
+              position: absolute;
+              top: 0.5rem;
+              right: 0.5rem;
+              font-size: 1rem;
+            }
+
+            &.critical {
+              border-color: #dc3545;
+              background: #f8d7da;
+              .quantity { color: #dc3545; }
+            }
+
+            &.low {
+              border-color: #ffc107;
+              background: #fff3cd;
+              .quantity { color: #856404; }
+            }
+
+            &.normal {
+              border-color: #28a745;
+              background: #d4edda;
+              .quantity { color: #28a745; }
+            }
+
+            &.high {
+              border-color: #17a2b8;
+              background: #d1ecf1;
+              .quantity { color: #17a2b8; }
+            }
+          }
+        }
+      }
+
+      .recent-activities {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        h2 {
+          margin: 0 0 1.5rem 0;
+          color: #333;
+          font-size: 1.5rem;
+        }
+
+        .activities-list {
+          .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            &:hover {
+              background-color: #f8f9fa;
+            }
+
+            .activity-icon {
+              font-size: 1.5rem;
+              width: 40px;
+              height: 40px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: #f8f9fa;
+              border-radius: 50%;
+              flex-shrink: 0;
+            }
+
+            .activity-content {
+              flex: 1;
+
+              .activity-message {
+                margin: 0 0 0.25rem 0;
+                color: #333;
+                font-weight: 500;
+              }
+
+              .activity-time {
+                margin: 0;
+                color: #666;
+                font-size: 0.8rem;
+              }
+            }
+
+            &.donation {
+              .activity-icon { background: #d4edda; }
+            }
+
+            &.request {
+              .activity-icon { background: #f8d7da; }
+            }
+
+            &.approval {
+              .activity-icon { background: #d1ecf1; }
+            }
+          }
+        }
+      }
+
+      .quick-actions {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        h2 {
+          margin: 0 0 1.5rem 0;
+          color: #333;
+          font-size: 1.5rem;
+          text-align: center;
+        }
+
+        .action-buttons {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+
+          .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+
+            .icon-request::before { content: "📋"; }
+            .icon-donation::before { content: "🩸"; }
+            .icon-inventory::before { content: "🏥"; }
+            .icon-report::before { content: "📊"; }
+
+            &.primary {
+              background: #007bff;
+
+              &:hover {
+                background: #0056b3;
+                transform: translateY(-2px);
+              }
+            }
+
+            &.secondary {
+              background: #6c757d;
+
+              &:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+              }
+            }
+
+            &.info {
+              background: #17a2b8;
+
+              &:hover {
+                background: #138496;
+                transform: translateY(-2px);
+              }
+            }
+
+            &.warning {
+              background: #ffc107;
+              color: #212529;
+
+              &:hover {
+                background: #e0a800;
+                transform: translateY(-2px);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .manager-dashboard {
+    .dashboard-main {
+      margin-left: 0;
+      padding: 1rem;
+
+      .dashboard-header {
+        padding: 1.5rem;
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+
+      .dashboard-content {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .inventory-grid {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+
+        .quick-actions {
+          .action-buttons {
+            grid-template-columns: 1fr;
+          }
+        }
+      }
+    }
+  }
+}

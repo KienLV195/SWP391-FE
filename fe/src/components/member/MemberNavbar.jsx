@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import authService from "../../services/authService";
 import "../../styles/components/MemberNavbar.scss";
 
 const navItems = [
@@ -11,10 +12,13 @@ const navItems = [
 
 const MemberNavbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-  const userInfo = {
-    name: "Nguyễn Văn A",
-    avatar: "", // Có thể thay bằng link ảnh nếu có
+  const user = authService.getCurrentUser();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate("/");
   };
   return (
     <header className="navbar member-navbar">
@@ -34,18 +38,24 @@ const MemberNavbar = () => {
       </nav>
       <div className="navbar-actions">
         <div className="user-info">
-          <span className="user-name">{userInfo.name}</span>
+          <span className="user-name">
+            {user?.profile?.fullName || "Member"}
+          </span>
           <div
             className="member-avatar-wrapper"
             onClick={() => setShowMenu((prev) => !prev)}
           >
-            {userInfo.avatar || userInfo.name.charAt(0).toUpperCase()}
+            {user?.profile?.fullName?.charAt(0).toUpperCase() || "M"}
           </div>
         </div>
         {showMenu && (
           <div className="member-dropdown-menu">
+            <Link to="/member/activity-history">Lịch sử hoạt động</Link>
             <Link to="/member/notifications">Thông báo cá nhân</Link>
             <Link to="/member/profile">Hồ sơ cá nhân</Link>
+            <button onClick={handleLogout} className="logout-btn">
+              Đăng xuất
+            </button>
           </div>
         )}
       </div>

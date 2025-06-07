@@ -20,7 +20,7 @@ import ScrollToTop from "../../components/common/ScrollToTop";
 
 const { Panel } = Collapse;
 
-const GuestHomePage = ({ CustomNavbar, hideNavbar }) => {
+const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
   const [emergencyRequests, setEmergencyRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const questionsPerPage = 5;
@@ -363,41 +363,50 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar }) => {
     <>
       {!hideNavbar && (CustomNavbar ? <CustomNavbar /> : <GuestNavbar />)}
       <div className="guest-home-page">
-        <section
-          className="hero-section"
-          data-aos="fade-up"
-          style={{
-            backgroundImage: `url(${blood1})`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            backgroundSize: "cover",
-          }}
-        >
-          <div className="hero-container">
-            <div className="hero-content">
-              <h1 className="merriweather-title">
-                HIẾN MÁU CỨU NGƯỜI
-                <br />
-                NHẬN MÁU CỨU MÌNH
-              </h1>
-              <p className="merriweather-content">
-                Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
-                nối sự sống bằng từng giọt máu yêu thương.
-              </p>
-              <div className="cta-row">
-                <Link to="/login" className="cta-button">
-                  ĐĂNG KÝ HIẾN MÁU
-                </Link>
-                <Link to="/login" className="cta-button secondary">
-                  ĐĂNG KÝ NHẬN MÁU
-                </Link>
+        {CustomHeroSection ? (
+          <CustomHeroSection />
+        ) : (
+          <section
+            className="hero-section"
+            data-aos="fade-up"
+            style={{
+              backgroundImage: `url(${blood1})`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center center",
+              backgroundSize: "cover",
+            }}
+          >
+            <div className="hero-container">
+              <div className="hero-content">
+                <h1 className="merriweather-title">
+                  HIẾN MÁU CỨU NGƯỜI
+                  <br />
+                  NHẬN MÁU CỨU MÌNH
+                </h1>
+                <p className="merriweather-content">
+                  Dù bạn là người cho hay người cần, chúng tôi luôn sẵn sàng kết
+                  nối sự sống bằng từng giọt máu yêu thương.
+                </p>
+                <div className="cta-row">
+                  <Link to="/login" className="cta-button">
+                    ĐĂNG KÝ HIẾN MÁU
+                  </Link>
+                  <Link to="/login" className="cta-button secondary">
+                    ĐĂNG KÝ NHẬN MÁU
+                  </Link>
+                </div>
+                <div className="demo-link">
+                  <Link to="/test-accounts" className="demo-button">
+                    🧪 Xem tài khoản demo
+                  </Link>
+                </div>
+              </div>
+              <div className="hero-image">
+                <img src={blood1} alt="Truyền máu" className="hero-img" />
               </div>
             </div>
-            <div className="hero-image">
-              <img src={blood1} alt="Truyền máu" className="hero-img" />
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="hospital-info-section" data-aos="fade-right">
           <div className="hospital-left">
