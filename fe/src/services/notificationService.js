@@ -1,5 +1,9 @@
-// TODO: Replace with actual API calls when backend is ready
+import config from '../config/environment';
+
 class NotificationService {
+  constructor() {
+    this.baseURL = config.api.baseUrl;
+  }
   // Mock data for notifications
   static mockNotifications = [
     {
@@ -77,14 +81,36 @@ class NotificationService {
     }
   ];
 
-  // TODO: Replace with API call - GET /api/notifications/:userId
-  static async getNotifications(userId) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const userNotifications = this.mockNotifications.filter(n => n.userId === userId);
-        resolve(userNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-      }, 500);
-    });
+  // TODO_API_REPLACE: Replace with actual API call
+  // GET /api/notifications/{userId}
+  async getNotifications(userId) {
+    try {
+      // TODO_API_REPLACE: Replace with actual API call
+      // const response = await fetch(`${this.baseURL}/notifications/${userId}`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      //   }
+      // });
+      // const data = await response.json();
+      // if (response.ok) {
+      //   return data.notifications;
+      // } else {
+      //   throw new Error(data.message);
+      // }
+
+      // MOCK_DATA: Remove this section when implementing real API
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const userNotifications = this.mockNotifications.filter(n => n.userId === userId);
+          resolve(userNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        }, 500);
+      });
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
   }
 
   // TODO: Replace with API call - GET /api/notifications/:userId/unread-count

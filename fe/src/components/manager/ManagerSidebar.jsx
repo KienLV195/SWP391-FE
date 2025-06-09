@@ -17,6 +17,7 @@ const ManagerSidebar = () => {
     { path: "/manager/eligible-donors", label: "👥 Người hiến đủ điều kiện" },
     { path: "/manager/blood-requests", label: "📋 Quản lý yêu cầu máu" },
     { path: "/manager/blood-inventory", label: "🏦 Quản lý kho máu" },
+    { path: "/manager/blog", label: "📝 Quản lý Blog" },
     { path: "/manager/reports", label: "📊 Báo cáo & Thống kê" },
     { path: "/manager/notifications", label: "🔔 Thông báo" },
   ];

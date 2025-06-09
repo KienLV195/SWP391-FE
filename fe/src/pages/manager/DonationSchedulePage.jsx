@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
-import StatusWorkflowTracker from "../../components/common/StatusWorkflowTracker";
-import StatusWorkflowService from "../../services/statusWorkflowService";
-import DistanceService from "../../services/distanceService";
+import SimpleStatusTracker from "../../components/common/SimpleStatusTracker";
+import GeolibService from "../../services/geolibService";
+import { DONATION_STATUS } from "../../constants/systemConstants";
 import "../../styles/pages/DonationSchedulePage.scss";
 
 const DonationSchedulePage = () => {
@@ -297,7 +297,7 @@ const DonationSchedulePage = () => {
         status: newStatus,
         updatedAt: new Date().toISOString(),
         updatedBy: "Manager",
-        ...(newStatus === StatusWorkflowService.DONATION_STATUSES.STORED && {
+        ...(newStatus === DONATION_STATUS.STORED && {
           storedAt: new Date().toISOString(),
           storageLocation: "Kho A - Tủ 2 - Ngăn 1",
           expiryDate: new Date(
@@ -530,13 +530,6 @@ const DonationSchedulePage = () => {
                               {DistanceService.formatDistance(
                                 donation.location.distance
                               )}
-                              <span className="travel-time">
-                                (
-                                {DistanceService.getEstimatedTravelTime(
-                                  donation.location.distance
-                                )}
-                                )
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -887,13 +880,9 @@ const DonationSchedulePage = () => {
                 </p>
               </div>
 
-              <StatusWorkflowTracker
+              <SimpleStatusTracker
                 currentStatus={selectedDonation.status}
-                userRole={StatusWorkflowService.USER_ROLES.MANAGER}
                 workflowType="donation"
-                itemId={selectedDonation.id}
-                onStatusUpdate={handleStatusUpdate}
-                showActions={true}
               />
             </div>
           </div>

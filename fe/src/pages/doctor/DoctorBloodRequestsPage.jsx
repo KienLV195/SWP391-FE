@@ -6,9 +6,15 @@ import {
   BLOOD_GROUPS,
   RH_TYPES,
   COMPONENT_TYPES,
-  URGENCY_LEVELS,
   DOCTOR_TYPES,
 } from "../../services/mockData";
+import {
+  REQUEST_STATUS,
+  URGENCY_LEVELS,
+  URGENCY_LABELS,
+  URGENCY_COLORS,
+  URGENCY_ICONS,
+} from "../../constants/systemConstants";
 import "../../styles/pages/DoctorBloodRequestsPage.scss";
 
 const DoctorBloodRequestsPage = () => {
@@ -195,16 +201,7 @@ const DoctorBloodRequestsPage = () => {
   };
 
   const getUrgencyText = (urgency) => {
-    switch (urgency) {
-      case URGENCY_LEVELS.NORMAL:
-        return "Bình thường";
-      case URGENCY_LEVELS.URGENT:
-        return "Khẩn cấp";
-      case URGENCY_LEVELS.CRITICAL:
-        return "Cực kỳ khẩn cấp";
-      default:
-        return "Không xác định";
-    }
+    return URGENCY_LABELS[urgency] || "Không xác định";
   };
 
   const getUrgencyColor = (urgency) => {

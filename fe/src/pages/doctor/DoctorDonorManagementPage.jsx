@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DoctorSidebar from "../../components/doctor/DoctorSidebar";
-import StatusWorkflowTracker from "../../components/common/StatusWorkflowTracker";
-import StatusWorkflowService from "../../services/statusWorkflowService";
+import SimpleStatusTracker from "../../components/common/SimpleStatusTracker";
 import NotificationService from "../../services/notificationService";
 import authService from "../../services/authService";
 import { DOCTOR_TYPES } from "../../services/mockData";
+import { DONATION_STATUS } from "../../constants/systemConstants";
 import "../../styles/pages/DoctorDonorManagementPage.scss";
 
 const DoctorDonorManagementPage = () => {

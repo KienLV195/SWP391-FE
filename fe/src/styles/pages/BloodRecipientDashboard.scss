@@ -1,0 +1,397 @@
+.blood-recipient-dashboard {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+
+  .dashboard-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+
+    h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+  }
+
+  .dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .quick-request-card {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0 0 2rem 0;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .btn-danger {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: white;
+        color: #dc3545;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .profile-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 0 1.5rem 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .profile-info {
+      margin-bottom: 2rem;
+
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        label {
+          font-weight: 600;
+          color: #555;
+        }
+
+        span {
+          color: #333;
+
+          &.blood-type {
+            background-color: #007bff;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #007bff;
+      color: #007bff;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .blood-requests {
+    grid-column: 1 / -1;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 0 1.5rem 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .requests-list {
+      .request-item {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transform: translateY(-1px);
+        }
+
+        .request-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+
+          .request-date {
+            font-weight: 600;
+            color: #333;
+          }
+
+          .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+
+            &.status-warning {
+              background-color: #fff3cd;
+              color: #856404;
+            }
+
+            &.status-success {
+              background-color: #d4edda;
+              color: #155724;
+            }
+
+            &.status-danger {
+              background-color: #f8d7da;
+              color: #721c24;
+            }
+
+            &.status-info {
+              background-color: #d1ecf1;
+              color: #0c5460;
+            }
+          }
+        }
+
+        .request-details {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+
+          .detail-row {
+            display: flex;
+            gap: 0.5rem;
+
+            .label {
+              font-weight: 600;
+              color: #555;
+              min-width: 80px;
+            }
+
+            .blood-type {
+              background-color: #007bff;
+              color: white;
+              padding: 0.25rem 0.75rem;
+              border-radius: 15px;
+              font-weight: 600;
+              font-size: 0.9rem;
+            }
+
+            .urgency {
+              padding: 0.25rem 0.75rem;
+              border-radius: 15px;
+              font-size: 0.8rem;
+              font-weight: 600;
+
+              &.emergency {
+                background-color: #f8d7da;
+                color: #721c24;
+              }
+
+              &.normal {
+                background-color: #d4edda;
+                color: #155724;
+              }
+            }
+          }
+        }
+
+        .request-actions {
+          text-align: right;
+
+          .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+          }
+
+          .btn-outline {
+            background: transparent;
+            border: 1px solid #007bff;
+            color: #007bff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background-color: #007bff;
+              color: white;
+            }
+          }
+        }
+      }
+    }
+
+    .no-requests {
+      text-align: center;
+      padding: 3rem;
+
+      p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: #0056b3;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  .compatibility-tool {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0 0 2rem 0;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .btn-info {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: white;
+        color: #17a2b8;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .quick-actions {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin: 0 0 1.5rem 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .action-buttons {
+      display: grid;
+      gap: 1rem;
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+
+        &:hover {
+          background-color: #e9ecef;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-info::before { content: "📚"; }
+        .icon-blog::before { content: "📰"; }
+        .icon-notification::before { content: "🔔"; }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .blood-recipient-dashboard {
+    .dashboard-content {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      padding: 1.5rem;
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    .blood-requests {
+      .request-details {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

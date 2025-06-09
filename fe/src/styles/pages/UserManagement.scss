@@ -1,0 +1,470 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+.user-management {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .page-header {
+    @include mixins.flex-between;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.shadow-elevation(2);
+
+    .header-content {
+      h1 {
+        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
+        margin-bottom: vars.$spacing-2;
+      }
+
+      p {
+        @include mixins.text(vars.$font-size-lg, vars.$text-secondary);
+        margin: 0;
+      }
+    }
+
+    .btn-primary {
+      @include mixins.button-primary;
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-2;
+      white-space: nowrap;
+
+      i {
+        font-size: vars.$font-size-sm;
+      }
+    }
+  }
+
+  .filters-section {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-6);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.flex-between;
+    gap: vars.$spacing-6;
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+
+      i {
+        position: absolute;
+        left: vars.$spacing-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: vars.$text-muted;
+        font-size: vars.$font-size-sm;
+      }
+
+      input {
+        @include mixins.form-input;
+        padding-left: vars.$spacing-10;
+        font-size: vars.$font-size-base;
+
+        &::placeholder {
+          color: vars.$text-muted;
+        }
+      }
+    }
+
+    .filter-controls {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-4;
+
+      .filter-select {
+        @include mixins.form-input;
+        min-width: 160px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right vars.$spacing-2 center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: vars.$spacing-8;
+        appearance: none;
+      }
+    }
+  }
+
+  .users-table-container {
+    @include mixins.card-base;
+    @include mixins.shadow-elevation(2);
+    overflow: hidden;
+    margin-bottom: vars.$spacing-6;
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background: vars.$background-section;
+
+        th {
+          @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-semibold);
+          padding: vars.$spacing-4 vars.$spacing-6;
+          text-align: left;
+          border-bottom: 1px solid vars.$border-light;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      tbody {
+        tr {
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: vars.$background-light;
+          }
+
+          &:not(:last-child) {
+            border-bottom: 1px solid vars.$border-light;
+          }
+
+          td {
+            padding: vars.$spacing-4 vars.$spacing-6;
+            vertical-align: middle;
+
+            .user-info {
+              @include mixins.flex-align(flex-start, center);
+              gap: vars.$spacing-3;
+
+              .user-avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: vars.$border-radius-full;
+                @include mixins.gradient-bg(vars.$primary-color, vars.$primary-hover);
+                @include mixins.flex-center;
+                color: vars.$white;
+                font-size: vars.$font-size-lg;
+                font-weight: vars.$font-weight-bold;
+                flex-shrink: 0;
+                @include mixins.shadow-elevation(1);
+              }
+
+              .user-details {
+                .user-name {
+                  @include mixins.text(vars.$font-size-base, vars.$text-primary, vars.$font-weight-semibold);
+                  margin-bottom: vars.$spacing-1;
+                }
+
+                .user-email {
+                  @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
+                  margin-bottom: vars.$spacing-1;
+                }
+
+                .user-phone {
+                  @include mixins.text(vars.$font-size-sm, vars.$text-muted);
+                  margin: 0;
+                }
+              }
+            }
+
+            .role-badge {
+              @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+              padding: vars.$spacing-1 vars.$spacing-3;
+              border-radius: vars.$border-radius-full;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+
+              &.role-admin {
+                background: vars.$error-color;
+              }
+
+              &.role-manager {
+                background: vars.$warning-color;
+              }
+
+              &.role-doctor {
+                background: vars.$info-color;
+              }
+
+              &.role-member {
+                background: vars.$success-color;
+              }
+            }
+
+            .status-badge {
+              @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+              padding: vars.$spacing-1 vars.$spacing-3;
+              border-radius: vars.$border-radius-full;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+
+              &.status-active {
+                background: vars.$success-color;
+              }
+
+              &.status-inactive {
+                background: vars.$text-muted;
+              }
+
+              &.status-suspended {
+                background: vars.$warning-color;
+              }
+
+              &.status-banned {
+                background: vars.$error-color;
+              }
+            }
+
+            .blood-type {
+              @include mixins.text(vars.$font-size-sm, vars.$secondary-color, vars.$font-weight-semibold);
+              background: vars.$secondary-light;
+              padding: vars.$spacing-1 vars.$spacing-2;
+              border-radius: vars.$border-radius-sm;
+              display: inline-block;
+              margin-bottom: vars.$spacing-1;
+            }
+
+            .department {
+              @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
+              font-style: italic;
+            }
+
+            .last-login {
+              @include mixins.text(vars.$font-size-sm, vars.$text-muted);
+            }
+
+            .action-buttons {
+              @include mixins.flex-align(center, center);
+              gap: vars.$spacing-2;
+
+              .action-btn {
+                @include mixins.button-ghost(vars.$text-secondary);
+                padding: vars.$spacing-2;
+                border-radius: vars.$border-radius-sm;
+                font-size: vars.$font-size-sm;
+                transition: all 0.2s ease;
+
+                &.edit:hover {
+                  background: vars.$warning-color;
+                  color: vars.$white;
+                }
+
+                &.delete:hover {
+                  background: vars.$error-color;
+                  color: vars.$white;
+                }
+              }
+
+              .status-dropdown {
+                position: relative;
+
+                .action-btn.status:hover {
+                  background: vars.$info-color;
+                  color: vars.$white;
+                }
+
+                .dropdown-menu {
+                  position: absolute;
+                  top: 100%;
+                  right: 0;
+                  background: vars.$white;
+                  border: 1px solid vars.$border-light;
+                  border-radius: vars.$border-radius-base;
+                  @include mixins.shadow-elevation(3);
+                  min-width: 120px;
+                  z-index: vars.$z-index-dropdown;
+                  opacity: 0;
+                  visibility: hidden;
+                  transform: translateY(-10px);
+                  transition: all 0.2s ease;
+
+                  button {
+                    @include mixins.button-ghost(vars.$text-secondary);
+                    width: 100%;
+                    text-align: left;
+                    padding: vars.$spacing-2 vars.$spacing-3;
+                    border-radius: 0;
+                    font-size: vars.$font-size-sm;
+
+                    &:first-child {
+                      border-radius: vars.$border-radius-base vars.$border-radius-base 0 0;
+                    }
+
+                    &:last-child {
+                      border-radius: 0 0 vars.$border-radius-base vars.$border-radius-base;
+                    }
+
+                    &:hover {
+                      background: vars.$background-section;
+                    }
+                  }
+                }
+
+                &:hover .dropdown-menu {
+                  opacity: 1;
+                  visibility: visible;
+                  transform: translateY(0);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .pagination {
+    @include mixins.flex-center;
+    gap: vars.$spacing-4;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-4);
+
+    .pagination-btn {
+      @include mixins.button-ghost(vars.$text-secondary);
+      padding: vars.$spacing-2;
+      border-radius: vars.$border-radius-sm;
+      font-size: vars.$font-size-sm;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: vars.$primary-color;
+        color: vars.$white;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .pagination-info {
+      @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+    }
+  }
+
+  .loading-spinner {
+    @include mixins.flex-center;
+    flex-direction: column;
+    padding: vars.$spacing-16;
+    gap: vars.$spacing-4;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid vars.$border-light;
+      border-top: 4px solid vars.$primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // === RESPONSIVE DESIGN ===
+  @include mixins.tablet {
+    padding: vars.$spacing-4;
+
+    .page-header {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+      text-align: center;
+
+      .btn-primary {
+        align-self: center;
+      }
+    }
+
+    .filters-section {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+
+      .search-box {
+        max-width: none;
+      }
+
+      .filter-controls {
+        width: 100%;
+        justify-content: stretch;
+
+        .filter-select {
+          flex: 1;
+          min-width: auto;
+        }
+      }
+    }
+
+    .users-table-container {
+      overflow-x: auto;
+
+      .users-table {
+        min-width: 800px;
+      }
+    }
+  }
+
+  @include mixins.mobile {
+    padding: vars.$spacing-3;
+
+    .page-header {
+      padding: vars.$spacing-4;
+
+      .header-content h1 {
+        font-size: vars.$font-size-2xl;
+      }
+    }
+
+    .filters-section {
+      padding: vars.$spacing-4;
+    }
+
+    .users-table-container {
+      .users-table {
+        min-width: 600px;
+
+        th,
+        td {
+          padding: vars.$spacing-3 vars.$spacing-4;
+        }
+
+        .user-info {
+          .user-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: vars.$font-size-base;
+          }
+
+          .user-details {
+            .user-name {
+              font-size: vars.$font-size-sm;
+            }
+
+            .user-email,
+            .user-phone {
+              font-size: vars.$font-size-xs;
+            }
+          }
+        }
+
+        .action-buttons {
+          gap: vars.$spacing-1;
+
+          .action-btn {
+            padding: vars.$spacing-1;
+            font-size: vars.$font-size-xs;
+          }
+        }
+      }
+    }
+
+    .pagination {
+      padding: vars.$spacing-3;
+      gap: vars.$spacing-2;
+
+      .pagination-info {
+        font-size: vars.$font-size-xs;
+      }
+    }
+  }
+}

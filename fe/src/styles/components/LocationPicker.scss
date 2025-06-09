@@ -54,6 +54,33 @@
         &::placeholder {
           color: #adb5bd;
         }
+
+        &.geocoding {
+          border-color: #ffc107;
+          background-color: #fff3cd;
+        }
+      }
+
+      .geocoding-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 6px;
+        color: #856404;
+        font-size: 0.9rem;
+
+        .loading-spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid #ffeaa7;
+          border-top: 2px solid #856404;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
       }
 
       .current-location-btn {

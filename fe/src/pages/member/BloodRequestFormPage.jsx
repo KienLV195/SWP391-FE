@@ -4,6 +4,14 @@ import MemberNavbar from "../../components/member/MemberNavbar";
 import LocationPicker from "../../components/member/LocationPicker";
 import authService from "../../services/authService";
 import NotificationService from "../../services/notificationService";
+import {
+  REQUEST_STATUS,
+  URGENCY_LEVELS,
+  URGENCY_LABELS,
+  URGENCY_COLORS,
+  URGENCY_ICONS,
+  BLOOD_TYPES,
+} from "../../constants/systemConstants";
 import "../../styles/pages/BloodRequestFormPage.scss";
 
 const BloodRequestFormPage = () => {
@@ -15,7 +23,7 @@ const BloodRequestFormPage = () => {
     bloodType: "",
     quantity: "",
     unit: "ml",
-    urgency: "normal", // normal, urgent, emergency
+    urgency: URGENCY_LEVELS.NORMAL, // normal, urgent, emergency
     medicalCondition: "",
     hospitalName: "",
     doctorName: "",
@@ -28,6 +36,7 @@ const BloodRequestFormPage = () => {
     expectedDate: "",
     location: null,
     additionalNotes: "",
+    status: REQUEST_STATUS.PENDING, // Initial status when submitted
   });
 
   const [submissionResult, setSubmissionResult] = useState(null);
@@ -95,25 +104,14 @@ const BloodRequestFormPage = () => {
   };
 
   const getUrgencyColor = (urgency) => {
-    switch (urgency) {
-      case "emergency":
-        return "#dc3545";
-      case "urgent":
-        return "#fd7e14";
-      default:
-        return "#28a745";
-    }
+    return URGENCY_COLORS[urgency] || URGENCY_COLORS[URGENCY_LEVELS.NORMAL];
   };
 
   const getUrgencyText = (urgency) => {
-    switch (urgency) {
-      case "emergency":
-        return "🚨 Cấp cứu";
-      case "urgent":
-        return "⚡ Khẩn cấp";
-      default:
-        return "📋 Bình thường";
-    }
+    const icon = URGENCY_ICONS[urgency] || URGENCY_ICONS[URGENCY_LEVELS.NORMAL];
+    const label =
+      URGENCY_LABELS[urgency] || URGENCY_LABELS[URGENCY_LEVELS.NORMAL];
+    return `${icon} ${label}`;
   };
 
   if (submissionResult) {
@@ -280,13 +278,22 @@ const BloodRequestFormPage = () => {
                     <select
                       value={requestData.urgency}
                       onChange={(e) =>
-                        handleInputChange("urgency", e.target.value)
+                        handleInputChange("urgency", parseInt(e.target.value))
                       }
                       required
                     >
-                      <option value="normal">📋 Bình thường</option>
-                      <option value="urgent">⚡ Khẩn cấp</option>
-                      <option value="emergency">🚨 Cấp cứu</option>
+                      <option value={URGENCY_LEVELS.NORMAL}>
+                        {URGENCY_ICONS[URGENCY_LEVELS.NORMAL]}{" "}
+                        {URGENCY_LABELS[URGENCY_LEVELS.NORMAL]}
+                      </option>
+                      <option value={URGENCY_LEVELS.URGENT}>
+                        {URGENCY_ICONS[URGENCY_LEVELS.URGENT]}{" "}
+                        {URGENCY_LABELS[URGENCY_LEVELS.URGENT]}
+                      </option>
+                      <option value={URGENCY_LEVELS.CRITICAL}>
+                        {URGENCY_ICONS[URGENCY_LEVELS.CRITICAL]}{" "}
+                        {URGENCY_LABELS[URGENCY_LEVELS.CRITICAL]}
+                      </option>
                     </select>
                   </div>
                 </div>

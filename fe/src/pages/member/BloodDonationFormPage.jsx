@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import LocationPicker from "../../components/member/LocationPicker";
+import AddressForm from "../../components/member/AddressForm";
 import authService from "../../services/authService";
 import NotificationService from "../../services/notificationService";
-import DistanceService from "../../services/distanceService";
+import GeolibService from "../../services/geolibService";
+import { DONATION_STATUS, BLOOD_TYPES } from "../../constants/systemConstants";
 import "../../styles/pages/BloodDonationFormPage.scss";
 
 const BloodDonationFormPage = () => {
@@ -19,11 +21,18 @@ const BloodDonationFormPage = () => {
     phone: "",
     dateOfBirth: "",
     gender: "",
-    address: "",
-    city: "",
-    district: "",
-    ward: "",
-    location: null,
+    address: {
+      houseNumber: "",
+      street: "",
+      ward: "",
+      district: "",
+      city: "",
+      fullAddress: "",
+      coordinates: { lat: null, lng: null },
+      distance: null,
+      travelTime: null,
+      formattedAddress: "",
+    },
   });
   const [healthSurvey, setHealthSurvey] = useState({
     weight: "",
@@ -164,7 +173,35 @@ const BloodDonationFormPage = () => {
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call - POST /api/donations/schedule
+      // TODO_API_REPLACE: Replace with actual API call
+      // const response = await fetch(`${config.api.baseUrl}/donations/schedule`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      //   },
+      //   body: JSON.stringify({
+      //     donorId: currentUser.id,
+      //     healthSurvey: healthAnswers,
+      //     appointmentDate: selectedDate,
+      //     timeSlot: selectedTimeSlot,
+      //     address: formData.address,
+      //     coordinates: coordinates,
+      //     distance: distance
+      //   })
+      // });
+      // const data = await response.json();
+      // if (response.ok) {
+      //   setRegistrationResult({
+      //     status: "scheduled",
+      //     message: "ĐẶT LỊCH THÀNH CÔNG",
+      //     description: "Lịch hẹn hiến máu đã được gửi đến Manager. Bạn sẽ nhận được xác nhận sớm."
+      //   });
+      // } else {
+      //   alert(`Lỗi: ${data.message}`);
+      // }
+
+      // MOCK_DATA: Remove this section when implementing real API
       const appointmentRequest = {
         userId: currentUser.id,
         personalInfo,
@@ -260,13 +297,13 @@ const BloodDonationFormPage = () => {
   // Calculate distance when personalInfo.location changes
   useEffect(() => {
     if (personalInfo.location) {
-      const distance = DistanceService.calculateDistanceToHospital(
+      const distance = GeolibService.getDistanceToHospital(
         personalInfo.location
       );
       setDistanceInfo({
         distance,
-        formattedDistance: DistanceService.formatDistance(distance),
-        travelTime: DistanceService.getEstimatedTravelTime(distance),
+        formattedDistance: GeolibService.formatDistance(distance),
+        travelTime: "", // Empty travel time
       });
     }
   }, [personalInfo.location]);
@@ -279,12 +316,12 @@ const BloodDonationFormPage = () => {
 
     // Calculate distance when location changes
     if (field === "location" && value) {
-      const distance = DistanceService.calculateDistanceToHospital(value);
+      const distance = GeolibService.getDistanceToHospital(value);
       setDistanceInfo({
         distance,
-        formattedDistance: DistanceService.formatDistance(distance),
-        travelTime: DistanceService.getEstimatedTravelTime(distance),
-        priority: DistanceService.getPriorityLevel(distance),
+        formattedDistance: GeolibService.formatDistance(distance),
+        travelTime: "", // Empty travel time
+        priority: GeolibService.getDistancePriority(distance),
       });
     }
   };
@@ -526,59 +563,13 @@ const BloodDonationFormPage = () => {
                   </div>
                 </div>
 
-                {/* Current Location */}
-                <div className="form-section">
-                  <h3>📍 Địa chỉ hiện tại</h3>
-                  <p className="section-description">
-                    Vui lòng chọn vị trí hiện tại của bạn để chúng tôi tính
-                    khoảng cách đến bệnh viện
-                  </p>
-
-                  {/* Location Picker */}
-                  <div className="location-picker-section">
-                    <label>📍 Chọn vị trí hiện tại của bạn</label>
-                    <LocationPicker
-                      initialLocation={personalInfo.location}
-                      onLocationChange={(location) =>
-                        handlePersonalInfoChange("location", location)
-                      }
-                    />
-
-                    {/* Distance Information */}
-                    {distanceInfo && (
-                      <div className="distance-info">
-                        <div className="distance-card">
-                          <div className="distance-header">
-                            <span className="distance-icon">📏</span>
-                            <span className="distance-text">
-                              Khoảng cách đến Bệnh viện Đa khoa Ánh Dương
-                            </span>
-                          </div>
-                          <div className="distance-details">
-                            <div className="distance-value">
-                              <strong>{distanceInfo.formattedDistance}</strong>
-                            </div>
-                            <div className="travel-time">
-                              🚗 {distanceInfo.travelTime}
-                            </div>
-                          </div>
-                          <div className="hospital-info">
-                            <div className="hospital-address">
-                              🏥 Đường Cách Mạng Tháng 8, Quận 3, TP.HCM,
-                              Vietnam
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <p className="location-note">
-                      📍 Vị trí này sẽ giúp chúng tôi tính khoảng cách và ưu
-                      tiên trong trường hợp khẩn cấp. Bạn có thể click trên bản
-                      đồ hoặc sử dụng GPS để chọn vị trí chính xác.
-                    </p>
-                  </div>
-                </div>
+                {/* Address Form */}
+                <AddressForm
+                  initialAddress={personalInfo.address}
+                  onAddressChange={(addressData) =>
+                    handlePersonalInfoChange("address", addressData)
+                  }
+                />
 
                 <div className="form-actions">
                   <button

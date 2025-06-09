@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import ManagerSidebar from '../../components/manager/ManagerSidebar';
-import NearbyDonorsModal from '../../components/manager/NearbyDonorsModal';
-import DistanceService from '../../services/distanceService';
-import NotificationService from '../../services/notificationService';
-import authService from '../../services/authService';
-import '../../styles/pages/EligibleDonorsPage.scss';
+import React, { useState, useEffect } from "react";
+import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import NearbyDonorsModal from "../../components/manager/NearbyDonorsModal";
+import GeolibService from "../../services/geolibService";
+import NotificationService from "../../services/notificationService";
+import authService from "../../services/authService";
+import "../../styles/pages/EligibleDonorsPage.scss";
 
 const EligibleDonorsPage = () => {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    bloodType: 'all',
+    bloodType: "all",
     maxDistance: 50,
-    eligibilityStatus: 'eligible',
-    sortBy: 'priority' // priority, distance, donations, lastDonation
+    eligibilityStatus: "eligible",
+    sortBy: "priority", // priority, distance, donations, lastDonation
   });
   const [selectedDonors, setSelectedDonors] = useState([]);
   const [showNearbyModal, setShowNearbyModal] = useState(false);
@@ -32,152 +32,196 @@ const EligibleDonorsPage = () => {
       const mockDonors = [
         {
           id: 1,
-          name: 'Nguyễn Văn A',
-          bloodType: 'O+',
-          phone: '0123456789',
-          email: 'nguyenvana@email.com',
-          coordinates: { lat: 10.7751000, lng: 106.6862000 },
-          address: '120 Đường ABC, Quận 1, TP.HCM',
-          lastDonationDate: '2024-10-15',
-          nextEligibleDate: '2024-12-10',
+          name: "Nguyễn Văn A",
+          bloodType: "O+",
+          phone: "0123456789",
+          email: "nguyenvana@email.com",
+          coordinates: { lat: 10.7751, lng: 106.6862 },
+          address: {
+            houseNumber: "120",
+            street: "Đường Nguyễn Huệ",
+            ward: "Phường Bến Nghé",
+            district: "Quận 1",
+            city: "TP. Hồ Chí Minh",
+            fullAddress:
+              "120 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+          },
+          lastDonationDate: "2024-10-15",
+          nextEligibleDate: "2024-12-10",
           isEligible: true,
-          healthStatus: 'excellent',
+          healthStatus: "excellent",
           totalDonations: 8,
-          registrationDate: '2022-01-15',
-          gender: 'male',
+          registrationDate: "2022-01-15",
+          gender: "male",
           age: 28,
           weight: 65,
           chronicDiseases: [],
           recentActivities: [],
           emergencyAvailable: true,
-          preferredTimeSlots: ['morning', 'afternoon'],
-          notes: 'Người hiến tích cực, sức khỏe tốt'
+          preferredTimeSlots: ["morning", "afternoon"],
+          notes: "Người hiến tích cực, sức khỏe tốt",
         },
         {
           id: 2,
-          name: 'Trần Thị B',
-          bloodType: 'A+',
-          phone: '0987654321',
-          email: 'tranthib@email.com',
-          coordinates: { lat: 10.7800000, lng: 106.6900000 },
-          address: '456 Đường XYZ, Quận 3, TP.HCM',
-          lastDonationDate: '2024-09-20',
-          nextEligibleDate: '2024-12-13',
+          name: "Trần Thị B",
+          bloodType: "A+",
+          phone: "0987654321",
+          email: "tranthib@email.com",
+          coordinates: { lat: 10.78, lng: 106.69 },
+          address: {
+            houseNumber: "456",
+            street: "Đường Lê Lợi",
+            ward: "Phường 8",
+            district: "Quận 3",
+            city: "TP. Hồ Chí Minh",
+            fullAddress: "456 Đường Lê Lợi, Phường 8, Quận 3, TP. Hồ Chí Minh",
+          },
+          lastDonationDate: "2024-09-20",
+          nextEligibleDate: "2024-12-13",
           isEligible: true,
-          healthStatus: 'good',
+          healthStatus: "good",
           totalDonations: 12,
-          registrationDate: '2021-06-10',
-          gender: 'female',
+          registrationDate: "2021-06-10",
+          gender: "female",
           age: 32,
           weight: 55,
           chronicDiseases: [],
           recentActivities: [],
           emergencyAvailable: true,
-          preferredTimeSlots: ['afternoon'],
-          notes: 'Người hiến kinh nghiệm'
+          preferredTimeSlots: ["afternoon"],
+          notes: "Người hiến kinh nghiệm",
         },
         {
           id: 3,
-          name: 'Lê Văn C',
-          bloodType: 'O-',
-          phone: '0345678901',
-          email: 'levanc@email.com',
-          coordinates: { lat: 10.8000000, lng: 106.7000000 },
-          address: '789 Đường GHI, Quận 7, TP.HCM',
-          lastDonationDate: '2024-08-30',
-          nextEligibleDate: '2024-12-05',
+          name: "Lê Văn C",
+          bloodType: "O-",
+          phone: "0345678901",
+          email: "levanc@email.com",
+          coordinates: { lat: 10.8, lng: 106.7 },
+          address: {
+            houseNumber: "789",
+            street: "Đường Nguyễn Văn Linh",
+            ward: "Phường Tân Thuận Đông",
+            district: "Quận 7",
+            city: "TP. Hồ Chí Minh",
+            fullAddress:
+              "789 Đường Nguyễn Văn Linh, Phường Tân Thuận Đông, Quận 7, TP. Hồ Chí Minh",
+          },
+          lastDonationDate: "2024-08-30",
+          nextEligibleDate: "2024-12-05",
           isEligible: true,
-          healthStatus: 'excellent',
+          healthStatus: "excellent",
           totalDonations: 15,
-          registrationDate: '2020-09-12',
-          gender: 'male',
+          registrationDate: "2020-09-12",
+          gender: "male",
           age: 35,
           weight: 70,
           chronicDiseases: [],
           recentActivities: [],
           emergencyAvailable: true,
-          preferredTimeSlots: ['morning'],
-          notes: 'Máu hiếm O-, sẵn sàng hỗ trợ khẩn cấp'
+          preferredTimeSlots: ["morning"],
+          notes: "Máu hiếm O-, sẵn sàng hỗ trợ khẩn cấp",
         },
         {
           id: 4,
-          name: 'Phạm Thị D',
-          bloodType: 'AB+',
-          phone: '0567890123',
-          email: 'phamthid@email.com',
-          coordinates: { lat: 10.7500000, lng: 106.6500000 },
-          address: '321 Đường JKL, Quận 5, TP.HCM',
-          lastDonationDate: '2024-11-20',
-          nextEligibleDate: '2025-01-15',
+          name: "Phạm Thị D",
+          bloodType: "AB+",
+          phone: "0567890123",
+          email: "phamthid@email.com",
+          coordinates: { lat: 10.75, lng: 106.65 },
+          address: {
+            houseNumber: "321",
+            street: "Đường Trần Hưng Đạo",
+            ward: "Phường 7",
+            district: "Quận 5",
+            city: "TP. Hồ Chí Minh",
+            fullAddress:
+              "321 Đường Trần Hưng Đạo, Phường 7, Quận 5, TP. Hồ Chí Minh",
+          },
+          lastDonationDate: "2024-11-20",
+          nextEligibleDate: "2025-01-15",
           isEligible: false,
-          healthStatus: 'good',
+          healthStatus: "good",
           totalDonations: 6,
-          registrationDate: '2023-03-20',
-          gender: 'female',
+          registrationDate: "2023-03-20",
+          gender: "female",
           age: 26,
           weight: 52,
           chronicDiseases: [],
-          recentActivities: ['recent_donation'],
+          recentActivities: ["recent_donation"],
           emergencyAvailable: false,
-          preferredTimeSlots: ['afternoon'],
-          notes: 'Vừa hiến máu gần đây'
-        }
+          preferredTimeSlots: ["afternoon"],
+          notes: "Vừa hiến máu gần đây",
+        },
       ];
 
       // Calculate distances and priorities
-      const donorsWithDistance = mockDonors.map(donor => {
-        const distance = DistanceService.calculateDistanceToHospital(donor.coordinates);
-        const travelTime = DistanceService.getEstimatedTravelTime(distance);
-        const priority = DistanceService.getDistancePriority(distance);
-        const daysUntilEligible = NotificationService.getDaysUntilEligible(donor.lastDonationDate, donor.gender);
-        
+      const donorsWithDistance = mockDonors.map((donor) => {
+        const distance = GeolibService.getDistanceToHospital(donor.coordinates);
+
+        const priority = GeolibService.getDistancePriority(distance);
+        const daysUntilEligible = NotificationService.getDaysUntilEligible(
+          donor.lastDonationDate,
+          donor.gender
+        );
+
         return {
           ...donor,
           distance,
-          travelTime,
           priority,
-          priorityText: DistanceService.getPriorityText(priority),
-          priorityColor: DistanceService.getPriorityColor(priority),
+          priorityText: GeolibService.getPriorityText(priority),
+          priorityColor: GeolibService.getPriorityColor(priority),
           daysUntilEligible,
-          isCurrentlyEligible: daysUntilEligible <= 0
+          isCurrentlyEligible: daysUntilEligible <= 0,
         };
       });
 
       // Apply filters
       let filteredDonors = donorsWithDistance;
 
-      if (filters.bloodType !== 'all') {
-        filteredDonors = filteredDonors.filter(d => d.bloodType === filters.bloodType);
+      if (filters.bloodType !== "all") {
+        filteredDonors = filteredDonors.filter(
+          (d) => d.bloodType === filters.bloodType
+        );
       }
 
       if (filters.maxDistance) {
-        filteredDonors = filteredDonors.filter(d => d.distance <= filters.maxDistance);
+        filteredDonors = filteredDonors.filter(
+          (d) => d.distance <= filters.maxDistance
+        );
       }
 
-      if (filters.eligibilityStatus === 'eligible') {
-        filteredDonors = filteredDonors.filter(d => d.isEligible && d.isCurrentlyEligible);
-      } else if (filters.eligibilityStatus === 'upcoming') {
-        filteredDonors = filteredDonors.filter(d => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7);
+      if (filters.eligibilityStatus === "eligible") {
+        filteredDonors = filteredDonors.filter(
+          (d) => d.isEligible && d.isCurrentlyEligible
+        );
+      } else if (filters.eligibilityStatus === "upcoming") {
+        filteredDonors = filteredDonors.filter(
+          (d) => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7
+        );
       }
 
       // Sort donors
       filteredDonors.sort((a, b) => {
         switch (filters.sortBy) {
-          case 'priority':
+          case "priority":
             // Sort by: eligibility -> distance -> health -> donations
             if (a.isCurrentlyEligible && !b.isCurrentlyEligible) return -1;
             if (!a.isCurrentlyEligible && b.isCurrentlyEligible) return 1;
             if (a.distance !== b.distance) return a.distance - b.distance;
             if (a.healthStatus !== b.healthStatus) {
               const healthOrder = { excellent: 3, good: 2, fair: 1 };
-              return (healthOrder[b.healthStatus] || 0) - (healthOrder[a.healthStatus] || 0);
+              return (
+                (healthOrder[b.healthStatus] || 0) -
+                (healthOrder[a.healthStatus] || 0)
+              );
             }
             return b.totalDonations - a.totalDonations;
-          case 'distance':
+          case "distance":
             return a.distance - b.distance;
-          case 'donations':
+          case "donations":
             return b.totalDonations - a.totalDonations;
-          case 'lastDonation':
+          case "lastDonation":
             return new Date(b.lastDonationDate) - new Date(a.lastDonationDate);
           default:
             return 0;
@@ -186,16 +230,16 @@ const EligibleDonorsPage = () => {
 
       setDonors(filteredDonors);
     } catch (error) {
-      console.error('Error loading eligible donors:', error);
+      console.error("Error loading eligible donors:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDonorSelect = (donorId) => {
-    setSelectedDonors(prev => {
+    setSelectedDonors((prev) => {
       if (prev.includes(donorId)) {
-        return prev.filter(id => id !== donorId);
+        return prev.filter((id) => id !== donorId);
       } else {
         return [...prev, donorId];
       }
@@ -208,15 +252,15 @@ const EligibleDonorsPage = () => {
     try {
       // TODO: Replace with actual API call - POST /api/notifications/contact-donors
       for (const donorId of selectedDonors) {
-        const donor = donors.find(d => d.id === donorId);
+        const donor = donors.find((d) => d.id === donorId);
         if (donor) {
           await NotificationService.sendUrgentBloodRequest(donorId, {
             id: Date.now(),
             bloodType: donor.bloodType,
-            quantity: '1 đơn vị',
-            urgency: 'urgent',
-            hospital: 'Bệnh viện XYZ',
-            contactPerson: currentUser.name
+            quantity: "1 đơn vị",
+            urgency: "urgent",
+            hospital: "Bệnh viện XYZ",
+            contactPerson: currentUser.name,
           });
         }
       }
@@ -224,42 +268,56 @@ const EligibleDonorsPage = () => {
       alert(`Đã gửi thông báo đến ${selectedDonors.length} người hiến máu!`);
       setSelectedDonors([]);
     } catch (error) {
-      console.error('Error contacting donors:', error);
-      alert('Có lỗi xảy ra khi gửi thông báo!');
+      console.error("Error contacting donors:", error);
+      alert("Có lỗi xảy ra khi gửi thông báo!");
     }
   };
 
   const handleEmergencyRequest = (bloodType) => {
-    setEmergencyRequest({ bloodType, urgency: 'emergency' });
+    setEmergencyRequest({ bloodType, urgency: "emergency" });
     setShowNearbyModal(true);
   };
 
   const getHealthStatusColor = (status) => {
     switch (status) {
-      case 'excellent': return '#28a745';
-      case 'good': return '#17a2b8';
-      case 'fair': return '#ffc107';
-      default: return '#6c757d';
+      case "excellent":
+        return "#28a745";
+      case "good":
+        return "#17a2b8";
+      case "fair":
+        return "#ffc107";
+      default:
+        return "#6c757d";
     }
   };
 
   const getHealthStatusText = (status) => {
     switch (status) {
-      case 'excellent': return 'Xuất sắc';
-      case 'good': return 'Tốt';
-      case 'fair': return 'Khá';
-      default: return 'Không xác định';
+      case "excellent":
+        return "Xuất sắc";
+      case "good":
+        return "Tốt";
+      case "fair":
+        return "Khá";
+      default:
+        return "Không xác định";
     }
   };
 
-  const eligibleCount = donors.filter(d => d.isEligible && d.isCurrentlyEligible).length;
-  const upcomingCount = donors.filter(d => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7).length;
-  const emergencyAvailableCount = donors.filter(d => d.emergencyAvailable && d.isCurrentlyEligible).length;
+  const eligibleCount = donors.filter(
+    (d) => d.isEligible && d.isCurrentlyEligible
+  ).length;
+  const upcomingCount = donors.filter(
+    (d) => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7
+  ).length;
+  const emergencyAvailableCount = donors.filter(
+    (d) => d.emergencyAvailable && d.isCurrentlyEligible
+  ).length;
 
   return (
     <div className="eligible-donors-page">
       <ManagerSidebar />
-      
+
       <div className="donors-content">
         <div className="page-header">
           <div>
@@ -267,18 +325,18 @@ const EligibleDonorsPage = () => {
             <p>Danh sách người hiến máu sẵn sàng hỗ trợ</p>
           </div>
           <div className="header-actions">
-            <button 
+            <button
               className="btn btn-danger"
-              onClick={() => handleEmergencyRequest('O+')}
+              onClick={() => handleEmergencyRequest("O+")}
             >
               🚨 Yêu cầu khẩn cấp
             </button>
-            <button 
+            <button
               className="btn btn-primary"
               onClick={loadEligibleDonors}
               disabled={loading}
             >
-              {loading ? '⏳ Đang tải...' : '🔄 Làm mới'}
+              {loading ? "⏳ Đang tải..." : "🔄 Làm mới"}
             </button>
           </div>
         </div>
@@ -292,7 +350,7 @@ const EligibleDonorsPage = () => {
               <div className="stat-label">Đủ điều kiện</div>
             </div>
           </div>
-          
+
           <div className="stat-card upcoming">
             <div className="stat-icon">⏰</div>
             <div className="stat-content">
@@ -300,7 +358,7 @@ const EligibleDonorsPage = () => {
               <div className="stat-label">Sắp đủ điều kiện</div>
             </div>
           </div>
-          
+
           <div className="stat-card emergency">
             <div className="stat-icon">🚨</div>
             <div className="stat-content">
@@ -308,7 +366,7 @@ const EligibleDonorsPage = () => {
               <div className="stat-label">Sẵn sàng khẩn cấp</div>
             </div>
           </div>
-          
+
           <div className="stat-card selected">
             <div className="stat-icon">☑️</div>
             <div className="stat-content">
@@ -322,9 +380,11 @@ const EligibleDonorsPage = () => {
         <div className="filters-section">
           <div className="filter-group">
             <label>Nhóm máu:</label>
-            <select 
-              value={filters.bloodType} 
-              onChange={(e) => setFilters(prev => ({...prev, bloodType: e.target.value}))}
+            <select
+              value={filters.bloodType}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, bloodType: e.target.value }))
+              }
             >
               <option value="all">Tất cả</option>
               <option value="O+">O+</option>
@@ -340,9 +400,14 @@ const EligibleDonorsPage = () => {
 
           <div className="filter-group">
             <label>Khoảng cách tối đa:</label>
-            <select 
-              value={filters.maxDistance} 
-              onChange={(e) => setFilters(prev => ({...prev, maxDistance: Number(e.target.value)}))}
+            <select
+              value={filters.maxDistance}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  maxDistance: Number(e.target.value),
+                }))
+              }
             >
               <option value={5}>5km</option>
               <option value={10}>10km</option>
@@ -354,21 +419,30 @@ const EligibleDonorsPage = () => {
 
           <div className="filter-group">
             <label>Trạng thái:</label>
-            <select 
-              value={filters.eligibilityStatus} 
-              onChange={(e) => setFilters(prev => ({...prev, eligibilityStatus: e.target.value}))}
+            <select
+              value={filters.eligibilityStatus}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  eligibilityStatus: e.target.value,
+                }))
+              }
             >
               <option value="eligible">Đủ điều kiện ({eligibleCount})</option>
-              <option value="upcoming">Sắp đủ điều kiện ({upcomingCount})</option>
+              <option value="upcoming">
+                Sắp đủ điều kiện ({upcomingCount})
+              </option>
               <option value="all">Tất cả</option>
             </select>
           </div>
 
           <div className="filter-group">
             <label>Sắp xếp:</label>
-            <select 
-              value={filters.sortBy} 
-              onChange={(e) => setFilters(prev => ({...prev, sortBy: e.target.value}))}
+            <select
+              value={filters.sortBy}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, sortBy: e.target.value }))
+              }
             >
               <option value="priority">Ưu tiên</option>
               <option value="distance">Khoảng cách</option>
@@ -385,13 +459,13 @@ const EligibleDonorsPage = () => {
               Đã chọn {selectedDonors.length} người hiến máu
             </div>
             <div className="action-buttons">
-              <button 
+              <button
                 className="btn btn-success"
                 onClick={handleContactSelected}
               >
                 📞 Liên hệ ({selectedDonors.length})
               </button>
-              <button 
+              <button
                 className="btn btn-secondary"
                 onClick={() => setSelectedDonors([])}
               >
@@ -416,12 +490,12 @@ const EligibleDonorsPage = () => {
             </div>
           ) : (
             <div className="donors-list">
-              {donors.map(donor => (
-                <div 
+              {donors.map((donor) => (
+                <div
                   key={donor.id}
-                  className={`donor-card ${!donor.isCurrentlyEligible ? 'not-eligible' : ''} ${
-                    selectedDonors.includes(donor.id) ? 'selected' : ''
-                  }`}
+                  className={`donor-card ${
+                    !donor.isCurrentlyEligible ? "not-eligible" : ""
+                  } ${selectedDonors.includes(donor.id) ? "selected" : ""}`}
                 >
                   <div className="donor-header">
                     <div className="donor-selection">
@@ -432,43 +506,56 @@ const EligibleDonorsPage = () => {
                         disabled={!donor.isCurrentlyEligible}
                       />
                     </div>
-                    
+
                     <div className="donor-basic-info">
                       <div className="donor-name">{donor.name}</div>
                       <div className="donor-contact">
                         📞 {donor.phone} | 📧 {donor.email}
                       </div>
                       <div className="blood-type-badge">{donor.bloodType}</div>
-                      {['O-', 'AB-', 'B-'].includes(donor.bloodType) && (
+                      {["O-", "AB-", "B-"].includes(donor.bloodType) && (
                         <span className="rare-badge">⭐ Máu hiếm</span>
                       )}
                     </div>
-                    
+
                     <div className="donor-status">
-                      <div className={`eligibility-status ${donor.isCurrentlyEligible ? 'eligible' : 'not-eligible'}`}>
-                        {donor.isCurrentlyEligible ? '✅ Đủ điều kiện' : 
-                         `⏳ Còn ${donor.daysUntilEligible} ngày`}
+                      <div
+                        className={`eligibility-status ${
+                          donor.isCurrentlyEligible
+                            ? "eligible"
+                            : "not-eligible"
+                        }`}
+                      >
+                        {donor.isCurrentlyEligible
+                          ? "✅ Đủ điều kiện"
+                          : `⏳ Còn ${donor.daysUntilEligible} ngày`}
                       </div>
-                      {donor.emergencyAvailable && donor.isCurrentlyEligible && (
-                        <div className="emergency-badge">🚨 Sẵn sàng khẩn cấp</div>
-                      )}
+                      {donor.emergencyAvailable &&
+                        donor.isCurrentlyEligible && (
+                          <div className="emergency-badge">
+                            🚨 Sẵn sàng khẩn cấp
+                          </div>
+                        )}
                     </div>
                   </div>
 
                   <div className="donor-details">
                     <div className="detail-row">
                       <span className="detail-label">📍 Khoảng cách:</span>
-                      <span className={`distance-info priority-${donor.priority}`}>
+                      <span
+                        className={`distance-info priority-${donor.priority}`}
+                      >
                         {DistanceService.formatDistance(donor.distance)}
-                        <small>({donor.travelTime})</small>
                       </span>
                     </div>
 
                     <div className="detail-row">
                       <span className="detail-label">🏥 Sức khỏe:</span>
-                      <span 
+                      <span
                         className="health-status"
-                        style={{ color: getHealthStatusColor(donor.healthStatus) }}
+                        style={{
+                          color: getHealthStatusColor(donor.healthStatus),
+                        }}
                       >
                         {getHealthStatusText(donor.healthStatus)}
                       </span>
@@ -476,19 +563,27 @@ const EligibleDonorsPage = () => {
 
                     <div className="detail-row">
                       <span className="detail-label">🩸 Số lần hiến:</span>
-                      <span className="donations-count">{donor.totalDonations} lần</span>
+                      <span className="donations-count">
+                        {donor.totalDonations} lần
+                      </span>
                     </div>
 
                     <div className="detail-row">
                       <span className="detail-label">📅 Lần cuối:</span>
                       <span className="last-donation">
-                        {new Date(donor.lastDonationDate).toLocaleDateString('vi-VN')}
+                        {new Date(donor.lastDonationDate).toLocaleDateString(
+                          "vi-VN"
+                        )}
                       </span>
                     </div>
 
                     <div className="detail-row">
                       <span className="detail-label">🏠 Địa chỉ:</span>
-                      <span className="address">{donor.address}</span>
+                      <span className="address">
+                        {typeof donor.address === "object"
+                          ? donor.address.fullAddress
+                          : donor.address}
+                      </span>
                     </div>
 
                     {donor.notes && (
@@ -506,14 +601,14 @@ const EligibleDonorsPage = () => {
                     >
                       📞 Gọi
                     </a>
-                    
+
                     <a
                       href={`mailto:${donor.email}`}
                       className="btn btn-info btn-sm"
                     >
                       📧 Email
                     </a>
-                    
+
                     <a
                       href={DistanceService.getDirectionsUrl(donor.coordinates)}
                       target="_blank"
@@ -522,8 +617,10 @@ const EligibleDonorsPage = () => {
                     >
                       🗺️ Chỉ đường
                     </a>
-                    
-                    <div className={`priority-badge priority-${donor.priority}`}>
+
+                    <div
+                      className={`priority-badge priority-${donor.priority}`}
+                    >
                       {donor.priorityText}
                     </div>
                   </div>

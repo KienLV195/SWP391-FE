@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import DistanceService from '../../services/distanceService';
-import NotificationService from '../../services/notificationService';
-import '../../styles/components/NearbyDonorsModal.scss';
+import React, { useState, useEffect } from "react";
+import GeolibService from "../../services/geolibService";
+import NotificationService from "../../services/notificationService";
+import "../../styles/components/NearbyDonorsModal.scss";
 
 const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDonors, setSelectedDonors] = useState([]);
   const [maxDistance, setMaxDistance] = useState(20);
-  const [sortBy, setSortBy] = useState('distance'); // distance, donations, registration
+  const [sortBy, setSortBy] = useState("distance"); // distance, donations, registration
 
   useEffect(() => {
     if (isOpen && bloodRequest) {
@@ -18,26 +18,26 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
   const loadNearbyDonors = async () => {
     if (!bloodRequest) return;
-    
+
     setLoading(true);
     try {
-      const nearbyDonors = await DistanceService.findNearbyDonors(
+      const nearbyDonors = await GeolibService.findNearbyDonors(
         bloodRequest.bloodType,
         maxDistance,
         bloodRequest.urgency
       );
       setDonors(nearbyDonors);
     } catch (error) {
-      console.error('Error loading nearby donors:', error);
+      console.error("Error loading nearby donors:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDonorSelect = (donorId) => {
-    setSelectedDonors(prev => {
+    setSelectedDonors((prev) => {
       if (prev.includes(donorId)) {
-        return prev.filter(id => id !== donorId);
+        return prev.filter((id) => id !== donorId);
       } else {
         return [...prev, donorId];
       }
@@ -50,14 +50,14 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
     try {
       // TODO: Replace with actual API call - POST /api/notifications/contact-donors
       for (const donorId of selectedDonors) {
-        const donor = donors.find(d => d.id === donorId);
+        const donor = donors.find((d) => d.id === donorId);
         if (donor) {
           await NotificationService.sendUrgentBloodRequest(donorId, {
             id: bloodRequest.id,
             bloodType: bloodRequest.bloodType,
             quantity: bloodRequest.quantity,
             urgency: bloodRequest.urgency,
-            hospital: 'Bệnh viện XYZ'
+            hospital: "Bệnh viện XYZ",
           });
         }
       }
@@ -65,16 +65,16 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
       alert(`Đã gửi thông báo đến ${selectedDonors.length} người hiến máu!`);
       onClose();
     } catch (error) {
-      console.error('Error contacting donors:', error);
-      alert('Có lỗi xảy ra khi gửi thông báo!');
+      console.error("Error contacting donors:", error);
+      alert("Có lỗi xảy ra khi gửi thông báo!");
     }
   };
 
   const getSortedDonors = () => {
     const sorted = [...donors];
-    
+
     switch (sortBy) {
-      case 'distance':
+      case "distance":
         return sorted.sort((a, b) => {
           // Eligible donors first
           if (a.isEligible && !b.isEligible) return -1;
@@ -82,13 +82,13 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
           // Then by distance
           return a.distance - b.distance;
         });
-      case 'donations':
+      case "donations":
         return sorted.sort((a, b) => {
           if (a.isEligible && !b.isEligible) return -1;
           if (!a.isEligible && b.isEligible) return 1;
           return b.totalDonations - a.totalDonations;
         });
-      case 'registration':
+      case "registration":
         return sorted.sort((a, b) => {
           if (a.isEligible && !b.isEligible) return -1;
           if (!a.isEligible && b.isEligible) return 1;
@@ -101,8 +101,8 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
   if (!isOpen) return null;
 
-  const eligibleDonors = donors.filter(d => d.isEligible);
-  const ineligibleDonors = donors.filter(d => !d.isEligible);
+  const eligibleDonors = donors.filter((d) => d.isEligible);
+  const ineligibleDonors = donors.filter((d) => !d.isEligible);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -110,17 +110,30 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
         <div className="modal-header">
           <div className="header-info">
             <h2>🗺️ Người hiến máu gần đây</h2>
-            <p>Tìm kiếm người hiến máu phù hợp cho yêu cầu #{bloodRequest?.id}</p>
+            <p>
+              Tìm kiếm người hiến máu phù hợp cho yêu cầu #{bloodRequest?.id}
+            </p>
             <div className="request-info">
-              <span className="blood-type-badge">{bloodRequest?.bloodType}</span>
-              <span className="quantity-info">{bloodRequest?.quantity} {bloodRequest?.unit}</span>
-              <span className={`urgency-badge urgency-${bloodRequest?.urgency}`}>
-                {bloodRequest?.urgency === 'emergency' ? '🚨 Cấp cứu' : 
-                 bloodRequest?.urgency === 'urgent' ? '⚡ Khẩn cấp' : '📋 Bình thường'}
+              <span className="blood-type-badge">
+                {bloodRequest?.bloodType}
+              </span>
+              <span className="quantity-info">
+                {bloodRequest?.quantity} {bloodRequest?.unit}
+              </span>
+              <span
+                className={`urgency-badge urgency-${bloodRequest?.urgency}`}
+              >
+                {bloodRequest?.urgency === "emergency"
+                  ? "🚨 Cấp cứu"
+                  : bloodRequest?.urgency === "urgent"
+                  ? "⚡ Khẩn cấp"
+                  : "📋 Bình thường"}
               </span>
             </div>
           </div>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <div className="modal-body">
@@ -128,8 +141,8 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
           <div className="search-controls">
             <div className="control-group">
               <label>Bán kính tìm kiếm:</label>
-              <select 
-                value={maxDistance} 
+              <select
+                value={maxDistance}
                 onChange={(e) => setMaxDistance(Number(e.target.value))}
               >
                 <option value={5}>5km</option>
@@ -142,8 +155,8 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
             <div className="control-group">
               <label>Sắp xếp theo:</label>
-              <select 
-                value={sortBy} 
+              <select
+                value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
                 <option value="distance">Khoảng cách</option>
@@ -152,12 +165,12 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
               </select>
             </div>
 
-            <button 
+            <button
               className="btn btn-primary"
               onClick={loadNearbyDonors}
               disabled={loading}
             >
-              {loading ? '🔄 Đang tìm...' : '🔍 Tìm kiếm'}
+              {loading ? "🔄 Đang tìm..." : "🔍 Tìm kiếm"}
             </button>
           </div>
 
@@ -192,18 +205,20 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
               </div>
             ) : (
               <div className="donors-list">
-                {getSortedDonors().map(donor => (
-                  <div 
+                {getSortedDonors().map((donor) => (
+                  <div
                     key={donor.id}
-                    className={`donor-card ${!donor.isEligible ? 'ineligible' : ''} ${
-                      selectedDonors.includes(donor.id) ? 'selected' : ''
-                    }`}
+                    className={`donor-card ${
+                      !donor.isEligible ? "ineligible" : ""
+                    } ${selectedDonors.includes(donor.id) ? "selected" : ""}`}
                   >
                     <div className="donor-header">
                       <div className="donor-basic-info">
                         <div className="donor-name">{donor.name}</div>
                         <div className="donor-blood-type">
-                          <span className="blood-type-badge">{donor.bloodType}</span>
+                          <span className="blood-type-badge">
+                            {donor.bloodType}
+                          </span>
                         </div>
                       </div>
                       <div className="donor-selection">
@@ -219,7 +234,9 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
                     <div className="donor-details">
                       <div className="detail-row">
                         <span className="detail-label">📍 Khoảng cách:</span>
-                        <span className={`distance-info distance-${donor.priority}`}>
+                        <span
+                          className={`distance-info distance-${donor.priority}`}
+                        >
                           {DistanceService.formatDistance(donor.distance)}
                           <small>({donor.travelTime})</small>
                         </span>
@@ -227,20 +244,30 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
                       <div className="detail-row">
                         <span className="detail-label">🩸 Số lần hiến:</span>
-                        <span className="donations-count">{donor.totalDonations} lần</span>
+                        <span className="donations-count">
+                          {donor.totalDonations} lần
+                        </span>
                       </div>
 
                       <div className="detail-row">
                         <span className="detail-label">📅 Lần cuối:</span>
                         <span className="last-donation">
-                          {new Date(donor.lastDonationDate).toLocaleDateString('vi-VN')}
+                          {new Date(donor.lastDonationDate).toLocaleDateString(
+                            "vi-VN"
+                          )}
                         </span>
                       </div>
 
                       <div className="detail-row">
                         <span className="detail-label">✅ Trạng thái:</span>
-                        <span className={`eligibility-status ${donor.isEligible ? 'eligible' : 'not-eligible'}`}>
-                          {donor.isEligible ? 'Đủ điều kiện' : 'Chưa đủ điều kiện'}
+                        <span
+                          className={`eligibility-status ${
+                            donor.isEligible ? "eligible" : "not-eligible"
+                          }`}
+                        >
+                          {donor.isEligible
+                            ? "Đủ điều kiện"
+                            : "Chưa đủ điều kiện"}
                         </span>
                       </div>
 
@@ -259,15 +286,19 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
                     <div className="donor-actions">
                       <a
-                        href={DistanceService.getDirectionsUrl(donor.coordinates)}
+                        href={DistanceService.getDirectionsUrl(
+                          donor.coordinates
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-sm btn-outline"
                       >
                         🗺️ Chỉ đường
                       </a>
-                      
-                      <div className={`priority-badge priority-${donor.priority}`}>
+
+                      <div
+                        className={`priority-badge priority-${donor.priority}`}
+                      >
                         {donor.priorityText}
                       </div>
                     </div>
@@ -286,7 +317,7 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
             <button className="btn btn-secondary" onClick={onClose}>
               Đóng
             </button>
-            <button 
+            <button
               className="btn btn-primary"
               onClick={handleContactDonors}
               disabled={selectedDonors.length === 0}

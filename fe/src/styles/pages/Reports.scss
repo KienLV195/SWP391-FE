@@ -1,0 +1,548 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+.reports {
+  padding: vars.$spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .page-header {
+    @include mixins.flex-between;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.shadow-elevation(2);
+
+    .header-content {
+      h1 {
+        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
+        margin-bottom: vars.$spacing-2;
+      }
+
+      p {
+        @include mixins.text(vars.$font-size-lg, vars.$text-secondary);
+        margin: 0;
+      }
+    }
+
+    .header-actions {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-4;
+
+      .period-select {
+        @include mixins.form-input;
+        min-width: 150px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right vars.$spacing-2 center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: vars.$spacing-8;
+        appearance: none;
+      }
+
+      .export-buttons {
+        @include mixins.flex-align(center, center);
+        gap: vars.$spacing-2;
+
+        .btn-outline {
+          @include mixins.button-ghost(vars.$text-secondary);
+          border: 1px solid vars.$border-medium;
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+
+          &:hover {
+            background: vars.$background-section;
+            border-color: vars.$primary-color;
+            color: vars.$primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  .reports-nav {
+    @include mixins.flex-align(center, center);
+    gap: vars.$spacing-2;
+    margin-bottom: vars.$spacing-8;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-4);
+
+    .nav-btn {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-2;
+      padding: vars.$spacing-3 vars.$spacing-4;
+      border-radius: vars.$border-radius-base;
+      background: transparent;
+      border: none;
+      color: vars.$text-secondary;
+      font-weight: vars.$font-weight-medium;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        background: vars.$background-section;
+        color: vars.$text-primary;
+      }
+
+      &.active {
+        background: vars.$primary-color;
+        color: vars.$white;
+        @include mixins.shadow-elevation(2);
+      }
+
+      i {
+        font-size: vars.$font-size-sm;
+      }
+    }
+  }
+
+  .reports-content {
+    .report-section {
+      @include mixins.card-base;
+      @include mixins.card-padding(vars.$spacing-8);
+      @include mixins.shadow-elevation(2);
+
+      h2 {
+        @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-semibold, vars.$text-primary);
+        margin-bottom: vars.$spacing-6;
+        text-align: center;
+      }
+
+      // Overview Grid
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: vars.$spacing-6;
+
+        .overview-card {
+          @include mixins.card-base;
+          @include mixins.card-hover;
+          @include mixins.card-padding(vars.$spacing-6);
+          @include mixins.flex-align(flex-start, center);
+          gap: vars.$spacing-4;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+          }
+
+          &.users::before {
+            background: vars.$primary-color;
+          }
+
+          &.blogs::before {
+            background: vars.$success-color;
+          }
+
+          &.requests::before {
+            background: vars.$secondary-color;
+          }
+
+          .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: vars.$border-radius-lg;
+            @include mixins.flex-center;
+            font-size: vars.$font-size-2xl;
+            color: vars.$white;
+            @include mixins.shadow-elevation(2);
+
+            .users & {
+              @include mixins.gradient-bg(vars.$primary-color, vars.$primary-hover);
+            }
+
+            .blogs & {
+              @include mixins.gradient-bg(vars.$success-color, #4caf50);
+            }
+
+            .requests & {
+              @include mixins.gradient-bg(vars.$secondary-color, vars.$secondary-hover);
+            }
+          }
+
+          .card-content {
+            flex: 1;
+
+            h3 {
+              @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-bold);
+              margin: 0 0 vars.$spacing-2 0;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            }
+
+            .number {
+              @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-extrabold, vars.$text-primary);
+              margin: 0 0 vars.$spacing-2 0;
+            }
+
+            .subtitle {
+              @include mixins.text(vars.$font-size-sm, vars.$text-muted);
+              margin: 0;
+            }
+          }
+        }
+      }
+
+      // Stats Grid
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: vars.$spacing-8;
+
+        .chart-container {
+          @include mixins.card-base;
+          @include mixins.card-padding(vars.$spacing-6);
+
+          h3 {
+            @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+            margin-bottom: vars.$spacing-4;
+            text-align: center;
+          }
+
+          .chart-placeholder {
+            @include mixins.flex-center;
+            flex-direction: column;
+            gap: vars.$spacing-3;
+            padding: vars.$spacing-8;
+            background: vars.$background-light;
+            border-radius: vars.$border-radius-base;
+            border: 2px dashed vars.$border-medium;
+            text-align: center;
+
+            i {
+              font-size: vars.$font-size-4xl;
+              color: vars.$text-muted;
+            }
+
+            p {
+              @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-medium);
+              margin: 0;
+            }
+
+            small {
+              @include mixins.text(vars.$font-size-sm, vars.$text-muted);
+              margin: 0;
+            }
+          }
+
+          .role-stats,
+          .blood-type-stats {
+            .role-item,
+            .blood-type-item {
+              @include mixins.flex-align(center, center);
+              gap: vars.$spacing-3;
+              margin-bottom: vars.$spacing-3;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              .role-info,
+              .blood-type-info {
+                @include mixins.flex-between;
+                min-width: 80px;
+
+                .role-name,
+                .blood-type {
+                  @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+                }
+
+                .role-count,
+                .blood-count {
+                  @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+                }
+              }
+
+              .role-bar,
+              .blood-bar {
+                flex: 1;
+                height: 8px;
+                background: vars.$background-section;
+                border-radius: vars.$border-radius-full;
+                overflow: hidden;
+
+                .role-progress,
+                .blood-progress {
+                  height: 100%;
+                  background: vars.$primary-color;
+                  border-radius: vars.$border-radius-full;
+                  transition: width 0.3s ease;
+                }
+              }
+
+              .role-percentage,
+              .blood-percentage {
+                @include mixins.text(vars.$font-size-xs, vars.$text-muted, vars.$font-weight-medium);
+                min-width: 40px;
+                text-align: right;
+              }
+            }
+          }
+        }
+      }
+
+      // Blog Stats
+      .blog-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: vars.$spacing-4;
+        margin-bottom: vars.$spacing-6;
+
+        .blog-stat-card {
+          @include mixins.card-base;
+          @include mixins.card-padding(vars.$spacing-4);
+          text-align: center;
+
+          h4 {
+            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+            margin: 0 0 vars.$spacing-2 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .stat-number {
+            @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, vars.$primary-color);
+            margin: 0;
+          }
+        }
+      }
+
+      .category-stats {
+        .category-item {
+          @include mixins.flex-between;
+          padding: vars.$spacing-3;
+          border-radius: vars.$border-radius-base;
+          margin-bottom: vars.$spacing-2;
+          background: vars.$background-light;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .category-name {
+            @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+          }
+
+          .category-count {
+            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+          }
+        }
+      }
+
+      // System Stats
+      .system-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: vars.$spacing-4;
+
+        .system-card {
+          @include mixins.card-base;
+          @include mixins.card-padding(vars.$spacing-4);
+          text-align: center;
+
+          h4 {
+            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+            margin: 0 0 vars.$spacing-2 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .system-value {
+            @include mixins.heading(vars.$font-size-xl, vars.$font-weight-bold, vars.$primary-color);
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .loading-spinner {
+    @include mixins.flex-center;
+    flex-direction: column;
+    padding: vars.$spacing-16;
+    gap: vars.$spacing-4;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid vars.$border-light;
+      border-top: 4px solid vars.$primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // === RESPONSIVE DESIGN ===
+  @include mixins.tablet {
+    padding: vars.$spacing-4;
+
+    .page-header {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+      text-align: center;
+
+      .header-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
+    .reports-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .reports-content {
+      .report-section {
+        .overview-grid {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: vars.$spacing-6;
+        }
+
+        .blog-overview {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .system-grid {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+      }
+    }
+  }
+
+  @include mixins.mobile {
+    padding: vars.$spacing-3;
+
+    .page-header {
+      padding: vars.$spacing-4;
+
+      .header-content h1 {
+        font-size: vars.$font-size-2xl;
+      }
+
+      .header-actions {
+        gap: vars.$spacing-2;
+
+        .period-select {
+          min-width: 120px;
+        }
+
+        .export-buttons {
+          .btn-outline {
+            padding: vars.$spacing-2 vars.$spacing-3;
+            font-size: vars.$font-size-sm;
+          }
+        }
+      }
+    }
+
+    .reports-nav {
+      padding: vars.$spacing-3;
+      gap: vars.$spacing-1;
+
+      .nav-btn {
+        padding: vars.$spacing-2 vars.$spacing-3;
+        font-size: vars.$font-size-sm;
+
+        i {
+          font-size: vars.$font-size-xs;
+        }
+      }
+    }
+
+    .reports-content {
+      .report-section {
+        padding: vars.$spacing-4;
+
+        h2 {
+          font-size: vars.$font-size-xl;
+        }
+
+        .overview-grid {
+          grid-template-columns: 1fr;
+          gap: vars.$spacing-4;
+
+          .overview-card {
+            padding: vars.$spacing-4;
+
+            .card-icon {
+              width: 50px;
+              height: 50px;
+              font-size: vars.$font-size-xl;
+            }
+
+            .card-content {
+              .number {
+                font-size: vars.$font-size-2xl;
+              }
+            }
+          }
+        }
+
+        .stats-grid {
+          gap: vars.$spacing-4;
+
+          .chart-container {
+            padding: vars.$spacing-4;
+
+            .chart-placeholder {
+              padding: vars.$spacing-4;
+
+              i {
+                font-size: vars.$font-size-2xl;
+              }
+            }
+          }
+        }
+
+        .blog-overview {
+          grid-template-columns: repeat(2, 1fr);
+          gap: vars.$spacing-3;
+
+          .blog-stat-card {
+            padding: vars.$spacing-3;
+
+            .stat-number {
+              font-size: vars.$font-size-xl;
+            }
+          }
+        }
+
+        .system-grid {
+          grid-template-columns: 1fr;
+          gap: vars.$spacing-3;
+
+          .system-card {
+            padding: vars.$spacing-3;
+
+            .system-value {
+              font-size: vars.$font-size-lg;
+            }
+          }
+        }
+      }
+    }
+  }
+}

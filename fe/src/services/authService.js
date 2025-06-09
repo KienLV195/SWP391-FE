@@ -1,4 +1,5 @@
 import { authenticateUser, getUserById, ROLES } from './mockData';
+import config from '../config/environment';
 
 // Authentication service for managing user sessions
 class AuthService {
@@ -34,9 +35,27 @@ class AuthService {
   // Login with email and password
   async login(email, password) {
     try {
-      // Simulate API call delay
+      // TODO_API_REPLACE: Replace with actual API call
+      // const response = await fetch(`${config.api.baseUrl}/auth/login`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ email, password })
+      // });
+      // const data = await response.json();
+      // if (response.ok) {
+      //   this.currentUser = data.user;
+      //   this.isAuthenticated = true;
+      //   localStorage.setItem('authToken', data.token);
+      //   this.saveUserToStorage(data.user);
+      //   return { success: true, user: data.user, token: data.token };
+      // } else {
+      //   return { success: false, error: data.message };
+      // }
+
+      // MOCK_DATA: Remove this section when implementing real API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       const user = authenticateUser(email, password);
       if (user) {
         this.currentUser = user;
@@ -51,11 +70,46 @@ class AuthService {
     }
   }
 
+  // Register new user
+  async register(userData) {
+    try {
+      // TODO_API_REPLACE: Replace with actual API call
+      // const response = await fetch(`${config.api.baseUrl}/auth/register`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(userData)
+      // });
+      // const data = await response.json();
+      // if (response.ok) {
+      //   return { success: true, message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.' };
+      // } else {
+      //   return { success: false, error: data.message };
+      // }
+
+      // MOCK_DATA: Remove this section when implementing real API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return { success: true, message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.' };
+    } catch (error) {
+      return { success: false, error: 'Có lỗi xảy ra khi đăng ký' };
+    }
+  }
+
   // Logout
   logout() {
+    // TODO_API_REPLACE: Add API call to invalidate token
+    // await fetch(`${config.api.baseUrl}/auth/logout`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+    //   }
+    // });
+
     this.currentUser = null;
     this.isAuthenticated = false;
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
   }
 
   // Get current user
@@ -127,7 +181,7 @@ class AuthService {
         return '/manager';
 
       case ROLES.ADMIN:
-        return '/admin';
+        return '/admin/dashboard';
 
       default:
         return '/';

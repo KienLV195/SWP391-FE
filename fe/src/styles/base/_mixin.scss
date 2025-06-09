@@ -44,20 +44,28 @@
 }
 
 // Typography
-@mixin heading($size: vars.$font-size-xlarge, $color: vars.$primary-color) {
+@mixin heading($size: vars.$font-size-xlarge, $weight: 800, $color: vars.$primary-color) {
   font-family: vars.$font-primary;
-  font-weight: 800;
+  font-weight: $weight;
   font-size: $size;
   color: $color;
 }
 
-@mixin text($size: vars.$font-size-base, $color: vars.$text-secondary) {
+@mixin text($size: vars.$font-size-base, $color: vars.$text-secondary, $weight: 400) {
   font-family: vars.$font-secondary;
   font-size: $size;
   color: $color;
+  font-weight: $weight;
 }
 
-// Button
+@mixin text-gradient($color1, $color2) {
+  background: linear-gradient(135deg, $color1, $color2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Buttons
 @mixin primary-button($bg-color: vars.$primary-color, $hover-bg: vars.$primary-hover) {
   @include reset();
   display: inline-flex;
@@ -77,4 +85,129 @@
   &:hover {
     background: $hover-bg;
   }
+}
+
+@mixin button-primary($bg-color: vars.$primary-color, $hover-bg: vars.$primary-hover) {
+  @include primary-button($bg-color, $hover-bg);
+}
+
+@mixin button-secondary {
+  @include reset();
+  display: inline-flex;
+  padding: 12px vars.$spacing-lg;
+  background: vars.$background-card;
+  color: vars.$text-primary;
+  border: 1px solid vars.$border-light;
+  font-family: vars.$font-primary;
+  font-weight: 600;
+  font-size: vars.$font-size-base;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: vars.$background-section;
+    border-color: vars.$primary-color;
+    color: vars.$primary-color;
+  }
+}
+
+@mixin button-ghost($color: vars.$text-secondary) {
+  @include reset();
+  display: inline-flex;
+  padding: 8px 12px;
+  background: transparent;
+  color: $color;
+  border: none;
+  font-family: vars.$font-secondary;
+  font-weight: 500;
+  font-size: vars.$font-size-base;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($color, 0.1);
+  }
+}
+
+// Cards
+@mixin card-base {
+  background: vars.$background-card;
+  border: 1px solid vars.$border-light;
+  border-radius: vars.$border-radius-base;
+}
+
+@mixin card-hover {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@mixin card-padding($padding: vars.$spacing-base) {
+  padding: $padding;
+}
+
+// Shadows
+@mixin shadow-elevation($level: 1) {
+  @if $level == 1 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  } @else if $level == 2 {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  } @else if $level == 3 {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  } @else if $level == 4 {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  }
+}
+
+// Forms
+@mixin form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid vars.$border-light;
+  border-radius: vars.$border-radius-base;
+  font-size: vars.$font-size-base;
+  font-family: vars.$font-secondary;
+  background: vars.$background-card;
+  color: vars.$text-primary;
+  transition: all 0.2s;
+
+  &:focus {
+    border-color: vars.$primary-color;
+    box-shadow: 0 0 0 3px rgba(vars.$primary-color, 0.1);
+  }
+
+  &::placeholder {
+    color: vars.$text-muted;
+  }
+}
+
+@mixin form-label {
+  display: block;
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-medium;
+  color: vars.$text-primary;
+  margin-bottom: vars.$spacing-2;
+}
+
+// Gradients
+@mixin gradient-bg($color1, $color2) {
+  background: linear-gradient(135deg, $color1, $color2);
+}
+
+// Flex utilities
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

@@ -1,0 +1,441 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+// Layout for Doctor/Manager with sidebar
+.doctor-layout,
+.manager-layout {
+  display: flex;
+  min-height: 100vh;
+
+  .doctor-content,
+  .manager-content {
+    flex: 1;
+    margin-left: 280px; // Sidebar width
+    padding: vars.$spacing-8;
+    background: vars.$background-light;
+    min-height: 100vh;
+    overflow-x: auto;
+
+    @include mixins.tablet {
+      margin-left: 0;
+      padding: vars.$spacing-lg;
+    }
+
+    @include mixins.mobile {
+      padding: vars.$spacing-base;
+    }
+  }
+}
+
+.blog-management {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .page-header {
+    @include mixins.flex-between;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.shadow-elevation(2);
+
+    .header-content {
+      h1 {
+        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
+        margin-bottom: vars.$spacing-2;
+      }
+
+      p {
+        @include mixins.text(vars.$font-size-lg, vars.$text-secondary);
+        margin: 0 0 vars.$spacing-4 0;
+      }
+
+      .content-guide {
+        display: flex;
+        flex-wrap: wrap;
+        gap: vars.$spacing-4;
+        margin-top: vars.$spacing-3;
+
+        .guide-item {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+          padding: vars.$spacing-2 vars.$spacing-3;
+          background: rgba(vars.$primary-color, 0.1);
+          border-radius: vars.$border-radius-base;
+          @include mixins.text(vars.$font-size-sm, vars.$primary-color);
+
+          i {
+            font-size: vars.$font-size-sm;
+          }
+
+          strong {
+            font-weight: vars.$font-weight-semibold;
+          }
+        }
+
+        @include mixins.mobile {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    }
+
+    .btn-primary {
+      @include mixins.button-primary;
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-2;
+      white-space: nowrap;
+
+      i {
+        font-size: vars.$font-size-sm;
+      }
+    }
+  }
+
+  .filters-section {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-6);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.flex-between;
+    gap: vars.$spacing-6;
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+
+      i {
+        position: absolute;
+        left: vars.$spacing-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: vars.$text-muted;
+        font-size: vars.$font-size-sm;
+      }
+
+      input {
+        @include mixins.form-input;
+        padding-left: vars.$spacing-10;
+        font-size: vars.$font-size-base;
+
+        &::placeholder {
+          color: vars.$text-muted;
+        }
+      }
+    }
+
+    .filter-controls {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-4;
+
+      .filter-select {
+        @include mixins.form-input;
+        min-width: 160px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right vars.$spacing-2 center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: vars.$spacing-8;
+        appearance: none;
+      }
+    }
+  }
+
+  .blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: vars.$spacing-6;
+
+    .blog-card {
+      @include mixins.card-base;
+      @include mixins.card-hover;
+      overflow: hidden;
+      transition: all 0.3s ease;
+
+      .blog-header {
+        @include mixins.flex-between;
+        padding: vars.$spacing-4 vars.$spacing-6;
+        border-bottom: 1px solid vars.$border-light;
+        background: vars.$background-section;
+
+        .blog-meta {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-3;
+
+          .category {
+            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            background: vars.$primary-light;
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .status-badge {
+            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            &.status-published {
+              background: vars.$success-color;
+            }
+
+            &.status-draft {
+              background: vars.$text-muted;
+            }
+
+            &.status-pending {
+              background: vars.$warning-color;
+            }
+
+            &.status-rejected {
+              background: vars.$error-color;
+            }
+          }
+        }
+
+        .blog-actions {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-1;
+
+          .action-btn {
+            @include mixins.button-ghost(vars.$text-secondary);
+            padding: vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            font-size: vars.$font-size-sm;
+            transition: all 0.2s ease;
+
+            &.view:hover {
+              background: vars.$info-color;
+              color: vars.$white;
+            }
+
+            &.edit:hover {
+              background: vars.$warning-color;
+              color: vars.$white;
+            }
+
+            &.delete:hover {
+              background: vars.$error-color;
+              color: vars.$white;
+            }
+          }
+        }
+      }
+
+      .blog-content {
+        padding: vars.$spacing-6;
+
+        .blog-title {
+          @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+          margin-bottom: vars.$spacing-3;
+          line-height: vars.$line-height-tight;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .blog-excerpt {
+          @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
+          line-height: vars.$line-height-relaxed;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          margin: 0;
+        }
+      }
+
+      .blog-footer {
+        padding: vars.$spacing-4 vars.$spacing-6;
+        border-top: 1px solid vars.$border-light;
+        background: vars.$background-light;
+
+        .blog-info {
+          @include mixins.flex-align(flex-start, center);
+          gap: vars.$spacing-4;
+          flex-wrap: wrap;
+
+          span {
+            @include mixins.flex-align(center, center);
+            gap: vars.$spacing-1;
+            @include mixins.text(vars.$font-size-xs, vars.$text-muted);
+
+            i {
+              font-size: vars.$font-size-xs;
+              color: vars.$text-muted;
+            }
+          }
+
+          .author {
+            color: vars.$text-secondary;
+            font-weight: vars.$font-weight-medium;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-16);
+    text-align: center;
+    grid-column: 1 / -1;
+
+    i {
+      font-size: vars.$font-size-5xl;
+      color: vars.$text-muted;
+      margin-bottom: vars.$spacing-6;
+    }
+
+    h3 {
+      @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+      margin-bottom: vars.$spacing-3;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin-bottom: vars.$spacing-8;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-primary {
+      @include mixins.button-primary;
+    }
+  }
+
+  .loading-spinner {
+    @include mixins.flex-center;
+    flex-direction: column;
+    padding: vars.$spacing-16;
+    gap: vars.$spacing-4;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid vars.$border-light;
+      border-top: 4px solid vars.$primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // === RESPONSIVE DESIGN ===
+  @include mixins.tablet {
+    padding: vars.$spacing-4;
+
+    .page-header {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+      text-align: center;
+
+      .btn-primary {
+        align-self: center;
+      }
+    }
+
+    .filters-section {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+
+      .search-box {
+        max-width: none;
+      }
+
+      .filter-controls {
+        width: 100%;
+        justify-content: stretch;
+
+        .filter-select {
+          flex: 1;
+          min-width: auto;
+        }
+      }
+    }
+
+    .blogs-grid {
+      grid-template-columns: 1fr;
+      gap: vars.$spacing-4;
+    }
+  }
+
+  @include mixins.mobile {
+    padding: vars.$spacing-3;
+
+    .page-header {
+      padding: vars.$spacing-4;
+
+      .header-content h1 {
+        font-size: vars.$font-size-2xl;
+      }
+    }
+
+    .filters-section {
+      padding: vars.$spacing-4;
+    }
+
+    .blog-card {
+      .blog-header {
+        padding: vars.$spacing-3 vars.$spacing-4;
+
+        .blog-meta {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: vars.$spacing-2;
+        }
+
+        .blog-actions {
+          gap: vars.$spacing-2;
+        }
+      }
+
+      .blog-content {
+        padding: vars.$spacing-4;
+      }
+
+      .blog-footer {
+        padding: vars.$spacing-3 vars.$spacing-4;
+
+        .blog-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: vars.$spacing-2;
+        }
+      }
+    }
+  }
+
+  // Auto-published badge for Doctor
+  .auto-published-badge {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+
+    i {
+      font-size: 0.9rem;
+    }
+  }
+}

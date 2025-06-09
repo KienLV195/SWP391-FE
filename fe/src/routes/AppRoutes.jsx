@@ -37,6 +37,22 @@ import BloodRequestFormPage from "../pages/member/BloodRequestFormPage";
 import ActivityHistoryPage from "../pages/member/ActivityHistoryPage";
 import NotificationsPage from "../pages/member/NotificationsPage";
 import TestAccounts from "../pages/demo/TestAccounts";
+
+// Admin imports
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import UserManagement from "../pages/admin/UserManagement";
+import BlogApproval from "../pages/admin/BlogApproval";
+import Reports from "../pages/admin/Reports";
+import SystemSettings from "../pages/admin/SystemSettings";
+
+// Doctor Blog Management
+import DoctorBlogManagement from "../pages/doctor/BlogManagement";
+import DoctorBlogEditor from "../pages/doctor/BlogEditor";
+
+// Manager Blog Management
+import ManagerBlogManagement from "../pages/manager/BlogManagement";
+import ManagerBlogEditor from "../pages/manager/BlogEditor";
+
 import ProtectedRoute, {
   MemberRoute,
   DoctorRoute,
@@ -261,6 +277,101 @@ const router = createBrowserRouter([
       </MemberRoute>
     ),
   },
+
+  // === ADMIN ROUTES ===
+  {
+    path: "/admin/dashboard",
+    element: (
+      <AdminRoute>
+        <AdminDashboard />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: "/admin/users",
+    element: (
+      <AdminRoute>
+        <UserManagement />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: "/admin/blogs",
+    element: (
+      <AdminRoute>
+        <BlogApproval />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: "/admin/reports",
+    element: (
+      <AdminRoute>
+        <Reports />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: "/admin/system",
+    element: (
+      <AdminRoute>
+        <SystemSettings />
+      </AdminRoute>
+    ),
+  },
+
+  // === DOCTOR BLOG ROUTES ===
+  {
+    path: "/doctor/blog",
+    element: (
+      <DoctorRoute>
+        <DoctorBlogManagement />
+      </DoctorRoute>
+    ),
+  },
+  {
+    path: "/doctor/blog/create",
+    element: (
+      <DoctorRoute>
+        <DoctorBlogEditor />
+      </DoctorRoute>
+    ),
+  },
+  {
+    path: "/doctor/blog/edit/:id",
+    element: (
+      <DoctorRoute>
+        <DoctorBlogEditor />
+      </DoctorRoute>
+    ),
+  },
+
+  // === MANAGER BLOG ROUTES ===
+  {
+    path: "/manager/blog",
+    element: (
+      <ManagerRoute>
+        <ManagerBlogManagement />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/blog/create",
+    element: (
+      <ManagerRoute>
+        <ManagerBlogEditor />
+      </ManagerRoute>
+    ),
+  },
+  {
+    path: "/manager/blog/edit/:id",
+    element: (
+      <ManagerRoute>
+        <ManagerBlogEditor />
+      </ManagerRoute>
+    ),
+  },
+
   {
     path: "*",
     element: <NotFoundPage />,

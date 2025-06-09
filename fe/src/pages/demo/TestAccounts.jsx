@@ -73,6 +73,7 @@ const TestAccounts = () => {
     [ROLES.STAFF_BLOOD_MANAGER]: mockUsers.filter(
       (user) => user.role === ROLES.STAFF_BLOOD_MANAGER
     ),
+    [ROLES.ADMIN]: mockUsers.filter((user) => user.role === ROLES.ADMIN),
   };
 
   return (
@@ -195,6 +196,52 @@ const TestAccounts = () => {
                   <div className="account-header">
                     <h3>{user.profile.fullName}</h3>
                     <span className="role-badge manager">
+                      {getRoleDisplay(user)}
+                    </span>
+                  </div>
+                  <div className="account-details">
+                    <div className="detail-row">
+                      <span className="label">Email:</span>
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Mật khẩu:</span>
+                      <span>{user.password}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Phòng ban:</span>
+                      <span>{user.profile.department}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Chức vụ:</span>
+                      <span>{user.profile.position}</span>
+                    </div>
+                  </div>
+                  <button
+                    className="login-btn"
+                    onClick={() => handleQuickLogin(user.email, user.password)}
+                    disabled={isLoggingIn}
+                  >
+                    {isLoggingIn ? "Đang đăng nhập..." : "Đăng nhập"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Admins */}
+          <div className="account-section">
+            <h2>🔧 Quản trị viên (Admins)</h2>
+            <p className="section-description">
+              Quản trị viên có quyền cao nhất, quản lý toàn bộ hệ thống, người
+              dùng, blog và báo cáo.
+            </p>
+            <div className="accounts-grid">
+              {groupedUsers[ROLES.ADMIN].map((user) => (
+                <div key={user.id} className="account-card">
+                  <div className="account-header">
+                    <h3>{user.profile.fullName}</h3>
+                    <span className="role-badge admin">
                       {getRoleDisplay(user)}
                     </span>
                   </div>

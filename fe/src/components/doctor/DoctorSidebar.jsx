@@ -35,6 +35,12 @@ const DoctorSidebar = () => {
       path: "/doctor/donor-management",
       label: "👨‍⚕️ Quản lý người hiến máu",
     });
+
+    // Add blog management for blood department doctors
+    menuItems.push({
+      path: "/doctor/blog",
+      label: "📝 Quản lý Blog",
+    });
   }
 
   const isActive = (path, exact = false) => {

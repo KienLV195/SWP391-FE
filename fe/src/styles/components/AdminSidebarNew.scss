@@ -1,0 +1,255 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 100vh;
+  background: white;
+  border-right: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
+  &.expanded {
+    width: 280px;
+  }
+
+  .sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    color: white;
+    position: relative;
+
+    .logo-section {
+      margin-bottom: 1rem;
+
+      .logo-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: white;
+
+        .logo-icon {
+          width: 48px;
+          height: 48px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 1rem;
+
+          i {
+            font-size: 24px;
+          }
+        }
+
+        .logo-text {
+          .hospital-name {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+          }
+
+          .system-name {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .user-section {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-right: 1rem;
+    }
+
+    .user-info {
+      .user-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .user-role {
+        font-size: 0.8rem;
+        color: #666;
+        background: #f8f9fa;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+      }
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      color: #666;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+
+      &:hover {
+        background: #f8f9fa;
+        color: #d32f2f;
+        border-left-color: #d32f2f;
+      }
+
+      &.active {
+        background: linear-gradient(90deg, rgba(211, 47, 47, 0.1), transparent);
+        color: #d32f2f;
+        border-left-color: #d32f2f;
+        font-weight: 600;
+      }
+
+      .nav-text {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+
+    .logout-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: transparent;
+      border: 1px solid #d32f2f;
+      color: #d32f2f;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      &:hover {
+        background: #d32f2f;
+        color: white;
+      }
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  // Collapsed state
+  &:not(.expanded) {
+    .sidebar-header {
+      .logo-section {
+        .logo-link {
+          justify-content: center;
+
+          .logo-icon {
+            margin-right: 0;
+          }
+
+          .logo-text {
+            display: none;
+          }
+        }
+      }
+
+      .toggle-btn {
+        right: 0.5rem;
+      }
+    }
+
+    .user-section {
+      justify-content: center;
+
+      .user-avatar {
+        margin-right: 0;
+      }
+
+      .user-info {
+        display: none;
+      }
+    }
+
+    .sidebar-nav {
+      .nav-item {
+        justify-content: center;
+        padding: 1rem;
+
+        .nav-text {
+          display: none;
+        }
+      }
+    }
+
+    .sidebar-footer {
+      .logout-btn {
+        span {
+          display: none;
+        }
+      }
+    }
+  }
+}

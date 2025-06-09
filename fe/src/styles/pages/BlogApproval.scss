@@ -1,0 +1,733 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+.blog-approval {
+  padding: vars.$spacing-8;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .page-header {
+    @include mixins.flex-between;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.shadow-elevation(2);
+
+    .header-content {
+      h1 {
+        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, #d32f2f);
+        margin-bottom: vars.$spacing-2;
+      }
+
+      p {
+        @include mixins.text(vars.$font-size-lg, vars.$text-secondary);
+        margin: 0;
+      }
+    }
+
+    .header-stats {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-6;
+
+      .stat-item {
+        text-align: center;
+
+        .stat-number {
+          @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, #d32f2f);
+          display: block;
+          margin-bottom: vars.$spacing-1;
+        }
+
+        .stat-label {
+          @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .filters-section {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-6);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.flex-between;
+    gap: vars.$spacing-6;
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+
+      i {
+        position: absolute;
+        left: vars.$spacing-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: vars.$text-muted;
+        font-size: vars.$font-size-sm;
+      }
+
+      input {
+        @include mixins.form-input;
+        padding-left: vars.$spacing-10;
+        font-size: vars.$font-size-base;
+
+        &::placeholder {
+          color: vars.$text-muted;
+        }
+      }
+    }
+
+    .filter-controls {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-4;
+
+      .filter-select {
+        @include mixins.form-input;
+        min-width: 160px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right vars.$spacing-2 center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: vars.$spacing-8;
+        appearance: none;
+      }
+    }
+  }
+
+  .blogs-list {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-6;
+
+    .blog-item {
+      @include mixins.card-base;
+      @include mixins.shadow-elevation(2);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border-left: 4px solid vars.$border-light;
+
+      &.pending {
+        border-left-color: vars.$warning-color;
+        background: rgba(vars.$warning-color, 0.02);
+      }
+
+      &.approved {
+        border-left-color: vars.$success-color;
+        background: rgba(vars.$success-color, 0.02);
+      }
+
+      &.rejected {
+        border-left-color: vars.$error-color;
+        background: rgba(vars.$error-color, 0.02);
+      }
+
+      &.published {
+        border-left-color: vars.$info-color;
+        background: rgba(vars.$info-color, 0.02);
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        @include mixins.shadow-elevation(3);
+      }
+
+      .blog-header {
+        @include mixins.flex-between;
+        padding: vars.$spacing-4 vars.$spacing-6;
+        border-bottom: 1px solid vars.$border-light;
+        background: vars.$background-section;
+
+        .blog-meta {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-3;
+
+          .category {
+            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            background: vars.$primary-light;
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .status-badge {
+            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            &.status-pending {
+              background: vars.$warning-color;
+            }
+
+            &.status-approved {
+              background: vars.$success-color;
+            }
+
+            &.status-rejected {
+              background: vars.$error-color;
+            }
+
+            &.status-published {
+              background: vars.$info-color;
+            }
+          }
+
+          .role-badge {
+            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            &.role-doctor {
+              background: vars.$info-color;
+            }
+
+            &.role-manager {
+              background: vars.$warning-color;
+            }
+
+            &.role-member {
+              background: vars.$text-muted;
+            }
+          }
+        }
+
+        .blog-actions {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+
+          .action-btn {
+            @include mixins.button-ghost(vars.$text-secondary);
+            padding: vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+            font-size: vars.$font-size-sm;
+            transition: all 0.2s ease;
+
+            &.preview:hover {
+              background: vars.$info-color;
+              color: vars.$white;
+            }
+
+            &.approve:hover {
+              background: vars.$success-color;
+              color: vars.$white;
+            }
+
+            &.reject:hover {
+              background: vars.$error-color;
+              color: vars.$white;
+            }
+
+            &.publish:hover {
+              background: vars.$primary-color;
+              color: vars.$white;
+            }
+
+            &.delete:hover {
+              background: vars.$error-color;
+              color: vars.$white;
+            }
+          }
+        }
+      }
+
+      .blog-content {
+        padding: vars.$spacing-6;
+
+        .blog-title {
+          @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+          margin-bottom: vars.$spacing-3;
+          line-height: vars.$line-height-tight;
+        }
+
+        .blog-excerpt {
+          @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+          line-height: vars.$line-height-relaxed;
+          margin-bottom: vars.$spacing-4;
+        }
+
+        .rejection-reason {
+          @include mixins.text(vars.$font-size-sm, vars.$error-color);
+          background: rgba(vars.$error-color, 0.1);
+          padding: vars.$spacing-3;
+          border-radius: vars.$border-radius-base;
+          border-left: 4px solid vars.$error-color;
+
+          strong {
+            font-weight: vars.$font-weight-semibold;
+          }
+        }
+      }
+
+      .blog-footer {
+        @include mixins.flex-between;
+        padding: vars.$spacing-4 vars.$spacing-6;
+        border-top: 1px solid vars.$border-light;
+        background: vars.$background-light;
+
+        .author-info {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-4;
+
+          span {
+            @include mixins.flex-align(center, center);
+            gap: vars.$spacing-1;
+            @include mixins.text(vars.$font-size-sm, vars.$text-muted);
+
+            i {
+              font-size: vars.$font-size-xs;
+              color: vars.$text-muted;
+            }
+          }
+
+          .author {
+            color: vars.$text-secondary;
+            font-weight: vars.$font-weight-medium;
+          }
+        }
+
+        .blog-tags {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+          flex-wrap: wrap;
+
+          .tag {
+            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            background: vars.$primary-light;
+            padding: vars.$spacing-1 vars.$spacing-2;
+            border-radius: vars.$border-radius-sm;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-16);
+    text-align: center;
+
+    i {
+      font-size: vars.$font-size-5xl;
+      color: vars.$text-muted;
+      margin-bottom: vars.$spacing-6;
+    }
+
+    h3 {
+      @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+      margin-bottom: vars.$spacing-3;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  // Modal styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(vars.$black, 0.7);
+    @include mixins.flex-center;
+    z-index: vars.$z-index-modal;
+    backdrop-filter: blur(4px);
+
+    .modal-content {
+      background: vars.$white;
+      border-radius: vars.$border-radius-lg;
+      @include mixins.shadow-elevation(4);
+      max-width: 800px;
+      max-height: 90vh;
+      width: 90%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .modal-header {
+        @include mixins.flex-between;
+        padding: vars.$spacing-6;
+        border-bottom: 1px solid vars.$border-light;
+        background: vars.$background-section;
+
+        h2 {
+          @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+          margin: 0;
+        }
+
+        .close-btn {
+          @include mixins.button-ghost(vars.$text-secondary);
+          padding: vars.$spacing-2;
+          border-radius: vars.$border-radius-sm;
+          font-size: vars.$font-size-lg;
+
+          &:hover {
+            background: vars.$error-color;
+            color: vars.$white;
+          }
+        }
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: vars.$spacing-6;
+
+        .preview-meta {
+          margin-bottom: vars.$spacing-6;
+          padding-bottom: vars.$spacing-4;
+          border-bottom: 1px solid vars.$border-light;
+
+          h1 {
+            @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, vars.$text-primary);
+            margin-bottom: vars.$spacing-3;
+            line-height: vars.$line-height-tight;
+          }
+
+          .meta-info {
+            @include mixins.flex-align(flex-start, center);
+            gap: vars.$spacing-4;
+            flex-wrap: wrap;
+
+            span {
+              @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
+            }
+          }
+        }
+
+        .preview-content {
+          line-height: vars.$line-height-relaxed;
+
+          h1, h2, h3, h4, h5, h6 {
+            color: vars.$text-primary;
+            margin-top: vars.$spacing-6;
+            margin-bottom: vars.$spacing-3;
+
+            &:first-child {
+              margin-top: 0;
+            }
+          }
+
+          p {
+            margin-bottom: vars.$spacing-4;
+            color: vars.$text-secondary;
+          }
+
+          ul, ol {
+            margin-bottom: vars.$spacing-4;
+            padding-left: vars.$spacing-6;
+
+            li {
+              margin-bottom: vars.$spacing-2;
+              color: vars.$text-secondary;
+            }
+          }
+        }
+      }
+
+      .modal-actions {
+        @include mixins.flex-center;
+        gap: vars.$spacing-3;
+        padding: vars.$spacing-6;
+        border-top: 1px solid vars.$border-light;
+        background: vars.$background-section;
+
+        .btn-success {
+          @include mixins.button-primary(vars.$success-color, #4caf50);
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+        }
+
+        .btn-danger {
+          @include mixins.button-primary(vars.$error-color, #c62828);
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+        }
+
+        .btn-secondary {
+          @include mixins.button-secondary;
+        }
+      }
+    }
+  }
+
+  .loading-spinner {
+    @include mixins.flex-center;
+    flex-direction: column;
+    padding: vars.$spacing-16;
+    gap: vars.$spacing-4;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid vars.$border-light;
+      border-top: 4px solid vars.$primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // === RESPONSIVE DESIGN ===
+  @include mixins.tablet {
+    padding: vars.$spacing-4;
+
+    .page-header {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+      text-align: center;
+
+      .header-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: vars.$spacing-4;
+      }
+    }
+
+    .filters-section {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+
+      .search-box {
+        max-width: none;
+      }
+
+      .filter-controls {
+        width: 100%;
+        justify-content: stretch;
+
+        .filter-select {
+          flex: 1;
+          min-width: auto;
+        }
+      }
+    }
+
+    .modal-overlay {
+      .modal-content {
+        width: 95%;
+        max-height: 95vh;
+
+        .modal-body {
+          padding: vars.$spacing-4;
+
+          .preview-meta {
+            .meta-info {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: vars.$spacing-2;
+            }
+          }
+        }
+
+        .modal-actions {
+          padding: vars.$spacing-4;
+          flex-wrap: wrap;
+        }
+      }
+    }
+  }
+
+  @include mixins.mobile {
+    padding: vars.$spacing-3;
+
+    .page-header {
+      padding: vars.$spacing-4;
+
+      .header-content h1 {
+        font-size: vars.$font-size-2xl;
+      }
+
+      .header-stats {
+        gap: vars.$spacing-3;
+
+        .stat-item {
+          .stat-number {
+            font-size: vars.$font-size-xl;
+          }
+
+          .stat-label {
+            font-size: vars.$font-size-xs;
+          }
+        }
+      }
+    }
+
+    .filters-section {
+      padding: vars.$spacing-4;
+    }
+
+    .blogs-list {
+      gap: vars.$spacing-4;
+
+      .blog-item {
+        .blog-header {
+          padding: vars.$spacing-3 vars.$spacing-4;
+          flex-direction: column;
+          gap: vars.$spacing-3;
+          align-items: flex-start;
+
+          .blog-actions {
+            align-self: flex-end;
+          }
+        }
+
+        .blog-content {
+          padding: vars.$spacing-4;
+
+          .blog-title {
+            font-size: vars.$font-size-base;
+          }
+
+          .blog-excerpt {
+            font-size: vars.$font-size-sm;
+          }
+        }
+
+        .blog-footer {
+          padding: vars.$spacing-3 vars.$spacing-4;
+          flex-direction: column;
+          gap: vars.$spacing-3;
+          align-items: flex-start;
+
+          .author-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: vars.$spacing-2;
+          }
+        }
+      }
+    }
+
+    .modal-overlay {
+      .modal-content {
+        width: 98%;
+        max-height: 98vh;
+
+        .modal-header {
+          padding: vars.$spacing-4;
+
+          h2 {
+            font-size: vars.$font-size-lg;
+          }
+        }
+
+        .modal-body {
+          padding: vars.$spacing-3;
+
+          .preview-meta {
+            h1 {
+              font-size: vars.$font-size-xl;
+            }
+          }
+        }
+
+        .modal-actions {
+          padding: vars.$spacing-3;
+          gap: vars.$spacing-2;
+
+          .btn-success,
+          .btn-danger,
+          .btn-secondary {
+            padding: vars.$spacing-2 vars.$spacing-3;
+            font-size: vars.$font-size-sm;
+          }
+        }
+      }
+    }
+  }
+
+  // Admin-specific blog card styles
+  .blog-card {
+    .blog-actions {
+      .auto-published-badge {
+        background: linear-gradient(135deg, #d32f2f, #b71c1c);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          font-size: 0.9rem;
+        }
+      }
+
+      .action-btn.delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #c82333;
+          transform: translateY(-2px);
+        }
+      }
+
+      .action-btn.preview {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #5a6268;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  // Admin modal styles
+  .modal-overlay {
+    .modal-content {
+      .modal-header {
+        background: linear-gradient(135deg, #d32f2f, #b71c1c);
+        color: white;
+
+        h2 {
+          color: white;
+        }
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        border-color: #dc3545;
+
+        &:hover {
+          background: #c82333;
+          border-color: #bd2130;
+        }
+      }
+    }
+  }
+}

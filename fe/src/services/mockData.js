@@ -347,6 +347,57 @@ export const mockUsers = [
       department: 'Quản lý Ngân hàng Máu',
       position: 'Trưởng phòng'
     }
+  },
+  // Admin Users
+  {
+    userID: 9,
+    firebaseUID: 'firebase_uid_009',
+    email: 'admin@test.com',
+    phone: '0123456799',
+    password: '123456',
+    name: 'Nguyễn Văn Admin',
+    age: 44,
+    gender: 'Male',
+    address: 'Quận 1, TP.HCM',
+    bloodGroup: BLOOD_GROUPS.A,
+    rhType: RH_TYPES.POSITIVE,
+    status: USER_STATUS.ACTIVE,
+    roleID: 5,
+    role: ROLES.ADMIN,
+    department: 'Quản trị hệ thống',
+    createdAt: '2023-01-01T00:00:00Z',
+    profile: {
+      fullName: 'Nguyễn Văn Admin',
+      phone: '0123456799',
+      email: 'admin@test.com',
+      department: 'Quản trị hệ thống',
+      position: 'Quản trị viên'
+    }
+  },
+  {
+    userID: 10,
+    firebaseUID: 'firebase_uid_010',
+    email: 'superadmin@test.com',
+    phone: '0123456800',
+    password: '123456',
+    name: 'Trần Thị Super Admin',
+    age: 46,
+    gender: 'Female',
+    address: 'Quận 3, TP.HCM',
+    bloodGroup: BLOOD_GROUPS.O,
+    rhType: RH_TYPES.POSITIVE,
+    status: USER_STATUS.ACTIVE,
+    roleID: 5,
+    role: ROLES.ADMIN,
+    department: 'Quản trị hệ thống',
+    createdAt: '2023-01-01T00:00:00Z',
+    profile: {
+      fullName: 'Trần Thị Super Admin',
+      phone: '0123456800',
+      email: 'superadmin@test.com',
+      department: 'Quản trị hệ thống',
+      position: 'Quản trị viên cấp cao'
+    }
   }
 ];
 
@@ -638,3 +689,120 @@ export const getBloodInventoryWithStatus = () => {
     };
   });
 };
+
+// Mock Blog Data for testing - Updated for new workflow
+// Doctor: Auto-publish all posts (no approval needed)
+// Manager: Can only post News and Announcements (not Documents)
+// Admin: Can only delete posts (no approval workflow)
+export const MOCK_BLOGS = [
+  // Doctor posts - Tài liệu (auto-published)
+  {
+    id: 1,
+    title: 'Hướng dẫn chuẩn bị trước khi hiến máu',
+    slug: 'huong-dan-chuan-bi-truoc-khi-hien-mau',
+    category: 'Tài liệu',
+    contentType: 'document',
+    status: 'published', // Doctor auto-publishes
+    author: 'BS. Nguyễn Văn H',
+    authorId: 6, // Doctor Other Department
+    authorRole: 'doctor',
+    targetAudience: 'public',
+    excerpt: 'Hướng dẫn chi tiết các bước chuẩn bị cần thiết trước khi hiến máu để đảm bảo an toàn và hiệu quả.',
+    content: `<h2>Chuẩn bị sức khỏe</h2><p>Trước khi hiến máu, bạn cần đảm bảo sức khỏe tốt...</p>`,
+    featuredImage: '/images/blog/blood-donation-prep.jpg',
+    tags: 'hiến máu, chuẩn bị, hướng dẫn, sức khỏe',
+    views: 1245,
+    likes: 89,
+    createdAt: '2024-01-15T10:30:00Z',
+    updatedAt: '2024-01-15T10:30:00Z',
+    publishedAt: '2024-01-15T10:30:00Z' // Auto-published immediately
+  },
+  {
+    id: 2,
+    title: 'Thông tin về các nhóm máu và tính tương thích',
+    slug: 'thong-tin-ve-cac-nhom-mau-va-tinh-tuong-thich',
+    category: 'Tài liệu',
+    contentType: 'document',
+    status: 'published', // Doctor auto-publishes
+    author: 'BS. Trần Thị I',
+    authorId: 7, // Doctor Blood Department
+    authorRole: 'doctor',
+    targetAudience: 'public',
+    excerpt: 'Kiến thức cơ bản về hệ nhóm máu ABO, Rh và tính tương thích trong truyền máu.',
+    content: `<h2>Hệ nhóm máu ABO</h2><p>Có 4 nhóm máu chính trong hệ ABO...</p>`,
+    featuredImage: '/images/blog/blood-types.jpg',
+    tags: 'nhóm máu, ABO, Rh, tương thích, truyền máu',
+    views: 892,
+    likes: 67,
+    createdAt: '2024-01-12T09:15:00Z',
+    updatedAt: '2024-01-12T09:15:00Z',
+    publishedAt: '2024-01-12T09:15:00Z' // Auto-published immediately
+  },
+  {
+    id: 3,
+    title: 'Quy trình xét nghiệm máu hiến tặng',
+    slug: 'quy-trinh-xet-nghiem-mau-hien-tang',
+    category: 'Tài liệu',
+    contentType: 'document',
+    status: 'published', // Doctor auto-publishes
+    author: 'BS. Trần Thị I',
+    authorId: 7, // Doctor Blood Department
+    authorRole: 'doctor',
+    targetAudience: 'public',
+    excerpt: 'Quy trình xét nghiệm máu hiến tặng để đảm bảo an toàn cho người nhận.',
+    content: `<h2>Các xét nghiệm bắt buộc</h2><p>Mọi đơn vị máu hiến tặng đều phải qua các xét nghiệm...</p>`,
+    featuredImage: '/images/blog/blood-testing.jpg',
+    tags: 'xét nghiệm, máu, an toàn, quy trình',
+    views: 654,
+    likes: 43,
+    createdAt: '2024-01-18T14:20:00Z',
+    updatedAt: '2024-01-18T14:20:00Z',
+    publishedAt: '2024-01-18T14:20:00Z' // Auto-published immediately
+  },
+
+  // Manager posts - Tin tức (auto-published)
+  {
+    id: 4,
+    title: 'Tin tức: Chiến dịch hiến máu tháng 2/2024',
+    slug: 'tin-tuc-chien-dich-hien-mau-thang-2-2024',
+    category: 'Tin tức',
+    contentType: 'news',
+    status: 'published', // Manager auto-publishes news
+    author: 'QL. Lê Văn J',
+    authorId: 8, // Manager
+    authorRole: 'manager',
+    targetAudience: 'public',
+    excerpt: 'Bệnh viện Ánh Dương tổ chức chiến dịch hiến máu nhân đạo "Giọt máu hồng - Tình người ấm" trong tháng 2/2024.',
+    content: `<h2>Thông tin chiến dịch</h2><p>Bệnh viện Ánh Dương phối hợp với Hội Chữ thập đỏ...</p>`,
+    featuredImage: '/images/blog/blood-campaign-2024.jpg',
+    tags: 'chiến dịch, hiến máu, tháng 2, bệnh viện, tình nguyện',
+    views: 567,
+    likes: 45,
+    createdAt: '2024-01-20T14:30:00Z',
+    updatedAt: '2024-01-20T14:30:00Z',
+    publishedAt: '2024-01-20T14:30:00Z' // Auto-published immediately
+  },
+
+  // Manager posts - Thông báo nội bộ (internal)
+  {
+    id: 5,
+    title: 'Thông báo: Lịch trực khoa Huyết học tháng 2/2024',
+    slug: 'thong-bao-lich-truc-khoa-huyet-hoc-thang-2-2024',
+    category: 'Thông báo',
+    contentType: 'announcement',
+    status: 'published', // Manager auto-publishes announcements
+    author: 'QL. Lê Văn J',
+    authorId: 8, // Manager
+    authorRole: 'manager',
+    targetAudience: 'internal', // Staff only
+    excerpt: 'Thông báo lịch trực và phân công công việc cho khoa Huyết học trong tháng 2/2024.',
+    content: `<h2>Lịch trực tháng 2/2024</h2><p>Các bác sĩ và nhân viên khoa Huyết học...</p>`,
+    featuredImage: '/images/blog/schedule-announcement.jpg',
+    tags: 'lịch trực, khoa huyết học, thông báo, nội bộ',
+    views: 89,
+    likes: 12,
+    createdAt: '2024-01-25T09:00:00Z',
+    updatedAt: '2024-01-25T09:00:00Z',
+    publishedAt: '2024-01-25T09:00:00Z' // Auto-published immediately
+  }
+];

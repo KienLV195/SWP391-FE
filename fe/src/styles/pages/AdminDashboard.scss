@@ -1,0 +1,561 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mixins;
+
+// Layout for Admin with sidebar
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+
+  .admin-content {
+    flex: 1;
+    margin-left: 80px; // Collapsed sidebar width
+    padding: vars.$spacing-8;
+    background: vars.$background-light;
+    min-height: 100vh;
+    overflow-x: auto;
+    transition: margin-left 0.3s ease;
+
+    .admin-sidebar.expanded ~ & {
+      margin-left: 280px; // Expanded sidebar width
+    }
+
+    @include mixins.tablet {
+      margin-left: 0;
+      padding: vars.$spacing-lg;
+    }
+
+    @include mixins.mobile {
+      padding: vars.$spacing-base;
+    }
+  }
+}
+
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .dashboard-header {
+    @include mixins.flex-between;
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    margin-bottom: vars.$spacing-8;
+    @include mixins.shadow-elevation(2);
+
+    .header-content {
+      h1 {
+        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
+        margin-bottom: vars.$spacing-2;
+      }
+
+      p {
+        @include mixins.text(vars.$font-size-lg, vars.$text-secondary);
+        margin: 0;
+      }
+    }
+
+    .header-actions {
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-3;
+
+      .btn-outline {
+        @include mixins.button-ghost(vars.$text-secondary);
+        border: 1px solid vars.$border-medium;
+        @include mixins.flex-align(center, center);
+        gap: vars.$spacing-2;
+
+        &:hover {
+          background: vars.$background-section;
+          border-color: vars.$primary-color;
+          color: vars.$primary-color;
+        }
+      }
+
+      .btn-primary {
+        @include mixins.button-primary;
+        @include mixins.flex-align(center, center);
+        gap: vars.$spacing-2;
+      }
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: vars.$spacing-6;
+    margin-bottom: vars.$spacing-8;
+
+    .stat-card {
+      @include mixins.card-base;
+      @include mixins.card-hover;
+      @include mixins.card-padding(vars.$spacing-6);
+      @include mixins.flex-align(flex-start, center);
+      gap: vars.$spacing-4;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: vars.$primary-color;
+      }
+
+      &.users::before {
+        background: vars.$primary-color;
+      }
+
+      &.blogs::before {
+        background: vars.$success-color;
+      }
+
+      &.pending::before {
+        background: vars.$warning-color;
+      }
+
+      &.requests::before {
+        background: vars.$secondary-color;
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: vars.$border-radius-lg;
+        @include mixins.flex-center;
+        font-size: vars.$font-size-2xl;
+        color: vars.$white;
+        @include mixins.shadow-elevation(2);
+
+        .users & {
+          @include mixins.gradient-bg(vars.$primary-color, vars.$primary-hover);
+        }
+
+        .blogs & {
+          @include mixins.gradient-bg(vars.$success-color, #4caf50);
+        }
+
+        .pending & {
+          @include mixins.gradient-bg(vars.$warning-color, #ff9800);
+        }
+
+        .requests & {
+          @include mixins.gradient-bg(vars.$secondary-color, vars.$secondary-hover);
+        }
+      }
+
+      .stat-info {
+        flex: 1;
+
+        h3 {
+          @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-bold);
+          margin: 0 0 vars.$spacing-2 0;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .stat-number {
+          @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-extrabold, vars.$text-primary);
+          margin: 0 0 vars.$spacing-2 0;
+        }
+
+        .stat-change {
+          @include mixins.flex-align(flex-start, center);
+          gap: vars.$spacing-1;
+          @include mixins.text(vars.$font-size-sm, vars.$text-muted, vars.$font-weight-medium);
+
+          &.positive {
+            color: vars.$success-color;
+          }
+
+          &.negative {
+            color: vars.$error-color;
+          }
+
+          &.neutral {
+            color: vars.$text-muted;
+          }
+
+          i {
+            font-size: vars.$font-size-xs;
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: vars.$spacing-8;
+    margin-bottom: vars.$spacing-8;
+
+    .dashboard-card {
+      @include mixins.card-base;
+      @include mixins.shadow-elevation(2);
+      overflow: hidden;
+
+      .card-header {
+        @include mixins.flex-between;
+        padding: vars.$spacing-6;
+        border-bottom: 1px solid vars.$border-light;
+        background: vars.$background-section;
+
+        h2 {
+          @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+          margin: 0;
+        }
+
+        .view-all-link {
+          @include mixins.button-ghost(vars.$primary-color);
+          @include mixins.text(vars.$font-size-sm, vars.$primary-color, vars.$font-weight-medium);
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        .system-status {
+          @include mixins.flex-align(center, center);
+          gap: vars.$spacing-2;
+          @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+
+          &.good {
+            color: vars.$success-color;
+          }
+
+          i {
+            font-size: vars.$font-size-xs;
+            animation: pulse 2s infinite;
+          }
+        }
+      }
+
+      .card-body {
+        padding: vars.$spacing-6;
+        max-height: 400px;
+        overflow-y: auto;
+
+        .empty-state {
+          text-align: center;
+          padding: vars.$spacing-8;
+          color: vars.$text-muted;
+        }
+
+        .activities-list,
+        .alerts-list {
+          .activity-item,
+          .alert-item {
+            @include mixins.flex-align(flex-start, flex-start);
+            gap: vars.$spacing-3;
+            padding: vars.$spacing-4;
+            border-radius: vars.$border-radius-base;
+            margin-bottom: vars.$spacing-3;
+            transition: all 0.2s ease;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            &:hover {
+              background: vars.$background-light;
+            }
+
+            .activity-icon,
+            .alert-icon {
+              width: 32px;
+              height: 32px;
+              border-radius: vars.$border-radius-full;
+              @include mixins.flex-center;
+              font-size: vars.$font-size-sm;
+              color: vars.$white;
+              flex-shrink: 0;
+
+              &.success {
+                background: vars.$success-color;
+              }
+
+              &.warning {
+                background: vars.$warning-color;
+              }
+
+              &.danger {
+                background: vars.$error-color;
+              }
+
+              &.info {
+                background: vars.$info-color;
+              }
+            }
+
+            .activity-content,
+            .alert-content {
+              flex: 1;
+
+              .activity-message,
+              .alert-title {
+                @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+                margin: 0 0 vars.$spacing-1 0;
+                line-height: vars.$line-height-tight;
+              }
+
+              .alert-message {
+                @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
+                margin: 0 0 vars.$spacing-1 0;
+                line-height: vars.$line-height-normal;
+              }
+
+              .activity-time,
+              .alert-time {
+                @include mixins.text(vars.$font-size-xs, vars.$text-muted);
+                margin: 0;
+              }
+            }
+          }
+
+          .alert-item {
+            border-left: 4px solid vars.$border-light;
+
+            &.warning {
+              border-left-color: vars.$warning-color;
+              background: rgba(vars.$warning-color, 0.05);
+            }
+
+            &.error {
+              border-left-color: vars.$error-color;
+              background: rgba(vars.$error-color, 0.05);
+            }
+
+            &.info {
+              border-left-color: vars.$info-color;
+              background: rgba(vars.$info-color, 0.05);
+            }
+
+            &.success {
+              border-left-color: vars.$success-color;
+              background: rgba(vars.$success-color, 0.05);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .quick-actions {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-8);
+    @include mixins.shadow-elevation(2);
+
+    h2 {
+      @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-semibold, vars.$text-primary);
+      margin: 0 0 vars.$spacing-6 0;
+      text-align: center;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: vars.$spacing-4;
+
+      .action-card {
+        @include mixins.flex-center;
+        flex-direction: column;
+        gap: vars.$spacing-3;
+        padding: vars.$spacing-6;
+        border: 2px solid vars.$border-light;
+        border-radius: vars.$border-radius-lg;
+        background: vars.$background-card;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: vars.$text-secondary;
+
+        &:hover {
+          border-color: vars.$primary-color;
+          background: vars.$primary-light;
+          color: vars.$primary-color;
+          transform: translateY(-4px);
+          @include mixins.shadow-elevation(3);
+
+          i {
+            transform: scale(1.2);
+            color: vars.$primary-color;
+          }
+        }
+
+        i {
+          font-size: vars.$font-size-3xl;
+          color: vars.$text-muted;
+          transition: all 0.3s ease;
+        }
+
+        span {
+          @include mixins.text(vars.$font-size-base, inherit, vars.$font-weight-medium);
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .loading-spinner {
+    @include mixins.flex-center;
+    flex-direction: column;
+    padding: vars.$spacing-16;
+    gap: vars.$spacing-4;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid vars.$border-light;
+      border-top: 4px solid vars.$primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    p {
+      @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+      margin: 0;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  // === RESPONSIVE DESIGN ===
+  @include mixins.tablet {
+    padding: vars.$spacing-4;
+
+    .dashboard-header {
+      flex-direction: column;
+      gap: vars.$spacing-4;
+      text-align: center;
+
+      .header-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: vars.$spacing-4;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+      gap: vars.$spacing-6;
+    }
+
+    .quick-actions {
+      .actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: vars.$spacing-3;
+
+        .action-card {
+          padding: vars.$spacing-4;
+
+          i {
+            font-size: vars.$font-size-2xl;
+          }
+
+          span {
+            font-size: vars.$font-size-sm;
+          }
+        }
+      }
+    }
+  }
+
+  @include mixins.mobile {
+    padding: vars.$spacing-3;
+
+    .dashboard-header {
+      padding: vars.$spacing-4;
+
+      .header-content h1 {
+        font-size: vars.$font-size-2xl;
+      }
+
+      .header-actions {
+        gap: vars.$spacing-2;
+
+        .btn-outline,
+        .btn-primary {
+          padding: vars.$spacing-2 vars.$spacing-3;
+          font-size: vars.$font-size-sm;
+        }
+      }
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: vars.$spacing-3;
+
+      .stat-card {
+        padding: vars.$spacing-4;
+
+        .stat-icon {
+          width: 50px;
+          height: 50px;
+          font-size: vars.$font-size-xl;
+        }
+
+        .stat-info {
+          .stat-number {
+            font-size: vars.$font-size-2xl;
+          }
+        }
+      }
+    }
+
+    .dashboard-grid {
+      gap: vars.$spacing-4;
+
+      .dashboard-card {
+        .card-header {
+          padding: vars.$spacing-4;
+          flex-direction: column;
+          gap: vars.$spacing-2;
+          text-align: center;
+        }
+
+        .card-body {
+          padding: vars.$spacing-4;
+        }
+      }
+    }
+
+    .quick-actions {
+      padding: vars.$spacing-4;
+
+      .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+
+        .action-card {
+          padding: vars.$spacing-3;
+
+          i {
+            font-size: vars.$font-size-xl;
+          }
+
+          span {
+            font-size: vars.$font-size-xs;
+          }
+        }
+      }
+    }
+  }
+}
