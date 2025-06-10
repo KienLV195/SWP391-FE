@@ -246,6 +246,7 @@ li {
       margin-bottom: 18px;
       letter-spacing: 0.5px;
       text-transform: none;
+      color: vars.$dark-blue;
     }
 
     .hospital-desc {
@@ -274,7 +275,7 @@ li {
           font-size: 0.9em;
           width: 32px;
           height: 32px;
-          background-color: vars.$primary-color;
+          background-color: vars.$dark-blue;
           color: vars.$white;
           border-radius: 50%;
           @include mix.flex-center();
@@ -327,7 +328,7 @@ li {
 
   .emergency-section {
     padding: vars.$spacing-xxl 40px;
-    background: vars.$primary-color;
+    background: vars.$dark-blue;
     max-width: 100%;
     margin: 0 auto;
 
@@ -557,6 +558,7 @@ li {
         text-align: center;
         margin-bottom: 0;
         text-transform: uppercase;
+        color: vars.$dark-blue;
       }
     }
 
@@ -804,6 +806,7 @@ li {
       text-align: center;
       margin-bottom: 60px;
       text-transform: uppercase;
+      color: vars.$dark-blue;
     }
 
     .achievement-grid {

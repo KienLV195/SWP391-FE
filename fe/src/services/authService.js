@@ -70,7 +70,7 @@ class AuthService {
   // Login with email and password
   async login(email, password) {
     try {
-      // Real API call to backend
+      // Try real API call first
       const response = await axios.post(
         'https://localhost:7021/api/auth/login',
         {
@@ -128,20 +128,34 @@ class AuthService {
         };
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('API Login failed, falling back to mock data:', error.message);
 
-      // Handle different types of errors
+      // Fallback to mock data when API is not available
+      if (error.request || error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
+        console.log('Using mock authentication...');
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Use mock authentication
+        const user = authenticateUser(email, password);
+        if (user) {
+          this.currentUser = user;
+          this.isAuthenticated = true;
+          this.saveUserToStorage(user);
+          return { success: true, user };
+        } else {
+          return { success: false, error: 'Thông tin đăng nhập không chính xác' };
+        }
+      }
+
+      // Handle other API errors
       if (error.response) {
-        // Server responded with error status
         const errorMessage = error.response.data?.message ||
                            error.response.data?.error ||
                            'Thông tin đăng nhập không chính xác';
         return { success: false, error: errorMessage };
-      } else if (error.request) {
-        // Network error
-        return { success: false, error: 'Không thể kết nối đến hệ thống. Vui lòng thử lại sau' };
       } else {
-        // Other error
         return { success: false, error: 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau' };
       }
     }
