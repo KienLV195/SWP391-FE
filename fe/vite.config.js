@@ -20,7 +20,6 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           ui: ['antd', '@ant-design/icons'],
-          firebase: ['firebase'],
           utils: ['axios', 'aos']
         }
       }
