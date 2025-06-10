@@ -1,29 +1,146 @@
 import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Modal,
+  Button,
+  Select,
+  Input,
+  Space,
+  Tag,
+  Tooltip,
+  message,
+  Card,
+  Steps,
+  Row,
+  Col,
+  Switch,
+  Badge,
+  Divider,
+} from "antd";
+import {
+  EyeOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
+  ReloadOutlined,
+  TableOutlined,
+  AppstoreOutlined,
+  UserOutlined,
+  HeartOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
-import NearbyDonorsModal from "../../components/manager/NearbyDonorsModal";
+import ProcessWorkflowModal, {
+  DONATION_STATUSES,
+} from "../../components/shared/ProcessWorkflowModal";
 import GeolibService from "../../services/geolibService";
-import NotificationService from "../../services/notificationService";
 import authService from "../../services/authService";
 import "../../styles/pages/EligibleDonorsPage.scss";
 
+const { Option } = Select;
+const { Search } = Input;
+
 const EligibleDonorsPage = () => {
   const [donors, setDonors] = useState([]);
+  const [filteredDonors, setFilteredDonors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDonor, setSelectedDonor] = useState(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [processModalVisible, setProcessModalVisible] = useState(false);
+  const [viewMode, setViewMode] = useState("table"); // 'table' or 'card'
   const [filters, setFilters] = useState({
     bloodType: "all",
     maxDistance: 50,
-    eligibilityStatus: "eligible",
-    sortBy: "priority", // priority, distance, donations, lastDonation
+    searchText: "",
+    sortBy: "distance",
+    status: "all",
   });
-  const [selectedDonors, setSelectedDonors] = useState([]);
-  const [showNearbyModal, setShowNearbyModal] = useState(false);
-  const [emergencyRequest, setEmergencyRequest] = useState(null);
 
   const currentUser = authService.getCurrentUser();
 
+  // Hàm kiểm tra eligibility (84 ngày)
+  const isEligibleToDonate = (lastDonationDate) => {
+    if (!lastDonationDate) return true;
+
+    const lastDonation = new Date(lastDonationDate);
+    const currentDate = new Date();
+    const daysDifference = Math.floor(
+      (currentDate - lastDonation) / (1000 * 60 * 60 * 24)
+    );
+
+    return daysDifference >= 84;
+  };
+
+  // Format ngày theo DD/MM/YYYY
+  const formatDate = (dateString) => {
+    if (!dateString) return "Chưa hiến";
+    return new Date(dateString).toLocaleDateString("vi-VN");
+  };
+
+  // Get status info for display (simplified version for table rendering)
+  const getStatusInfo = (status) => {
+    const statusMap = {
+      [DONATION_STATUSES.REGISTERED]: {
+        text: "Đã đăng ký",
+        color: "#1890ff",
+        icon: <UserOutlined />,
+        step: 0,
+      },
+      [DONATION_STATUSES.HEALTH_CHECKED]: {
+        text: "Đã khám sức khỏe",
+        color: "#52c41a",
+        icon: <CheckCircleOutlined />,
+        step: 1,
+      },
+      [DONATION_STATUSES.ELIGIBLE]: {
+        text: "Đủ điều kiện",
+        color: "#52c41a",
+        icon: <CheckCircleOutlined />,
+        step: 2,
+      },
+      [DONATION_STATUSES.NOT_ELIGIBLE]: {
+        text: "Không đủ điều kiện",
+        color: "#ff4d4f",
+        icon: <ExclamationCircleOutlined />,
+        step: 2,
+      },
+      [DONATION_STATUSES.DONATED]: {
+        text: "Đã hiến máu",
+        color: "#722ed1",
+        icon: <HeartOutlined />,
+        step: 3,
+      },
+      [DONATION_STATUSES.BLOOD_TESTED]: {
+        text: "Đã xét nghiệm",
+        color: "#fa8c16",
+        icon: <ClockCircleOutlined />,
+        step: 4,
+      },
+      [DONATION_STATUSES.COMPLETED]: {
+        text: "Hoàn thành",
+        color: "#52c41a",
+        icon: <CheckCircleOutlined />,
+        step: 5,
+      },
+      [DONATION_STATUSES.STORED]: {
+        text: "Đã nhập kho",
+        color: "#13c2c2",
+        icon: <CheckCircleOutlined />,
+        step: 6,
+      },
+    };
+    return statusMap[status] || statusMap[DONATION_STATUSES.REGISTERED];
+  };
+
   useEffect(() => {
     loadEligibleDonors();
-  }, [filters]);
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [donors, filters]);
 
   const loadEligibleDonors = async () => {
     setLoading(true);
@@ -32,287 +149,353 @@ const EligibleDonorsPage = () => {
       const mockDonors = [
         {
           id: 1,
-          name: "Nguyễn Văn A",
+          name: "Nguyễn Văn An",
           bloodType: "O+",
-          phone: "0123456789",
-          email: "nguyenvana@email.com",
-          coordinates: { lat: 10.7751, lng: 106.6862 },
-          address: {
-            houseNumber: "120",
-            street: "Đường Nguyễn Huệ",
-            ward: "Phường Bến Nghé",
-            district: "Quận 1",
-            city: "TP. Hồ Chí Minh",
-            fullAddress:
-              "120 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
-          },
-          lastDonationDate: "2024-10-15",
-          nextEligibleDate: "2024-12-10",
-          isEligible: true,
+          phone: "0901234567",
+          email: "an.nguyen@email.com",
+          coordinates: { lat: 10.7769, lng: 106.7009 },
+          address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+          lastDonationDate: "2024-08-15",
+          totalDonations: 5,
           healthStatus: "excellent",
-          totalDonations: 8,
-          registrationDate: "2022-01-15",
-          gender: "male",
           age: 28,
           weight: 65,
-          chronicDiseases: [],
-          recentActivities: [],
-          emergencyAvailable: true,
-          preferredTimeSlots: ["morning", "afternoon"],
           notes: "Người hiến tích cực, sức khỏe tốt",
+          donationStatus: DONATION_STATUSES.REGISTERED,
+          appointmentDate: "2024-12-20",
+          timeSlot: "morning",
         },
         {
           id: 2,
-          name: "Trần Thị B",
+          name: "Trần Thị Bình",
           bloodType: "A+",
           phone: "0987654321",
-          email: "tranthib@email.com",
+          email: "binh.tran@email.com",
           coordinates: { lat: 10.78, lng: 106.69 },
-          address: {
-            houseNumber: "456",
-            street: "Đường Lê Lợi",
-            ward: "Phường 8",
-            district: "Quận 3",
-            city: "TP. Hồ Chí Minh",
-            fullAddress: "456 Đường Lê Lợi, Phường 8, Quận 3, TP. Hồ Chí Minh",
-          },
-          lastDonationDate: "2024-09-20",
-          nextEligibleDate: "2024-12-13",
-          isEligible: true,
-          healthStatus: "good",
+          address: "456 Lê Lợi, Quận 3, TP.HCM",
+          lastDonationDate: "2024-07-20",
           totalDonations: 12,
-          registrationDate: "2021-06-10",
-          gender: "female",
+          healthStatus: "good",
           age: 32,
           weight: 55,
-          chronicDiseases: [],
-          recentActivities: [],
-          emergencyAvailable: true,
-          preferredTimeSlots: ["afternoon"],
           notes: "Người hiến kinh nghiệm",
+          donationStatus: DONATION_STATUSES.HEALTH_CHECKED,
+          appointmentDate: "2024-12-18",
+          timeSlot: "afternoon",
         },
         {
           id: 3,
-          name: "Lê Văn C",
+          name: "Lê Văn Cường",
           bloodType: "O-",
           phone: "0345678901",
-          email: "levanc@email.com",
+          email: "cuong.le@email.com",
           coordinates: { lat: 10.8, lng: 106.7 },
-          address: {
-            houseNumber: "789",
-            street: "Đường Nguyễn Văn Linh",
-            ward: "Phường Tân Thuận Đông",
-            district: "Quận 7",
-            city: "TP. Hồ Chí Minh",
-            fullAddress:
-              "789 Đường Nguyễn Văn Linh, Phường Tân Thuận Đông, Quận 7, TP. Hồ Chí Minh",
-          },
-          lastDonationDate: "2024-08-30",
-          nextEligibleDate: "2024-12-05",
-          isEligible: true,
-          healthStatus: "excellent",
+          address: "789 Nguyễn Văn Linh, Quận 7, TP.HCM",
+          lastDonationDate: "2024-06-30",
           totalDonations: 15,
-          registrationDate: "2020-09-12",
-          gender: "male",
+          healthStatus: "excellent",
           age: 35,
           weight: 70,
-          chronicDiseases: [],
-          recentActivities: [],
-          emergencyAvailable: true,
-          preferredTimeSlots: ["morning"],
           notes: "Máu hiếm O-, sẵn sàng hỗ trợ khẩn cấp",
+          donationStatus: DONATION_STATUSES.DONATED,
+          appointmentDate: "2024-12-15",
+          timeSlot: "morning",
         },
         {
           id: 4,
-          name: "Phạm Thị D",
+          name: "Phạm Thị Dung",
           bloodType: "AB+",
           phone: "0567890123",
-          email: "phamthid@email.com",
+          email: "dung.pham@email.com",
           coordinates: { lat: 10.75, lng: 106.65 },
-          address: {
-            houseNumber: "321",
-            street: "Đường Trần Hưng Đạo",
-            ward: "Phường 7",
-            district: "Quận 5",
-            city: "TP. Hồ Chí Minh",
-            fullAddress:
-              "321 Đường Trần Hưng Đạo, Phường 7, Quận 5, TP. Hồ Chí Minh",
-          },
+          address: "321 Trần Hưng Đạo, Quận 5, TP.HCM",
           lastDonationDate: "2024-11-20",
-          nextEligibleDate: "2025-01-15",
-          isEligible: false,
-          healthStatus: "good",
           totalDonations: 6,
-          registrationDate: "2023-03-20",
-          gender: "female",
+          healthStatus: "good",
           age: 26,
           weight: 52,
-          chronicDiseases: [],
-          recentActivities: ["recent_donation"],
-          emergencyAvailable: false,
-          preferredTimeSlots: ["afternoon"],
           notes: "Vừa hiến máu gần đây",
+          donationStatus: DONATION_STATUSES.COMPLETED,
+          appointmentDate: "2024-12-10",
+          timeSlot: "afternoon",
+        },
+        {
+          id: 5,
+          name: "Hoàng Văn Minh",
+          bloodType: "B+",
+          phone: "0789012345",
+          email: "minh.hoang@email.com",
+          coordinates: { lat: 10.7651, lng: 106.6818 },
+          address: "555 Võ Văn Tần, Quận 3, TP.HCM",
+          lastDonationDate: "2024-09-10",
+          totalDonations: 8,
+          healthStatus: "excellent",
+          age: 30,
+          weight: 68,
+          notes: "Người hiến máu tích cực",
+          donationStatus: DONATION_STATUSES.BLOOD_TESTED,
+          appointmentDate: "2024-12-12",
+          timeSlot: "morning",
         },
       ];
 
-      // Calculate distances and priorities
-      const donorsWithDistance = mockDonors.map((donor) => {
-        const distance = GeolibService.getDistanceToHospital(donor.coordinates);
+      // Lọc chỉ những người đủ điều kiện (84 ngày)
+      const eligibleDonors = mockDonors
+        .filter((donor) => isEligibleToDonate(donor.lastDonationDate))
+        .map((donor) => {
+          const distance = GeolibService.getDistanceToHospital(
+            donor.coordinates
+          );
+          return {
+            ...donor,
+            distance,
+            formattedLastDonation: formatDate(donor.lastDonationDate),
+          };
+        });
 
-        const priority = GeolibService.getDistancePriority(distance);
-        const daysUntilEligible = NotificationService.getDaysUntilEligible(
-          donor.lastDonationDate,
-          donor.gender
-        );
-
-        return {
-          ...donor,
-          distance,
-          priority,
-          priorityText: GeolibService.getPriorityText(priority),
-          priorityColor: GeolibService.getPriorityColor(priority),
-          daysUntilEligible,
-          isCurrentlyEligible: daysUntilEligible <= 0,
-        };
-      });
-
-      // Apply filters
-      let filteredDonors = donorsWithDistance;
-
-      if (filters.bloodType !== "all") {
-        filteredDonors = filteredDonors.filter(
-          (d) => d.bloodType === filters.bloodType
-        );
-      }
-
-      if (filters.maxDistance) {
-        filteredDonors = filteredDonors.filter(
-          (d) => d.distance <= filters.maxDistance
-        );
-      }
-
-      if (filters.eligibilityStatus === "eligible") {
-        filteredDonors = filteredDonors.filter(
-          (d) => d.isEligible && d.isCurrentlyEligible
-        );
-      } else if (filters.eligibilityStatus === "upcoming") {
-        filteredDonors = filteredDonors.filter(
-          (d) => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7
-        );
-      }
-
-      // Sort donors
-      filteredDonors.sort((a, b) => {
-        switch (filters.sortBy) {
-          case "priority":
-            // Sort by: eligibility -> distance -> health -> donations
-            if (a.isCurrentlyEligible && !b.isCurrentlyEligible) return -1;
-            if (!a.isCurrentlyEligible && b.isCurrentlyEligible) return 1;
-            if (a.distance !== b.distance) return a.distance - b.distance;
-            if (a.healthStatus !== b.healthStatus) {
-              const healthOrder = { excellent: 3, good: 2, fair: 1 };
-              return (
-                (healthOrder[b.healthStatus] || 0) -
-                (healthOrder[a.healthStatus] || 0)
-              );
-            }
-            return b.totalDonations - a.totalDonations;
-          case "distance":
-            return a.distance - b.distance;
-          case "donations":
-            return b.totalDonations - a.totalDonations;
-          case "lastDonation":
-            return new Date(b.lastDonationDate) - new Date(a.lastDonationDate);
-          default:
-            return 0;
-        }
-      });
-
-      setDonors(filteredDonors);
+      setDonors(eligibleDonors);
     } catch (error) {
       console.error("Error loading eligible donors:", error);
+      message.error("Có lỗi xảy ra khi tải danh sách người hiến máu!");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDonorSelect = (donorId) => {
-    setSelectedDonors((prev) => {
-      if (prev.includes(donorId)) {
-        return prev.filter((id) => id !== donorId);
-      } else {
-        return [...prev, donorId];
+  const applyFilters = () => {
+    let filtered = [...donors];
+
+    if (filters.bloodType !== "all") {
+      filtered = filtered.filter(
+        (donor) => donor.bloodType === filters.bloodType
+      );
+    }
+
+    if (filters.maxDistance) {
+      filtered = filtered.filter(
+        (donor) => donor.distance <= filters.maxDistance
+      );
+    }
+
+    if (filters.status !== "all") {
+      filtered = filtered.filter(
+        (donor) => donor.donationStatus === filters.status
+      );
+    }
+
+    if (filters.searchText) {
+      const searchLower = filters.searchText.toLowerCase();
+      filtered = filtered.filter(
+        (donor) =>
+          donor.name.toLowerCase().includes(searchLower) ||
+          donor.phone.includes(filters.searchText) ||
+          donor.email.toLowerCase().includes(searchLower)
+      );
+    }
+
+    filtered.sort((a, b) => {
+      switch (filters.sortBy) {
+        case "distance":
+          return a.distance - b.distance;
+        case "lastDonation":
+          return new Date(b.lastDonationDate) - new Date(a.lastDonationDate);
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "status":
+          return (
+            getStatusInfo(a.donationStatus).step -
+            getStatusInfo(b.donationStatus).step
+          );
+        default:
+          return 0;
       }
     });
+
+    setFilteredDonors(filtered);
   };
 
-  const handleContactSelected = async () => {
-    if (selectedDonors.length === 0) return;
+  const handleViewDetails = (donor) => {
+    setSelectedDonor(donor);
+    setDetailModalVisible(true);
+  };
 
+  const handleViewProcess = (donor) => {
+    setSelectedDonor(donor);
+    setProcessModalVisible(true);
+  };
+
+  const handleUpdateStatus = async (donorId, newStatus) => {
     try {
-      // TODO: Replace with actual API call - POST /api/notifications/contact-donors
-      for (const donorId of selectedDonors) {
-        const donor = donors.find((d) => d.id === donorId);
-        if (donor) {
-          await NotificationService.sendUrgentBloodRequest(donorId, {
-            id: Date.now(),
-            bloodType: donor.bloodType,
-            quantity: "1 đơn vị",
-            urgency: "urgent",
-            hospital: "Bệnh viện XYZ",
-            contactPerson: currentUser.name,
-          });
-        }
-      }
-
-      alert(`Đã gửi thông báo đến ${selectedDonors.length} người hiến máu!`);
-      setSelectedDonors([]);
+      // TODO: Replace with actual API call - PUT /api/donors/:id/status
+      setDonors((prev) =>
+        prev.map((donor) =>
+          donor.id === donorId ? { ...donor, donationStatus: newStatus } : donor
+        )
+      );
+      message.success("Cập nhật trạng thái thành công!");
     } catch (error) {
-      console.error("Error contacting donors:", error);
-      alert("Có lỗi xảy ra khi gửi thông báo!");
+      console.error("Error updating status:", error);
+      message.error("Có lỗi xảy ra khi cập nhật trạng thái!");
     }
   };
 
-  const handleEmergencyRequest = (bloodType) => {
-    setEmergencyRequest({ bloodType, urgency: "emergency" });
-    setShowNearbyModal(true);
-  };
+  const handleSendEmail = async (donor) => {
+    try {
+      // TODO: Replace with actual API call - POST /api/donors/send-email
+      const emailData = {
+        to: donor.email,
+        subject: "Kêu gọi hiến máu - Bệnh viện Ánh Dương",
+        content: `Kính chào ${donor.name}, Bệnh viện Ánh Dương hiện đang cần máu nhóm ${donor.bloodType} để cứu chữa bệnh nhân.`,
+      };
 
-  const getHealthStatusColor = (status) => {
-    switch (status) {
-      case "excellent":
-        return "#28a745";
-      case "good":
-        return "#17a2b8";
-      case "fair":
-        return "#ffc107";
-      default:
-        return "#6c757d";
+      console.log("Sending email:", emailData);
+      message.success(`Đã gửi email kêu gọi hiến máu đến ${donor.name}!`);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      message.error("Có lỗi xảy ra khi gửi email!");
     }
   };
 
-  const getHealthStatusText = (status) => {
-    switch (status) {
-      case "excellent":
-        return "Xuất sắc";
-      case "good":
-        return "Tốt";
-      case "fair":
-        return "Khá";
-      default:
-        return "Không xác định";
+  const handleStoreBlood = async (donorId) => {
+    try {
+      // TODO_API_REPLACE: Replace with actual API call - POST /api/manager/store-blood/:id
+      await handleUpdateStatus(donorId, DONATION_STATUSES.STORED);
+    } catch (error) {
+      console.error("Error storing blood:", error);
+      message.error("Có lỗi xảy ra khi nhập kho!");
     }
   };
 
-  const eligibleCount = donors.filter(
-    (d) => d.isEligible && d.isCurrentlyEligible
-  ).length;
-  const upcomingCount = donors.filter(
-    (d) => d.daysUntilEligible > 0 && d.daysUntilEligible <= 7
-  ).length;
-  const emergencyAvailableCount = donors.filter(
-    (d) => d.emergencyAvailable && d.isCurrentlyEligible
-  ).length;
+  const getBloodTypeColor = (bloodType) => {
+    const colors = {
+      "O+": "#f50",
+      "O-": "#ff4d4f",
+      "A+": "#1890ff",
+      "A-": "#096dd9",
+      "B+": "#52c41a",
+      "B-": "#389e0d",
+      "AB+": "#722ed1",
+      "AB-": "#531dab",
+    };
+    return colors[bloodType] || "#666";
+  };
+
+  const columns = [
+    {
+      title: "Họ tên",
+      dataIndex: "name",
+      key: "name",
+      width: 180,
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (text) => <strong>{text}</strong>,
+    },
+    {
+      title: "Nhóm máu",
+      dataIndex: "bloodType",
+      key: "bloodType",
+      width: 100,
+      align: "center",
+      render: (bloodType) => (
+        <Tag
+          color={getBloodTypeColor(bloodType)}
+          style={{ fontWeight: "bold" }}
+        >
+          {bloodType}
+        </Tag>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "donationStatus",
+      key: "donationStatus",
+      width: 150,
+      align: "center",
+      render: (status) => {
+        const statusInfo = getStatusInfo(status);
+        return (
+          <Tag color={statusInfo.color} icon={statusInfo.icon}>
+            {statusInfo.text}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Khoảng cách",
+      dataIndex: "distance",
+      key: "distance",
+      width: 120,
+      align: "center",
+      sorter: (a, b) => a.distance - b.distance,
+      render: (distance) => (
+        <span
+          style={{
+            color:
+              distance <= 10
+                ? "#52c41a"
+                : distance <= 20
+                ? "#faad14"
+                : "#ff4d4f",
+          }}
+        >
+          {GeolibService.formatDistance(distance)}
+        </span>
+      ),
+    },
+    {
+      title: "Lần hiến cuối",
+      dataIndex: "formattedLastDonation",
+      key: "lastDonation",
+      width: 130,
+      align: "center",
+      sorter: (a, b) =>
+        new Date(b.lastDonationDate) - new Date(a.lastDonationDate),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+      width: 140,
+      render: (phone) => (
+        <a href={`tel:${phone}`} style={{ color: "#1890ff" }}>
+          <PhoneOutlined /> {phone}
+        </a>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      width: 220,
+      align: "center",
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              size="small"
+              onClick={() => handleViewDetails(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Quy trình hiến máu">
+            <Button
+              type="default"
+              icon={<ClockCircleOutlined />}
+              size="small"
+              onClick={() => handleViewProcess(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Gửi email kêu gọi">
+            <Button
+              type="default"
+              icon={<MailOutlined />}
+              size="small"
+              onClick={() => handleSendEmail(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div className="eligible-donors-page">
@@ -320,323 +503,369 @@ const EligibleDonorsPage = () => {
 
       <div className="donors-content">
         <div className="page-header">
-          <div>
+          <div className="header-info">
             <h1>👥 Người hiến đủ điều kiện</h1>
-            <p>Danh sách người hiến máu sẵn sàng hỗ trợ</p>
+            <p>Danh sách người hiến máu đã đủ 84 ngày kể từ lần hiến cuối</p>
           </div>
           <div className="header-actions">
-            <button
-              className="btn btn-danger"
-              onClick={() => handleEmergencyRequest("O+")}
-            >
-              🚨 Yêu cầu khẩn cấp
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={loadEligibleDonors}
-              disabled={loading}
-            >
-              {loading ? "⏳ Đang tải..." : "🔄 Làm mới"}
-            </button>
-          </div>
-        </div>
-
-        {/* Statistics */}
-        <div className="stats-section">
-          <div className="stat-card eligible">
-            <div className="stat-icon">✅</div>
-            <div className="stat-content">
-              <div className="stat-number">{eligibleCount}</div>
-              <div className="stat-label">Đủ điều kiện</div>
-            </div>
-          </div>
-
-          <div className="stat-card upcoming">
-            <div className="stat-icon">⏰</div>
-            <div className="stat-content">
-              <div className="stat-number">{upcomingCount}</div>
-              <div className="stat-label">Sắp đủ điều kiện</div>
-            </div>
-          </div>
-
-          <div className="stat-card emergency">
-            <div className="stat-icon">🚨</div>
-            <div className="stat-content">
-              <div className="stat-number">{emergencyAvailableCount}</div>
-              <div className="stat-label">Sẵn sàng khẩn cấp</div>
-            </div>
-          </div>
-
-          <div className="stat-card selected">
-            <div className="stat-icon">☑️</div>
-            <div className="stat-content">
-              <div className="stat-number">{selectedDonors.length}</div>
-              <div className="stat-label">Đã chọn</div>
-            </div>
+            <Space>
+              <div className="view-mode-toggle">
+                <span>Chế độ xem:</span>
+                <Switch
+                  checkedChildren={<AppstoreOutlined />}
+                  unCheckedChildren={<TableOutlined />}
+                  checked={viewMode === "card"}
+                  onChange={(checked) =>
+                    setViewMode(checked ? "card" : "table")
+                  }
+                />
+              </div>
+              <Button
+                type="primary"
+                icon={<ReloadOutlined />}
+                onClick={loadEligibleDonors}
+                loading={loading}
+              >
+                Làm mới
+              </Button>
+            </Space>
           </div>
         </div>
 
         {/* Filters */}
         <div className="filters-section">
-          <div className="filter-group">
-            <label>Nhóm máu:</label>
-            <select
-              value={filters.bloodType}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, bloodType: e.target.value }))
-              }
-            >
-              <option value="all">Tất cả</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-            </select>
-          </div>
+          <Space wrap size="large">
+            <div className="filter-group">
+              <label>Tìm kiếm:</label>
+              <Search
+                placeholder="Tên, số điện thoại, email..."
+                value={filters.searchText}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    searchText: e.target.value,
+                  }))
+                }
+                style={{ width: 250 }}
+                allowClear
+              />
+            </div>
 
-          <div className="filter-group">
-            <label>Khoảng cách tối đa:</label>
-            <select
-              value={filters.maxDistance}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  maxDistance: Number(e.target.value),
-                }))
-              }
-            >
-              <option value={5}>5km</option>
-              <option value={10}>10km</option>
-              <option value={20}>20km</option>
-              <option value={50}>50km</option>
-              <option value={100}>100km</option>
-            </select>
-          </div>
+            <div className="filter-group">
+              <label>Nhóm máu:</label>
+              <Select
+                value={filters.bloodType}
+                onChange={(value) =>
+                  setFilters((prev) => ({ ...prev, bloodType: value }))
+                }
+                style={{ width: 120 }}
+              >
+                <Option value="all">Tất cả</Option>
+                <Option value="O+">O+</Option>
+                <Option value="O-">O-</Option>
+                <Option value="A+">A+</Option>
+                <Option value="A-">A-</Option>
+                <Option value="B+">B+</Option>
+                <Option value="B-">B-</Option>
+                <Option value="AB+">AB+</Option>
+                <Option value="AB-">AB-</Option>
+              </Select>
+            </div>
 
-          <div className="filter-group">
-            <label>Trạng thái:</label>
-            <select
-              value={filters.eligibilityStatus}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  eligibilityStatus: e.target.value,
-                }))
-              }
-            >
-              <option value="eligible">Đủ điều kiện ({eligibleCount})</option>
-              <option value="upcoming">
-                Sắp đủ điều kiện ({upcomingCount})
-              </option>
-              <option value="all">Tất cả</option>
-            </select>
-          </div>
+            <div className="filter-group">
+              <label>Khoảng cách:</label>
+              <Select
+                value={filters.maxDistance}
+                onChange={(value) =>
+                  setFilters((prev) => ({ ...prev, maxDistance: value }))
+                }
+                style={{ width: 120 }}
+              >
+                <Option value={5}>≤ 5km</Option>
+                <Option value={10}>≤ 10km</Option>
+                <Option value={20}>≤ 20km</Option>
+                <Option value={50}>≤ 50km</Option>
+                <Option value={100}>≤ 100km</Option>
+              </Select>
+            </div>
 
-          <div className="filter-group">
-            <label>Sắp xếp:</label>
-            <select
-              value={filters.sortBy}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, sortBy: e.target.value }))
-              }
-            >
-              <option value="priority">Ưu tiên</option>
-              <option value="distance">Khoảng cách</option>
-              <option value="donations">Số lần hiến</option>
-              <option value="lastDonation">Lần hiến cuối</option>
-            </select>
-          </div>
+            <div className="filter-group">
+              <label>Trạng thái:</label>
+              <Select
+                value={filters.status}
+                onChange={(value) =>
+                  setFilters((prev) => ({ ...prev, status: value }))
+                }
+                style={{ width: 150 }}
+              >
+                <Option value="all">Tất cả</Option>
+                <Option value={DONATION_STATUSES.REGISTERED}>Đã đăng ký</Option>
+                <Option value={DONATION_STATUSES.HEALTH_CHECKED}>
+                  Đã khám
+                </Option>
+                <Option value={DONATION_STATUSES.DONATED}>Đã hiến máu</Option>
+                <Option value={DONATION_STATUSES.COMPLETED}>Hoàn thành</Option>
+              </Select>
+            </div>
+
+            <div className="filter-group">
+              <label>Sắp xếp:</label>
+              <Select
+                value={filters.sortBy}
+                onChange={(value) =>
+                  setFilters((prev) => ({ ...prev, sortBy: value }))
+                }
+                style={{ width: 150 }}
+              >
+                <Option value="distance">Khoảng cách</Option>
+                <Option value="lastDonation">Lần hiến cuối</Option>
+                <Option value="name">Tên A-Z</Option>
+                <Option value="status">Trạng thái</Option>
+              </Select>
+            </div>
+          </Space>
         </div>
 
-        {/* Selected Actions */}
-        {selectedDonors.length > 0 && (
-          <div className="selected-actions">
-            <div className="selected-info">
-              Đã chọn {selectedDonors.length} người hiến máu
-            </div>
-            <div className="action-buttons">
-              <button
-                className="btn btn-success"
-                onClick={handleContactSelected}
-              >
-                📞 Liên hệ ({selectedDonors.length})
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setSelectedDonors([])}
-              >
-                ❌ Bỏ chọn tất cả
-              </button>
-            </div>
+        {/* Results Summary */}
+        <div className="results-summary">
+          <span>
+            Hiển thị <strong>{filteredDonors.length}</strong> người hiến đủ điều
+            kiện
+            {filters.bloodType !== "all" && ` (nhóm máu ${filters.bloodType})`}
+            {filters.maxDistance && ` trong bán kính ${filters.maxDistance}km`}
+          </span>
+        </div>
+
+        {/* Donors Display */}
+        {viewMode === "table" ? (
+          <div className="table-section">
+            <Table
+              columns={columns}
+              dataSource={filteredDonors}
+              rowKey="id"
+              loading={loading}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} người hiến`,
+              }}
+              scroll={{ x: 1200 }}
+              size="middle"
+            />
+          </div>
+        ) : (
+          <div className="cards-section">
+            <Row gutter={[16, 16]}>
+              {filteredDonors.map((donor) => {
+                const statusInfo = getStatusInfo(donor.donationStatus);
+                return (
+                  <Col xs={24} sm={12} lg={8} xl={6} key={donor.id}>
+                    <Card
+                      className="donor-card"
+                      hoverable
+                      actions={[
+                        <Tooltip title="Xem chi tiết" key="detail">
+                          <EyeOutlined
+                            onClick={() => handleViewDetails(donor)}
+                          />
+                        </Tooltip>,
+                        <Tooltip title="Quy trình hiến máu" key="process">
+                          <ClockCircleOutlined
+                            onClick={() => handleViewProcess(donor)}
+                          />
+                        </Tooltip>,
+                        <Tooltip title="Gửi email" key="email">
+                          <MailOutlined
+                            onClick={() => handleSendEmail(donor)}
+                          />
+                        </Tooltip>,
+                      ]}
+                    >
+                      <div className="card-header">
+                        <div className="donor-name">{donor.name}</div>
+                        <Tag
+                          color={getBloodTypeColor(donor.bloodType)}
+                          className="blood-type-tag"
+                        >
+                          {donor.bloodType}
+                        </Tag>
+                      </div>
+
+                      <div className="card-content">
+                        <div className="status-section">
+                          <Badge
+                            color={statusInfo.color}
+                            text={statusInfo.text}
+                            className="status-badge"
+                          />
+                        </div>
+
+                        <div className="info-item">
+                          <EnvironmentOutlined className="info-icon" />
+                          <span className="distance-text">
+                            {GeolibService.formatDistance(donor.distance)}
+                          </span>
+                        </div>
+
+                        <div className="info-item">
+                          <PhoneOutlined className="info-icon" />
+                          <a href={`tel:${donor.phone}`} className="phone-link">
+                            {donor.phone}
+                          </a>
+                        </div>
+
+                        <div className="info-item">
+                          <ClockCircleOutlined className="info-icon" />
+                          <span>
+                            Lần hiến cuối: {donor.formattedLastDonation}
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                );
+              })}
+            </Row>
+
+            {filteredDonors.length === 0 && !loading && (
+              <div className="empty-state">
+                <UserOutlined className="empty-icon" />
+                <h3>Không tìm thấy người hiến nào</h3>
+                <p>Thử điều chỉnh bộ lọc để xem thêm kết quả</p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Donors List */}
-        <div className="donors-section">
-          {loading ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Đang tải danh sách người hiến...</p>
-            </div>
-          ) : donors.length === 0 ? (
-            <div className="empty-state">
-              <span className="empty-icon">👥</span>
-              <h3>Không tìm thấy người hiến</h3>
-              <p>Thử điều chỉnh bộ lọc để tìm thêm người hiến máu.</p>
-            </div>
-          ) : (
-            <div className="donors-list">
-              {donors.map((donor) => (
-                <div
-                  key={donor.id}
-                  className={`donor-card ${
-                    !donor.isCurrentlyEligible ? "not-eligible" : ""
-                  } ${selectedDonors.includes(donor.id) ? "selected" : ""}`}
-                >
-                  <div className="donor-header">
-                    <div className="donor-selection">
-                      <input
-                        type="checkbox"
-                        checked={selectedDonors.includes(donor.id)}
-                        onChange={() => handleDonorSelect(donor.id)}
-                        disabled={!donor.isCurrentlyEligible}
-                      />
-                    </div>
-
-                    <div className="donor-basic-info">
-                      <div className="donor-name">{donor.name}</div>
-                      <div className="donor-contact">
-                        📞 {donor.phone} | 📧 {donor.email}
-                      </div>
-                      <div className="blood-type-badge">{donor.bloodType}</div>
-                      {["O-", "AB-", "B-"].includes(donor.bloodType) && (
-                        <span className="rare-badge">⭐ Máu hiếm</span>
-                      )}
-                    </div>
-
-                    <div className="donor-status">
-                      <div
-                        className={`eligibility-status ${
-                          donor.isCurrentlyEligible
-                            ? "eligible"
-                            : "not-eligible"
-                        }`}
-                      >
-                        {donor.isCurrentlyEligible
-                          ? "✅ Đủ điều kiện"
-                          : `⏳ Còn ${donor.daysUntilEligible} ngày`}
-                      </div>
-                      {donor.emergencyAvailable &&
-                        donor.isCurrentlyEligible && (
-                          <div className="emergency-badge">
-                            🚨 Sẵn sàng khẩn cấp
-                          </div>
-                        )}
-                    </div>
+        {/* Detail Modal */}
+        <Modal
+          title={`Chi tiết người hiến: ${selectedDonor?.name}`}
+          open={detailModalVisible}
+          onCancel={() => setDetailModalVisible(false)}
+          footer={[
+            <Button key="close" onClick={() => setDetailModalVisible(false)}>
+              Đóng
+            </Button>,
+            <Button
+              key="email"
+              type="primary"
+              icon={<MailOutlined />}
+              onClick={() => {
+                handleSendEmail(selectedDonor);
+                setDetailModalVisible(false);
+              }}
+            >
+              Gửi email kêu gọi
+            </Button>,
+          ]}
+          width={600}
+        >
+          {selectedDonor && (
+            <div className="donor-details">
+              <div className="detail-section">
+                <h4>Thông tin cơ bản</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <label>Họ tên:</label>
+                    <span>{selectedDonor.name}</span>
                   </div>
-
-                  <div className="donor-details">
-                    <div className="detail-row">
-                      <span className="detail-label">📍 Khoảng cách:</span>
-                      <span
-                        className={`distance-info priority-${donor.priority}`}
-                      >
-                        {DistanceService.formatDistance(donor.distance)}
-                      </span>
-                    </div>
-
-                    <div className="detail-row">
-                      <span className="detail-label">🏥 Sức khỏe:</span>
-                      <span
-                        className="health-status"
-                        style={{
-                          color: getHealthStatusColor(donor.healthStatus),
-                        }}
-                      >
-                        {getHealthStatusText(donor.healthStatus)}
-                      </span>
-                    </div>
-
-                    <div className="detail-row">
-                      <span className="detail-label">🩸 Số lần hiến:</span>
-                      <span className="donations-count">
-                        {donor.totalDonations} lần
-                      </span>
-                    </div>
-
-                    <div className="detail-row">
-                      <span className="detail-label">📅 Lần cuối:</span>
-                      <span className="last-donation">
-                        {new Date(donor.lastDonationDate).toLocaleDateString(
-                          "vi-VN"
-                        )}
-                      </span>
-                    </div>
-
-                    <div className="detail-row">
-                      <span className="detail-label">🏠 Địa chỉ:</span>
-                      <span className="address">
-                        {typeof donor.address === "object"
-                          ? donor.address.fullAddress
-                          : donor.address}
-                      </span>
-                    </div>
-
-                    {donor.notes && (
-                      <div className="detail-row">
-                        <span className="detail-label">📝 Ghi chú:</span>
-                        <span className="notes">{donor.notes}</span>
-                      </div>
-                    )}
+                  <div className="detail-item">
+                    <label>Nhóm máu:</label>
+                    <Tag color={getBloodTypeColor(selectedDonor.bloodType)}>
+                      {selectedDonor.bloodType}
+                    </Tag>
                   </div>
-
-                  <div className="donor-actions">
-                    <a
-                      href={`tel:${donor.phone}`}
-                      className="btn btn-success btn-sm"
-                    >
-                      📞 Gọi
-                    </a>
-
-                    <a
-                      href={`mailto:${donor.email}`}
-                      className="btn btn-info btn-sm"
-                    >
-                      📧 Email
-                    </a>
-
-                    <a
-                      href={DistanceService.getDirectionsUrl(donor.coordinates)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-outline btn-sm"
-                    >
-                      🗺️ Chỉ đường
-                    </a>
-
-                    <div
-                      className={`priority-badge priority-${donor.priority}`}
-                    >
-                      {donor.priorityText}
-                    </div>
+                  <div className="detail-item">
+                    <label>Tuổi:</label>
+                    <span>{selectedDonor.age} tuổi</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Cân nặng:</label>
+                    <span>{selectedDonor.weight} kg</span>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="detail-section">
+                <h4>Thông tin liên hệ</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <label>Số điện thoại:</label>
+                    <a href={`tel:${selectedDonor.phone}`}>
+                      <PhoneOutlined /> {selectedDonor.phone}
+                    </a>
+                  </div>
+                  <div className="detail-item">
+                    <label>Email:</label>
+                    <a href={`mailto:${selectedDonor.email}`}>
+                      <MailOutlined /> {selectedDonor.email}
+                    </a>
+                  </div>
+                  <div className="detail-item full-width">
+                    <label>Địa chỉ:</label>
+                    <span>
+                      <EnvironmentOutlined /> {selectedDonor.address}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Khoảng cách:</label>
+                    <span>
+                      {GeolibService.formatDistance(selectedDonor.distance)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h4>Lịch sử hiến máu</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <label>Lần hiến cuối:</label>
+                    <span>{selectedDonor.formattedLastDonation}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Tổng số lần hiến:</label>
+                    <span>{selectedDonor.totalDonations} lần</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Tình trạng sức khỏe:</label>
+                    <Tag
+                      color={
+                        selectedDonor.healthStatus === "excellent"
+                          ? "green"
+                          : "blue"
+                      }
+                    >
+                      {selectedDonor.healthStatus === "excellent"
+                        ? "Xuất sắc"
+                        : "Tốt"}
+                    </Tag>
+                  </div>
+                </div>
+              </div>
+
+              {selectedDonor.notes && (
+                <div className="detail-section">
+                  <h4>Ghi chú</h4>
+                  <p>{selectedDonor.notes}</p>
+                </div>
+              )}
             </div>
           )}
-        </div>
-      </div>
+        </Modal>
 
-      {/* Nearby Donors Modal */}
-      <NearbyDonorsModal
-        isOpen={showNearbyModal}
-        onClose={() => setShowNearbyModal(false)}
-        bloodRequest={emergencyRequest}
-      />
+        {/* Process Workflow Modal */}
+        <ProcessWorkflowModal
+          visible={processModalVisible}
+          onCancel={() => setProcessModalVisible(false)}
+          selectedItem={selectedDonor}
+          onStoreBlood={handleStoreBlood}
+          isManager={true}
+          title="Quy trình hiến máu"
+        />
+      </div>
     </div>
   );
 };

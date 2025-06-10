@@ -1,0 +1,260 @@
+@use '../../base/variables' as vars;
+@use '../../base/mixin' as mix;
+
+.notifications-panel {
+  background: vars.$manager-bg;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px vars.$manager-shadow;
+  border: 1px solid vars.$manager-border;
+  font-family: vars.$font-manager;
+  overflow: hidden;
+
+  .panel-header {
+    @include mix.flex-align(space-between, center);
+    padding: vars.$spacing-lg;
+    background: vars.$manager-bg-light;
+    border-bottom: 1px solid vars.$manager-border;
+
+    .panel-title {
+      @include mix.flex-align(flex-start, center);
+      gap: vars.$spacing-xs;
+
+      .title-icon {
+        font-size: 1.2rem;
+        color: vars.$manager-primary;
+      }
+
+      span {
+        @include mix.heading(1.1rem, vars.$manager-text);
+        font-weight: 600;
+        font-family: vars.$font-manager;
+      }
+    }
+
+    .notification-count {
+      @include mix.text(0.8rem, vars.$white);
+      background: vars.$manager-primary;
+      padding: vars.$spacing-xs vars.$spacing-sm;
+      border-radius: 12px;
+      font-weight: 500;
+      font-family: vars.$font-manager;
+    }
+  }
+
+  .notifications-list {
+    max-height: 400px;
+    overflow-y: auto;
+
+    .notification-item {
+      @include mix.flex-align(flex-start, flex-start);
+      gap: vars.$spacing-sm;
+      padding: vars.$spacing-md;
+      border-bottom: 1px solid vars.$manager-border;
+      position: relative;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: vars.$manager-hover;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .notification-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        @include mix.flex-center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .notification-content {
+        flex: 1;
+        min-width: 0;
+
+        .notification-header {
+          @include mix.flex-align(space-between, flex-start);
+          gap: vars.$spacing-sm;
+          margin-bottom: vars.$spacing-xs;
+
+          .notification-title {
+            @include mix.text(0.9rem, vars.$manager-text);
+            font-weight: 600;
+            margin: 0;
+            font-family: vars.$font-manager;
+            flex: 1;
+          }
+
+          .notification-time {
+            @include mix.text(0.75rem, vars.$manager-text-light);
+            font-weight: 400;
+            font-family: vars.$font-manager;
+            white-space: nowrap;
+          }
+        }
+
+        .notification-message {
+          @include mix.text(0.85rem, vars.$manager-text-light);
+          margin: 0;
+          line-height: 1.4;
+          font-family: vars.$font-manager;
+        }
+      }
+
+      .unread-indicator {
+        position: absolute;
+        top: 50%;
+        right: vars.$spacing-md;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        background: vars.$manager-primary;
+        border-radius: 50%;
+      }
+
+      // Notification type styles
+      &.critical {
+        .notification-icon {
+          background: rgba(217, 16, 34, 0.1);
+          color: vars.$manager-emergency;
+        }
+
+        &.unread {
+          border-left: 3px solid vars.$manager-emergency;
+        }
+      }
+
+      &.warning {
+        .notification-icon {
+          background: rgba(255, 152, 0, 0.1);
+          color: vars.$warning-color;
+        }
+
+        &.unread {
+          border-left: 3px solid vars.$warning-color;
+        }
+      }
+
+      &.success {
+        .notification-icon {
+          background: rgba(76, 175, 80, 0.1);
+          color: vars.$success-color;
+        }
+
+        &.unread {
+          border-left: 3px solid vars.$success-color;
+        }
+      }
+
+      &.info {
+        .notification-icon {
+          background: rgba(217, 62, 76, 0.1);
+          color: vars.$manager-primary;
+        }
+
+        &.unread {
+          border-left: 3px solid vars.$manager-primary;
+        }
+      }
+
+      &.read {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .panel-footer {
+    padding: vars.$spacing-md vars.$spacing-lg;
+    background: vars.$manager-bg-light;
+    border-top: 1px solid vars.$manager-border;
+
+    .view-all-btn {
+      @include mix.button-ghost(vars.$manager-primary);
+      width: 100%;
+      padding: vars.$spacing-sm;
+      border-radius: 8px;
+      font-family: vars.$font-manager;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(217, 62, 76, 0.1);
+        color: vars.$manager-primary;
+      }
+    }
+  }
+
+  // Responsive Design
+  @include mix.tablet {
+    .panel-header {
+      padding: vars.$spacing-md;
+
+      .panel-title {
+        span {
+          font-size: 1rem;
+        }
+      }
+
+      .notification-count {
+        font-size: 0.75rem;
+        padding: vars.$spacing-xs;
+      }
+    }
+
+    .notifications-list {
+      max-height: 300px;
+
+      .notification-item {
+        padding: vars.$spacing-sm;
+
+        .notification-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 1rem;
+        }
+
+        .notification-content {
+          .notification-header {
+            .notification-title {
+              font-size: 0.85rem;
+            }
+
+            .notification-time {
+              font-size: 0.7rem;
+            }
+          }
+
+          .notification-message {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    .panel-footer {
+      padding: vars.$spacing-sm vars.$spacing-md;
+    }
+  }
+
+  @include mix.mobile {
+    .notifications-list {
+      max-height: 250px;
+
+      .notification-item {
+        .notification-content {
+          .notification-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: vars.$spacing-xs;
+
+            .notification-time {
+              align-self: flex-end;
+            }
+          }
+        }
+      }
+    }
+  }
+}

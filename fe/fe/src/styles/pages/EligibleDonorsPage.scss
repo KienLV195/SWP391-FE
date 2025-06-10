@@ -1,0 +1,125 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+.eligible-donors-page {
+  display: flex;
+  min-height: 100vh;
+  background: vars.$manager-bg-light;
+  font-family: vars.$font-manager;
+
+  .donors-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: vars.$spacing-lg;
+    transition: margin-left 0.3s ease;
+
+    &.collapsed {
+      margin-left: 80px;
+    }
+
+    // Page Header
+    .page-header {
+      background: vars.$manager-bg;
+      padding: vars.$spacing-lg;
+      border-radius: 12px;
+      margin-bottom: vars.$spacing-lg;
+      box-shadow: 0 2px 8px vars.$manager-shadow;
+      border: 1px solid vars.$manager-border;
+      @include mix.flex-align(space-between, center);
+
+      .header-info {
+        h1 {
+          margin: 0 0 8px 0;
+          font-size: 1.8rem;
+          font-weight: 600;
+          color: vars.$manager-text;
+          font-family: vars.$font-manager;
+        }
+
+        p {
+          margin: 0;
+          color: vars.$manager-text-light;
+          font-size: 1rem;
+          font-family: vars.$font-manager;
+        }
+      }
+
+      .header-actions {
+        .ant-btn {
+          font-family: vars.$font-manager;
+        }
+      }
+    }
+
+    // Filters Section
+    .filters-section {
+      background: vars.$manager-bg;
+      padding: vars.$spacing-lg;
+      border-radius: 12px;
+      margin-bottom: vars.$spacing-lg;
+      box-shadow: 0 2px 8px vars.$manager-shadow;
+      border: 1px solid vars.$manager-border;
+
+      .filter-group {
+        @include mix.flex-align(flex-start, center);
+        gap: 8px;
+
+        label {
+          font-weight: 500;
+          color: vars.$manager-text;
+          font-size: 0.9rem;
+          font-family: vars.$font-manager;
+          min-width: 80px;
+        }
+
+        .ant-select,
+        .ant-input-search {
+          font-family: vars.$font-manager;
+        }
+      }
+    }
+
+    // Results Summary
+    .results-summary {
+      background: vars.$manager-bg-light;
+      padding: vars.$spacing-md;
+      border-radius: 8px;
+      margin-bottom: vars.$spacing-md;
+      border-left: 3px solid vars.$manager-primary;
+
+      span {
+        color: vars.$manager-text;
+        font-size: 0.9rem;
+        font-family: vars.$font-manager;
+      }
+    }
+
+    // Table Section
+    .table-section {
+      background: vars.$manager-bg;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px vars.$manager-shadow;
+      border: 1px solid vars.$manager-border;
+      overflow: hidden;
+
+      .ant-table {
+        font-family: vars.$font-manager;
+
+        .ant-table-thead > tr > th {
+          background: vars.$manager-bg-light;
+          color: vars.$manager-text;
+          font-weight: 600;
+          border-bottom: 1px solid vars.$manager-border;
+        }
+
+        .ant-table-tbody > tr > td {
+          border-bottom: 1px solid vars.$manager-border;
+        }
+
+        .ant-table-tbody > tr:hover > td {
+          background: vars.$manager-hover;
+        }
+      }
+    }
+  }
+}

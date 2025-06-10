@@ -1,343 +1,52 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
 .manager-dashboard {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: vars.$manager-bg-light;
+  font-family: vars.$font-manager;
 
   .dashboard-main {
     flex: 1;
     margin-left: 280px;
-    padding: 2rem;
+    padding: vars.$spacing-lg;
     transition: margin-left 0.3s ease;
 
-    .dashboard-header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      color: #333;
-      padding: 2rem;
-      border-radius: 24px;
-      margin-bottom: 2rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-
-      h1 {
-        margin: 0 0 0.5rem 0;
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      p {
-        margin: 0;
-        font-size: 1.2rem;
-        color: #6c757d;
-        font-weight: 500;
-      }
+    &.collapsed {
+      margin-left: 80px;
     }
 
     .dashboard-content {
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+      // Content styling is now handled by individual components
+      // This container just provides spacing and layout structure
 
-        .stat-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border-radius: 20px;
-          padding: 1.5rem;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
 
-          &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
-          }
-
-          .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-          }
-
-          .stat-info {
-            h3 {
-              margin: 0 0 0.5rem 0;
-              font-size: 0.9rem;
-              color: #666;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            }
-
-            .stat-number {
-              font-size: 2.5rem;
-              font-weight: 700;
-              margin: 0 0 0.5rem 0;
-            }
-
-            .stat-subtitle {
-              font-size: 0.8rem;
-              color: #888;
-              margin: 0;
-            }
-          }
-
-          .stat-action {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 0.5rem 1rem;
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
-            border: 1px solid #007bff;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-
-            &:hover {
-              background: #007bff;
-              color: white;
-            }
-          }
-
-          &.donors {
-            border-left: 4px solid #28a745;
-            .stat-number { color: #28a745; }
-          }
-
-          &.recipients {
-            border-left: 4px solid #dc3545;
-            .stat-number { color: #dc3545; }
-          }
-
-          &.pending-donations {
-            border-left: 4px solid #ffc107;
-            .stat-number { color: #ffc107; }
-          }
-
-          &.pending-requests {
-            border-left: 4px solid #17a2b8;
-            .stat-number { color: #17a2b8; }
-          }
-        }
-      }
-
-      .blood-inventory-overview {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
-
-          h2 {
-            margin: 0;
-            color: #333;
-            font-size: 1.5rem;
-          }
-
-          .btn-outline {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 2px solid #007bff;
-            color: #007bff;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-
-            &:hover {
-              background: #007bff;
-              color: white;
-            }
-          }
-        }
-
-        .inventory-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 1rem;
-
-          .inventory-item {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-
-            &:hover {
-              transform: translateY(-2px);
-            }
-
-            .blood-type {
-              font-size: 1.2rem;
-              font-weight: 700;
-              color: #333;
-              margin-bottom: 0.5rem;
-            }
-
-            .quantity {
-              font-size: 1.8rem;
-              font-weight: 700;
-              margin-bottom: 0.25rem;
-            }
-
-            .unit {
-              font-size: 0.8rem;
-              color: #666;
-              margin-bottom: 0.5rem;
-            }
-
-            .status-indicator {
-              position: absolute;
-              top: 0.5rem;
-              right: 0.5rem;
-              font-size: 1rem;
-            }
-
-            &.critical {
-              border-color: #dc3545;
-              background: #f8d7da;
-              .quantity { color: #dc3545; }
-            }
-
-            &.low {
-              border-color: #ffc107;
-              background: #fff3cd;
-              .quantity { color: #856404; }
-            }
-
-            &.normal {
-              border-color: #28a745;
-              background: #d4edda;
-              .quantity { color: #28a745; }
-            }
-
-            &.high {
-              border-color: #17a2b8;
-              background: #d1ecf1;
-              .quantity { color: #17a2b8; }
-            }
-          }
-        }
-      }
-
-      .recent-activities {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-
-        h2 {
-          margin: 0 0 1.5rem 0;
-          color: #333;
-          font-size: 1.5rem;
-        }
-
-        .activities-list {
-          .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s ease;
-
-            &:last-child {
-              border-bottom: none;
-            }
-
-            &:hover {
-              background-color: #f8f9fa;
-            }
-
-            .activity-icon {
-              font-size: 1.5rem;
-              width: 40px;
-              height: 40px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              background: #f8f9fa;
-              border-radius: 50%;
-              flex-shrink: 0;
-            }
-
-            .activity-content {
-              flex: 1;
-
-              .activity-message {
-                margin: 0 0 0.25rem 0;
-                color: #333;
-                font-weight: 500;
-              }
-
-              .activity-time {
-                margin: 0;
-                color: #666;
-                font-size: 0.8rem;
-              }
-            }
-
-            &.donation {
-              .activity-icon { background: #d4edda; }
-            }
-
-            &.request {
-              .activity-icon { background: #f8d7da; }
-            }
-
-            &.approval {
-              .activity-icon { background: #d1ecf1; }
-            }
-          }
-        }
-      }
 
 
     }
   }
 }
 
-@media (max-width: 768px) {
+// Responsive Design
+@include mix.tablet {
+  .manager-dashboard {
+    .dashboard-main {
+      margin-left: 240px;
+      padding: vars.$spacing-md;
+
+      &.collapsed {
+        margin-left: 80px;
+      }
+    }
+  }
+}
+
+@include mix.mobile {
   .manager-dashboard {
     .dashboard-main {
       margin-left: 0;
-      padding: 1rem;
-
-      .dashboard-header {
-        padding: 1.5rem;
-
-        h1 {
-          font-size: 2rem;
-        }
-      }
-
-      .dashboard-content {
-        .stats-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .inventory-grid {
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        }
-      }
+      padding: vars.$spacing-sm;
     }
   }
 }

@@ -527,7 +527,7 @@ const DonationSchedulePage = () => {
                               )}`}
                             >
                               📏{" "}
-                              {DistanceService.formatDistance(
+                              {GeolibService.formatDistance(
                                 donation.location.distance
                               )}
                             </div>
@@ -562,7 +562,7 @@ const DonationSchedulePage = () => {
                         </button>
 
                         <a
-                          href={DistanceService.getDirectionsUrl(
+                          href={GeolibService.getDirectionsUrl(
                             donation.location
                           )}
                           target="_blank"

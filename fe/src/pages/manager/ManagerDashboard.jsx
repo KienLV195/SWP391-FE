@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import WelcomeBanner from "../../components/manager/dashboard/WelcomeBanner";
+import StatisticsCards from "../../components/manager/dashboard/StatisticsCards";
+import ChartsSection from "../../components/manager/dashboard/ChartsSection";
+import NotificationsPanel from "../../components/manager/dashboard/NotificationsPanel";
 import authService from "../../services/authService";
 import {
   mockBloodRequests,
@@ -18,10 +22,12 @@ const ManagerDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     totalDonors: 0,
     totalRecipients: 0,
-    pendingDonations: 0,
-    pendingRequests: 0,
-    bloodInventory: {},
-    recentActivities: [],
+    totalBloodUnits: 0,
+    totalRequests: 0,
+    bloodInventory: [],
+    bloodGroupData: [],
+    monthlyRequestsData: [],
+    notifications: [],
   });
 
   useEffect(() => {
@@ -40,63 +46,46 @@ const ManagerDashboard = () => {
         user.activityHistory &&
         user.activityHistory.some((activity) => activity.type === "donation")
     );
-    const recipientsWithHistory = members.filter(
-      (user) =>
-        user.activityHistory &&
-        user.activityHistory.some((activity) => activity.type === "request")
-    );
-    const pendingRequests = mockBloodRequests.filter(
-      (req) => req.status === REQUEST_STATUS.PENDING
-    );
 
     // Get blood inventory with status
     const bloodInventory = getBloodInventoryWithStatus();
 
-    // Recent activities
-    const recentActivities = [
-      {
-        id: 1,
-        type: "donation",
-        message: "Hoàng Văn E đã hoàn thành hiến máu O-",
-        timestamp: "2024-01-15T10:30:00Z",
-      },
-      {
-        id: 2,
-        type: "request",
-        message: "Yêu cầu máu A- khẩn cấp từ Nguyễn Thị F",
-        timestamp: "2024-01-15T09:15:00Z",
-      },
-      {
-        id: 3,
-        type: "approval",
-        message: "BS. Trần Thị I đã duyệt yêu cầu máu AB-",
-        timestamp: "2024-01-14T16:00:00Z",
-      },
+    // Calculate total blood units
+    const totalBloodUnits = bloodInventory.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
+    // Prepare blood group data for pie chart
+    const bloodGroupData = bloodInventory.map((item) => ({
+      name: item.bloodType,
+      value: item.quantity,
+      status: item.status,
+    }));
+
+    // Mock monthly requests data for line chart
+    const monthlyRequestsData = [
+      { month: "T7", requests: 45 },
+      { month: "T8", requests: 52 },
+      { month: "T9", requests: 38 },
+      { month: "T10", requests: 61 },
+      { month: "T11", requests: 49 },
+      { month: "T12", requests: 67 },
     ];
 
     setDashboardData({
       totalDonors: donorsWithHistory.length,
-      totalRecipients: recipientsWithHistory.length,
-      pendingDonations: 0, // No pending donations in new structure
-      pendingRequests: pendingRequests.length,
+      totalRecipients: members.length,
+      totalBloodUnits,
+      totalRequests: mockBloodRequests.length,
       bloodInventory,
-      recentActivities,
+      bloodGroupData,
+      monthlyRequestsData,
+      notifications: [], // Will use default notifications from component
     });
   };
 
-  // Removed getInventoryStatus - now handled in mockData
-
-  const handleViewDonations = () => {
-    navigate("/manager/manage-blood");
-  };
-
-  const handleViewRequests = () => {
-    navigate("/manager/request");
-  };
-
-  const handleViewInventory = () => {
-    navigate("/manager/blood-bank");
-  };
+  // Navigation handlers can be added here if needed
 
   if (!user) {
     return <div>Loading...</div>;
@@ -107,112 +96,27 @@ const ManagerDashboard = () => {
       <ManagerSidebar />
 
       <div className="dashboard-main">
-        <div className="dashboard-header">
-          <h1>Bảng điều khiển quản lý</h1>
-          <p>Chào mừng, {user.profile.fullName}</p>
-        </div>
+        {/* Welcome Banner */}
+        <WelcomeBanner managerName={user.profile.fullName} />
 
         <div className="dashboard-content">
           {/* Statistics Cards */}
-          <div className="stats-grid">
-            <div className="stat-card donors">
-              <div className="stat-icon">👥</div>
-              <div className="stat-info">
-                <h3>Người hiến máu</h3>
-                <div className="stat-number">{dashboardData.totalDonors}</div>
-                <div className="stat-subtitle">Tổng số đăng ký</div>
-              </div>
-            </div>
+          <StatisticsCards
+            statistics={{
+              totalBloodUnits: dashboardData.totalBloodUnits,
+              totalDonors: dashboardData.totalDonors,
+              totalRequests: dashboardData.totalRequests,
+            }}
+          />
 
-            <div className="stat-card recipients">
-              <div className="stat-icon">🩸</div>
-              <div className="stat-info">
-                <h3>Người cần máu</h3>
-                <div className="stat-number">
-                  {dashboardData.totalRecipients}
-                </div>
-                <div className="stat-subtitle">Tổng số đăng ký</div>
-              </div>
-            </div>
+          {/* Charts Section */}
+          <ChartsSection
+            bloodGroupData={dashboardData.bloodGroupData}
+            monthlyRequestsData={dashboardData.monthlyRequestsData}
+          />
 
-            <div className="stat-card pending-donations">
-              <div className="stat-icon">⏳</div>
-              <div className="stat-info">
-                <h3>Hiến máu chờ xử lý</h3>
-                <div className="stat-number">
-                  {dashboardData.pendingDonations}
-                </div>
-                <div className="stat-subtitle">Cần xử lý</div>
-              </div>
-              <button className="stat-action" onClick={handleViewDonations}>
-                Xem chi tiết
-              </button>
-            </div>
-
-            <div className="stat-card pending-requests">
-              <div className="stat-icon">📋</div>
-              <div className="stat-info">
-                <h3>Yêu cầu máu chờ xử lý</h3>
-                <div className="stat-number">
-                  {dashboardData.pendingRequests}
-                </div>
-                <div className="stat-subtitle">Cần xử lý</div>
-              </div>
-              <button className="stat-action" onClick={handleViewRequests}>
-                Xem chi tiết
-              </button>
-            </div>
-          </div>
-
-          {/* Blood Inventory Overview */}
-          <div className="blood-inventory-overview">
-            <div className="section-header">
-              <h2>Tồn kho máu</h2>
-              <button className="btn btn-outline" onClick={handleViewInventory}>
-                Xem chi tiết
-              </button>
-            </div>
-
-            <div className="inventory-grid">
-              {dashboardData.bloodInventory.map((item) => (
-                <div
-                  key={item.inventoryID}
-                  className={`inventory-item ${item.status}`}
-                >
-                  <div className="blood-type">{item.bloodType}</div>
-                  <div className="quantity">{item.quantity}</div>
-                  <div className="unit">đơn vị</div>
-                  <div className="status-indicator">{item.statusIcon}</div>
-                  {item.isRare && <div className="rare-indicator">⭐ Hiếm</div>}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent Activities */}
-          <div className="recent-activities">
-            <h2>Hoạt động gần đây</h2>
-            <div className="activities-list">
-              {dashboardData.recentActivities.map((activity) => (
-                <div
-                  key={activity.id}
-                  className={`activity-item ${activity.type}`}
-                >
-                  <div className="activity-icon">
-                    {activity.type === "donation" && "🩸"}
-                    {activity.type === "request" && "📋"}
-                    {activity.type === "approval" && "✅"}
-                  </div>
-                  <div className="activity-content">
-                    <div className="activity-message">{activity.message}</div>
-                    <div className="activity-time">
-                      {new Date(activity.timestamp).toLocaleString("vi-VN")}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Notifications Panel */}
+          <NotificationsPanel notifications={dashboardData.notifications} />
         </div>
       </div>
     </div>

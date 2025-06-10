@@ -72,6 +72,7 @@ li {
         letter-spacing: -1px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         white-space: nowrap;
+        color: white;
       }
 
       .merriweather-content {
@@ -233,17 +234,18 @@ li {
       font-weight: 700;
       margin-bottom: vars.$spacing-xs;
       letter-spacing: 0.5px;
-      text-transform: none;
+      text-transform: uppercase;
       border-bottom: 2px solid vars.$secondary-color;
       padding-bottom: vars.$spacing-xxs;
+      color: #B42F2F;
     }
 
     .hospital-name {
-      @include mix.heading(1.6rem, vars.$dark-blue);
+      @include mix.heading(1.6rem, vars.$primary-color);
       font-weight: 900;
       margin-bottom: 18px;
       letter-spacing: 0.5px;
-      text-transform: uppercase;
+      text-transform: none;
     }
 
     .hospital-desc {
@@ -272,11 +274,11 @@ li {
           font-size: 0.9em;
           width: 32px;
           height: 32px;
-          background-color: vars.$dark-blue;
+          background-color: vars.$primary-color;
           color: vars.$white;
           border-radius: 50%;
           @include mix.flex-center();
-          border: 1px solid vars.$dark-blue;
+          border: 1px solid vars.$primary-color;
           padding: 8px;
           transition: background-color 0.3s ease, transform 0.3s ease;
 
@@ -288,7 +290,7 @@ li {
           }
 
           &:hover {
-            background-color: lighten(vars.$dark-blue, 10%);
+            background-color: lighten(vars.$primary-color, 10%);
             transform: scale(1.1);
           }
         }
@@ -325,7 +327,7 @@ li {
 
   .emergency-section {
     padding: vars.$spacing-xxl 40px;
-    background: vars.$dark-blue;
+    background: vars.$primary-color;
     max-width: 100%;
     margin: 0 auto;
 
@@ -343,6 +345,7 @@ li {
       padding: vars.$spacing-md vars.$spacing-md;
       border-radius: 20px;
       display: inline-block;
+      color: white;
     }
 
     .ant-table-wrapper {
@@ -354,7 +357,7 @@ li {
         .ant-table-thead {
           th {
             background: vars.$background-main !important;
-            color: vars.$dark-blue !important;
+            color: vars.$primary-color !important;
             @include mix.heading(1.1rem);
             font-weight: 700;
             padding: vars.$spacing-base;
@@ -796,7 +799,7 @@ li {
     }
 
     .achievement-title {
-      @include mix.heading(2rem, vars.$dark-blue);
+      @include mix.heading(2rem, vars.$primary-color);
       font-weight: 900;
       text-align: center;
       margin-bottom: 60px;
@@ -930,6 +933,7 @@ li {
       padding: vars.$spacing-md vars.$spacing-md;
       border-radius: 20px;
       display: inline-block;
+      color: white;
     }
 
     .faq-content {

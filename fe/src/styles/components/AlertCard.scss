@@ -1,0 +1,199 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+.alert-card {
+  background: vars.$manager-bg;
+  border: 1px solid vars.$manager-border;
+  border-radius: 12px;
+  padding: vars.$spacing-lg;
+  box-shadow: 0 2px 8px vars.$manager-shadow;
+  font-family: vars.$font-manager;
+  position: relative;
+
+  .alert-header {
+    @include mix.flex-align(space-between, center);
+    margin-bottom: vars.$spacing-md;
+
+    .alert-title {
+      @include mix.flex-align(flex-start, center);
+      gap: 8px;
+
+      .alert-icon {
+        font-size: 1.1rem;
+        color: vars.$manager-primary;
+      }
+
+      span {
+        @include mix.heading(1rem, vars.$manager-text);
+        font-weight: 600;
+        font-family: vars.$font-manager;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .alert-pagination {
+      @include mix.flex-align(center, center);
+      gap: 8px;
+
+      .pagination-btn {
+        background: vars.$manager-bg;
+        border: 1px solid vars.$manager-border;
+        border-radius: 6px;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: vars.$manager-text-light;
+
+        &:hover:not(:disabled) {
+          background: vars.$manager-hover;
+          color: vars.$manager-primary;
+          border-color: vars.$manager-primary;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        svg {
+          font-size: 0.9rem;
+        }
+      }
+
+      .pagination-info {
+        @include mix.text(0.8rem, vars.$manager-text-light);
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+      }
+    }
+  }
+
+  .alert-content {
+    margin-bottom: vars.$spacing-md;
+
+    .alert-item {
+      @include mix.flex-align(flex-start, flex-start);
+      gap: vars.$spacing-sm;
+
+      .alert-status {
+        .status-indicator {
+          @include mix.text(0.75rem, vars.$white);
+          background: vars.$manager-primary;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
+
+          &.critical {
+            background: vars.$manager-primary;
+            animation: blink 2s infinite;
+          }
+
+          &.warning {
+            background: vars.$warning-color;
+          }
+
+          &.info {
+            background: vars.$info-color;
+          }
+        }
+      }
+
+      .alert-message {
+        @include mix.text(0.9rem, vars.$manager-text);
+        font-weight: 400;
+        line-height: 1.4;
+        flex: 1;
+      }
+    }
+  }
+
+  .alert-dots {
+    @include mix.flex-align(center, center);
+    gap: 6px;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: vars.$manager-border;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.active {
+        background: vars.$manager-primary;
+        transform: scale(1.2);
+      }
+
+      &:hover {
+        background: vars.$manager-text-light;
+      }
+    }
+  }
+
+  // Responsive
+  @include mix.tablet {
+    padding: vars.$spacing-md;
+
+    .alert-header {
+      .alert-title {
+        span {
+          font-size: 0.9rem;
+        }
+      }
+
+      .alert-pagination {
+        .pagination-info {
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    .alert-content {
+      .alert-item {
+        .alert-message {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+
+  @include mix.mobile {
+    padding: vars.$spacing-sm;
+
+    .alert-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: vars.$spacing-xs;
+
+      .alert-pagination {
+        align-self: flex-end;
+      }
+    }
+
+    .alert-content {
+      .alert-item {
+        flex-direction: column;
+        gap: vars.$spacing-xs;
+
+        .alert-status {
+          align-self: flex-start;
+        }
+      }
+    }
+  }
+}
+
+// Blink animation for critical alerts
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.7;
+  }
+}

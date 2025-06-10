@@ -17,9 +17,15 @@ const MemberNavbar = () => {
 
   const user = authService.getCurrentUser();
 
-  const handleLogout = () => {
-    authService.logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still navigate even if logout API fails
+      navigate("/");
+    }
   };
   return (
     <header className="navbar member-navbar">

@@ -1,0 +1,161 @@
+@use '../../base/variables' as vars;
+@use '../../base/mixin' as mix;
+
+.statistics-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: vars.$spacing-lg;
+  margin-bottom: vars.$spacing-lg;
+
+  .stat-card {
+    background: vars.$manager-bg;
+    border-radius: 12px;
+    padding: vars.$spacing-lg;
+    box-shadow: 0 2px 8px vars.$manager-shadow;
+    border: 1px solid vars.$manager-border;
+    transition: all 0.3s ease;
+    font-family: vars.$font-manager;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px vars.$manager-shadow;
+    }
+
+    .stat-header {
+      @include mix.flex-align(flex-start, center);
+      gap: vars.$spacing-sm;
+      margin-bottom: vars.$spacing-md;
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        @include mix.flex-center;
+        font-size: 1.5rem;
+        color: vars.$white;
+      }
+
+      .stat-title {
+        @include mix.text(1rem, vars.$manager-text);
+        font-weight: 600;
+        font-family: vars.$font-manager;
+      }
+    }
+
+    .stat-content {
+      .stat-value {
+        @include mix.heading(2.5rem, vars.$manager-text);
+        font-weight: 700;
+        margin-bottom: vars.$spacing-xs;
+        font-family: vars.$font-manager;
+        line-height: 1;
+      }
+
+      .stat-subtitle {
+        @include mix.text(0.9rem, vars.$manager-text-light);
+        font-weight: 500;
+        font-family: vars.$font-manager;
+      }
+    }
+
+    // Color variants
+    &.primary {
+      border-left: 4px solid vars.$manager-primary;
+
+      .stat-header .stat-icon {
+        background: vars.$manager-primary;
+      }
+    }
+
+    &.success {
+      border-left: 4px solid vars.$success-color;
+
+      .stat-header .stat-icon {
+        background: vars.$success-color;
+      }
+    }
+
+    &.warning {
+      border-left: 4px solid vars.$warning-color;
+
+      .stat-header .stat-icon {
+        background: vars.$warning-color;
+      }
+    }
+
+    &.emergency {
+      border-left: 4px solid vars.$manager-emergency;
+
+      .stat-header .stat-icon {
+        background: vars.$manager-emergency;
+      }
+    }
+  }
+
+  // Responsive Design
+  @include mix.tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: vars.$spacing-md;
+
+    .stat-card {
+      padding: vars.$spacing-md;
+
+      .stat-header {
+        .stat-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 1.3rem;
+        }
+
+        .stat-title {
+          font-size: 0.9rem;
+        }
+      }
+
+      .stat-content {
+        .stat-value {
+          font-size: 2rem;
+        }
+
+        .stat-subtitle {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+
+  @include mix.mobile {
+    grid-template-columns: 1fr;
+    gap: vars.$spacing-sm;
+
+    .stat-card {
+      padding: vars.$spacing-sm;
+
+      .stat-header {
+        gap: vars.$spacing-xs;
+
+        .stat-icon {
+          width: 36px;
+          height: 36px;
+          font-size: 1.1rem;
+        }
+
+        .stat-title {
+          font-size: 0.85rem;
+        }
+      }
+
+      .stat-content {
+        .stat-value {
+          font-size: 1.8rem;
+        }
+
+        .stat-subtitle {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}

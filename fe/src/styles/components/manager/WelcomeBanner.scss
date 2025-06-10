@@ -1,0 +1,123 @@
+@use '../../base/variables' as vars;
+@use '../../base/mixin' as mix;
+
+.welcome-banner {
+  background: vars.$manager-primary;
+  border-radius: 12px;
+  padding: vars.$spacing-lg;
+  margin-bottom: vars.$spacing-lg;
+  box-shadow: 0 4px 12px vars.$manager-shadow;
+  font-family: vars.$font-manager;
+  color: vars.$white;
+
+  .welcome-content {
+    @include mix.flex-align(space-between, center);
+    gap: vars.$spacing-md;
+
+    .welcome-text {
+      flex: 1;
+
+      .greeting {
+        @include mix.flex-align(flex-start, center);
+        gap: vars.$spacing-xs;
+        margin-bottom: vars.$spacing-xs;
+
+        .greeting-icon {
+          font-size: 1.2rem;
+          color: vars.$white;
+        }
+
+        .greeting-message {
+          @include mix.heading(1.5rem, vars.$white);
+          font-weight: 600;
+          font-family: vars.$font-manager;
+        }
+      }
+
+      .welcome-subtitle {
+        @include mix.text(1rem, rgba(255, 255, 255, 0.9));
+        font-weight: 400;
+        font-family: vars.$font-manager;
+        margin-left: calc(1.2rem + #{vars.$spacing-xs});
+      }
+    }
+
+    .welcome-info {
+      .date-time {
+        @include mix.flex-align(flex-start, center);
+        gap: vars.$spacing-xs;
+        padding: vars.$spacing-sm vars.$spacing-md;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+
+        .time-icon {
+          font-size: 1rem;
+          color: vars.$white;
+        }
+
+        .current-date {
+          @include mix.text(0.9rem, vars.$white);
+          font-weight: 500;
+          font-family: vars.$font-manager;
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @include mix.tablet {
+    padding: vars.$spacing-md;
+
+    .welcome-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: vars.$spacing-sm;
+
+      .welcome-text {
+        .greeting {
+          .greeting-message {
+            font-size: 1.3rem;
+          }
+        }
+
+        .welcome-subtitle {
+          font-size: 0.9rem;
+          margin-left: calc(1rem + #{vars.$spacing-xs});
+        }
+      }
+
+      .welcome-info {
+        align-self: flex-end;
+      }
+    }
+  }
+
+  @include mix.mobile {
+    padding: vars.$spacing-sm;
+
+    .welcome-content {
+      .welcome-text {
+        .greeting {
+          .greeting-message {
+            font-size: 1.1rem;
+          }
+        }
+
+        .welcome-subtitle {
+          font-size: 0.85rem;
+        }
+      }
+
+      .welcome-info {
+        .date-time {
+          padding: vars.$spacing-xs vars.$spacing-sm;
+
+          .current-date {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}

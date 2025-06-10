@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  validateEmail,
+  getPasswordValidationError,
+  validatePasswordConfirmation,
+  validateFullName,
+} from "../../utils/validation";
 import "../../styles/components/RegisterForm.scss";
 
 export default function RegisterForm() {
@@ -13,38 +19,35 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
-
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Vui lòng nhập họ và tên";
+    // Validate full name
+    const fullNameError = validateFullName(formData.fullName);
+    if (fullNameError) {
+      newErrors.fullName = fullNameError;
     }
 
+    // Validate email
     if (!formData.email) {
-      newErrors.email = "Vui lòng nhập email";
+      newErrors.email = "Email là bắt buộc";
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = "Email không đúng định dạng";
     }
 
-    if (!formData.password) {
-      newErrors.password = "Vui lòng nhập mật khẩu";
-    } else if (!validatePassword(formData.password)) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+    // Validate password
+    const passwordError = getPasswordValidationError(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+    // Validate password confirmation
+    const confirmPasswordError = validatePasswordConfirmation(
+      formData.password,
+      formData.confirmPassword
+    );
+    if (confirmPasswordError) {
+      newErrors.confirmPassword = confirmPasswordError;
     }
 
     setErrors(newErrors);
@@ -91,7 +94,10 @@ export default function RegisterForm() {
       });
     } catch (error) {
       console.error("Registration failed:", error);
-      setErrors({ submit: "Đăng ký thất bại. Vui lòng thử lại." });
+      setErrors({
+        submit:
+          "Đăng ký không thành công. Vui lòng kiểm tra lại thông tin và thử lại.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -109,12 +115,14 @@ export default function RegisterForm() {
           <div className="form-group">
             <label className="register-form__label">HỌ VÀ TÊN</label>
             <input
-              className={`register-form__input ${errors.fullName ? "error" : ""}`}
+              className={`register-form__input ${
+                errors.fullName ? "error" : ""
+              }`}
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="NHẬP HỌ VÀ TÊN"
+              placeholder="Nhập họ và tên đầy đủ"
               required
             />
             {errors.fullName && (
@@ -130,7 +138,7 @@ export default function RegisterForm() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="NHẬP EMAIL"
+              placeholder="Nhập địa chỉ email"
               required
             />
             {errors.email && (
@@ -141,12 +149,14 @@ export default function RegisterForm() {
           <div className="form-group">
             <label className="register-form__label">MẬT KHẨU</label>
             <input
-              className={`register-form__input ${errors.password ? "error" : ""}`}
+              className={`register-form__input ${
+                errors.password ? "error" : ""
+              }`}
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="NHẬP MẬT KHẨU (ÍT NHẤT 6 KÝ TỰ)"
+              placeholder="Tối thiểu 6 ký tự bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt"
               required
             />
             {errors.password && (
@@ -164,7 +174,7 @@ export default function RegisterForm() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="NHẬP LẠI MẬT KHẨU"
+              placeholder="Nhập lại mật khẩu để xác nhận"
               required
             />
             {errors.confirmPassword && (

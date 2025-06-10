@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import authService from '../../services/authService';
-import '../../styles/components/LogoutButton.scss';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import authService from "../../services/authService";
+import "../../styles/components/LogoutButton.scss";
 
-const LogoutButton = ({ className = '', variant = 'default' }) => {
+const LogoutButton = ({ className = "", variant = "default" }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
-    
+
     setIsLoggingOut(true);
-    
+
     try {
-      // Simulate logout delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const result = authService.logout();
-      
+      // Call logout API
+      const result = await authService.logout();
+
       if (result.success) {
         // Redirect to home page
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
+      } else {
+        console.error("Logout failed:", result.error);
+        // Still redirect even if logout fails
+        navigate("/", { replace: true });
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
+      // Still redirect even if logout fails
+      navigate("/", { replace: true });
     } finally {
       setIsLoggingOut(false);
     }
   };
 
   return (
-    <button 
+    <button
       className={`logout-button logout-button--${variant} ${className}`}
       onClick={handleLogout}
       disabled={isLoggingOut}

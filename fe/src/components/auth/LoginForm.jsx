@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { validateEmail } from "../../utils/validation";
 import "../../styles/components/LoginForm.scss";
 import authService from "../../services/authService";
 
@@ -11,11 +12,6 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,13 +27,13 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateEmail(formData.email)) {
-      setError("Vui lòng nhập email hợp lệ");
+    if (!formData.email || !formData.password) {
+      setError("Vui lòng nhập đầy đủ email và mật khẩu");
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+    if (!validateEmail(formData.email) || formData.password.length < 6) {
+      setError("Mật khẩu hoặc email nhập chưa đúng");
       return;
     }
 
@@ -53,7 +49,7 @@ export default function LoginForm() {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setError("Có lỗi xảy ra khi đăng nhập");
+      setError("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau");
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +69,7 @@ export default function LoginForm() {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            placeholder="NHẬP EMAIL VÀO ĐÂY"
+            placeholder="Nhập địa chỉ email"
             required
           />
 
@@ -84,9 +80,8 @@ export default function LoginForm() {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            placeholder="NHẬP MẬT KHẨU VÀO ĐÂY"
+            placeholder="Nhập mật khẩu"
             required
-            minLength={6}
           />
 
           {error && <div className="login-form__error">{error}</div>}

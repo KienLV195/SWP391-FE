@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import authService from "../services/authService";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -22,11 +22,11 @@ export const AuthProvider = ({ children }) => {
       try {
         const currentUser = authService.getCurrentUser();
         const isAuth = authService.isUserAuthenticated();
-        
+
         setUser(currentUser);
         setIsAuthenticated(isAuth);
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error("Error initializing auth:", error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const result = await authService.login(email, password);
-      
+
       if (result.success) {
         setUser(result.user);
         setIsAuthenticated(true);
@@ -52,8 +52,11 @@ export const AuthProvider = ({ children }) => {
         return result;
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Có lỗi xảy ra khi đăng nhập' };
+      console.error("Login error:", error);
+      return {
+        success: false,
+        error: "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau",
+      };
     } finally {
       setLoading(false);
     }
@@ -61,13 +64,19 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const result = authService.logout();
+      const result = await authService.logout();
       setUser(null);
       setIsAuthenticated(false);
       return result;
     } catch (error) {
-      console.error('Logout error:', error);
-      return { success: false, error: 'Có lỗi xảy ra khi đăng xuất' };
+      console.error("Logout error:", error);
+      // Still clear local state even if API call fails
+      setUser(null);
+      setIsAuthenticated(false);
+      return {
+        success: false,
+        error: "Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại",
+      };
     }
   };
 
@@ -80,7 +89,7 @@ export const AuthProvider = ({ children }) => {
       }
       return success;
     } catch (error) {
-      console.error('Update profile error:', error);
+      console.error("Update profile error:", error);
       return false;
     }
   };
@@ -94,7 +103,7 @@ export const AuthProvider = ({ children }) => {
       }
       return success;
     } catch (error) {
-      console.error('Update status error:', error);
+      console.error("Update status error:", error);
       return false;
     }
   };
@@ -116,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     isAuthenticated,
-    
+
     // Methods
     login,
     logout,
@@ -125,18 +134,14 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     hasAnyRole,
     getRedirectPath,
-    
+
     // Computed values
     userRole: user?.role || null,
     userStatus: user?.status || null,
-    isFirstLogin: user?.isFirstLogin || false
+    isFirstLogin: user?.isFirstLogin || false,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

@@ -1,0 +1,173 @@
+@use '../../base/variables' as vars;
+@use '../../base/mixin' as mix;
+
+.charts-section {
+  margin-bottom: vars.$spacing-lg;
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: vars.$spacing-lg;
+
+    .chart-container {
+      background: vars.$manager-bg;
+      border-radius: 12px;
+      padding: vars.$spacing-lg;
+      box-shadow: 0 2px 8px vars.$manager-shadow;
+      border: 1px solid vars.$manager-border;
+      font-family: vars.$font-manager;
+
+      .chart-header {
+        margin-bottom: vars.$spacing-md;
+        padding-bottom: vars.$spacing-sm;
+        border-bottom: 1px solid vars.$manager-border;
+
+        h3 {
+          @include mix.heading(1.2rem, vars.$manager-text);
+          font-weight: 600;
+          margin: 0 0 vars.$spacing-xs 0;
+          font-family: vars.$font-manager;
+        }
+
+        .chart-subtitle {
+          @include mix.text(0.9rem, vars.$manager-text-light);
+          font-weight: 400;
+          font-family: vars.$font-manager;
+        }
+      }
+
+      .chart-content {
+        min-height: 300px;
+        @include mix.flex-center;
+
+        // Placeholder styles
+        .chart-placeholder {
+          text-align: center;
+          padding: vars.$spacing-lg;
+          color: vars.$manager-text-light;
+
+          h3 {
+            @include mix.heading(1.1rem, vars.$manager-text);
+            margin-bottom: vars.$spacing-md;
+            font-family: vars.$font-manager;
+          }
+
+          .placeholder-content {
+            .placeholder-icon {
+              font-size: 3rem;
+              margin-bottom: vars.$spacing-md;
+              opacity: 0.6;
+            }
+
+            p {
+              @include mix.text(1rem, vars.$manager-text-light);
+              margin-bottom: vars.$spacing-sm;
+              font-family: vars.$font-manager;
+            }
+
+            small {
+              @include mix.text(0.8rem, vars.$manager-text-light);
+              font-style: italic;
+              font-family: vars.$font-manager;
+            }
+          }
+        }
+      }
+
+      // Hover effect
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px vars.$manager-shadow;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+
+  // Responsive Design
+  @include mix.tablet {
+    .charts-grid {
+      grid-template-columns: 1fr;
+      gap: vars.$spacing-md;
+
+      .chart-container {
+        padding: vars.$spacing-md;
+
+        .chart-header {
+          h3 {
+            font-size: 1.1rem;
+          }
+
+          .chart-subtitle {
+            font-size: 0.8rem;
+          }
+        }
+
+        .chart-content {
+          min-height: 250px;
+
+          .chart-placeholder {
+            padding: vars.$spacing-md;
+
+            .placeholder-content {
+              .placeholder-icon {
+                font-size: 2.5rem;
+              }
+
+              p {
+                font-size: 0.9rem;
+              }
+
+              small {
+                font-size: 0.75rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @include mix.mobile {
+    .charts-grid {
+      gap: vars.$spacing-sm;
+
+      .chart-container {
+        padding: vars.$spacing-sm;
+
+        .chart-header {
+          margin-bottom: vars.$spacing-sm;
+
+          h3 {
+            font-size: 1rem;
+          }
+
+          .chart-subtitle {
+            font-size: 0.75rem;
+          }
+        }
+
+        .chart-content {
+          min-height: 200px;
+
+          .chart-placeholder {
+            padding: vars.$spacing-sm;
+
+            .placeholder-content {
+              .placeholder-icon {
+                font-size: 2rem;
+              }
+
+              p {
+                font-size: 0.8rem;
+              }
+
+              small {
+                font-size: 0.7rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

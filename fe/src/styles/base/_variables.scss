@@ -65,6 +65,7 @@ $font-weight-extrabold: 800;
 // Font family
 $font-primary: "Montserrat", "Poppins", Arial, Helvetica, sans-serif;
 $font-secondary: "Open Sans", "Roboto", "Inter", Arial, Helvetica, sans-serif;
+$font-manager: "Inter", "Roboto", "Segoe UI", sans-serif; // Font cho Manager
 
 // Extended colors
 $accent-color: #02314B; // Same as dark-blue
@@ -76,6 +77,19 @@ $success-color: #4caf50;
 $warning-color: #ff9800;
 $error-color: #f44336;
 $info-color: #2196f3;
+
+// Manager Theme Colors (Minimalistic)
+$manager-primary: #D93E4C; // Màu chính cho Manager - nổi bật
+$manager-dark: #20374E; // Nền tối sang trọng cho báo cáo
+$manager-warm: #DECCAA; // Màu ấm áp cho vùng phụ trợ
+$manager-emergency: #D91022; // Cảnh báo/khẩn cấp
+$manager-bg: #ffffff; // Nền trắng
+$manager-bg-light: #f5f7fa; // Nền xanh nhạt
+$manager-text: #2c3e50; // Text chính
+$manager-text-light: #6c757d; // Text phụ
+$manager-border: #e9ecef; // Border nhẹ
+$manager-hover: #f8f9fa; // Hover state
+$manager-shadow: rgba(0, 0, 0, 0.08); // Shadow nhẹ
 
 $text-primary: #222;
 $text-secondary: #6c757d;

@@ -1,5 +1,6 @@
 import { authenticateUser, getUserById, ROLES } from './mockData';
 import config from '../config/environment';
+import axios from 'axios';
 
 // Authentication service for managing user sessions
 class AuthService {
@@ -7,6 +8,40 @@ class AuthService {
     this.currentUser = null;
     this.isAuthenticated = false;
     this.loadUserFromStorage();
+    this.setupAxiosInterceptors();
+  }
+
+  // Setup axios interceptors to automatically add auth token
+  setupAxiosInterceptors() {
+    // Request interceptor to add token
+    axios.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Response interceptor to handle auth errors
+    axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        if (error.response?.status === 401 && !error.config.url.includes('/auth/logout')) {
+          // Token expired or invalid, logout user (but not if it's the logout call itself)
+          console.log('401 error detected, logging out user');
+          this.logout();
+          window.location.href = '/login';
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   // Load user from localStorage on app start
@@ -35,38 +70,80 @@ class AuthService {
   // Login with email and password
   async login(email, password) {
     try {
-      // TODO_API_REPLACE: Replace with actual API call
-      // const response = await fetch(`${config.api.baseUrl}/auth/login`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ email, password })
-      // });
-      // const data = await response.json();
-      // if (response.ok) {
-      //   this.currentUser = data.user;
-      //   this.isAuthenticated = true;
-      //   localStorage.setItem('authToken', data.token);
-      //   this.saveUserToStorage(data.user);
-      //   return { success: true, user: data.user, token: data.token };
-      // } else {
-      //   return { success: false, error: data.message };
-      // }
+      // Real API call to backend
+      const response = await axios.post(
+        'https://localhost:7021/api/auth/login',
+        {
+          email: email,
+          password: password
+        }
+      );
 
-      // MOCK_DATA: Remove this section when implementing real API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const user = authenticateUser(email, password);
-      if (user) {
+      console.log('Login response:', response);
+
+      // Check if login was successful
+      if (response.status === 200 && response.data) {
+        const userData = response.data;
+
+        // Extract user information from response
+        const user = {
+          id: userData.id || userData.userId,
+          email: userData.email,
+          name: userData.name || userData.fullName,
+          role: userData.role,
+          status: userData.status || 1,
+          profile: userData.profile || {
+            email: userData.email,
+            fullName: userData.name || userData.fullName,
+            phone: userData.phone || '',
+            address: userData.address || '',
+            bloodType: userData.bloodType || '',
+            dateOfBirth: userData.dateOfBirth || '',
+            gender: userData.gender || ''
+          },
+          isFirstLogin: userData.isFirstLogin || false
+        };
+
+        // Save authentication data
         this.currentUser = user;
         this.isAuthenticated = true;
+
+        // Save token if provided
+        if (userData.token) {
+          localStorage.setItem('authToken', userData.token);
+        }
+
+        // Save user to localStorage
         this.saveUserToStorage(user);
-        return { success: true, user };
+
+        return {
+          success: true,
+          user: user,
+          token: userData.token
+        };
       } else {
-        return { success: false, error: 'Email hoặc mật khẩu không đúng' };
+        return {
+          success: false,
+          error: response.data?.message || 'Đăng nhập không thành công'
+        };
       }
     } catch (error) {
-      return { success: false, error: 'Có lỗi xảy ra khi đăng nhập' };
+      console.error('Login error:', error);
+
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data?.message ||
+                           error.response.data?.error ||
+                           'Thông tin đăng nhập không chính xác';
+        return { success: false, error: errorMessage };
+      } else if (error.request) {
+        // Network error
+        return { success: false, error: 'Không thể kết nối đến hệ thống. Vui lòng thử lại sau' };
+      } else {
+        // Other error
+        return { success: false, error: 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau' };
+      }
     }
   }
 
@@ -92,24 +169,57 @@ class AuthService {
       await new Promise(resolve => setTimeout(resolve, 1500));
       return { success: true, message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.' };
     } catch (error) {
-      return { success: false, error: 'Có lỗi xảy ra khi đăng ký' };
+      console.error('Register error:', error);
+
+      // Handle different types of errors
+      if (error.response) {
+        const errorMessage = error.response.data?.message ||
+                           error.response.data?.error ||
+                           'Đăng ký không thành công';
+        return { success: false, error: errorMessage };
+      } else if (error.request) {
+        return { success: false, error: 'Không thể kết nối đến hệ thống. Vui lòng thử lại sau' };
+      } else {
+        return { success: false, error: 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau' };
+      }
     }
   }
 
   // Logout
-  logout() {
-    // TODO_API_REPLACE: Add API call to invalidate token
-    // await fetch(`${config.api.baseUrl}/auth/logout`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-    //   }
-    // });
+  async logout() {
+    try {
+      // Call API to invalidate token if token exists
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          await axios.post(
+            'https://localhost:7021/api/auth/logout',
+            {},
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+          console.log('Logout API call successful');
+        } catch (apiError) {
+          console.warn('Logout API call failed, but continuing with local logout:', apiError.message);
+          // Don't throw error, just log it and continue with local logout
+        }
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue with local logout even if API call fails
+    } finally {
+      // Always clear local data
+      this.currentUser = null;
+      this.isAuthenticated = false;
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+      console.log('Local logout completed');
+    }
 
-    this.currentUser = null;
-    this.isAuthenticated = false;
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('authToken');
+    return { success: true };
   }
 
   // Get current user
@@ -135,12 +245,7 @@ class AuthService {
     }
   }
 
-  // Logout method
-  logout() {
-    this.currentUser = null;
-    localStorage.removeItem('currentUser');
-    return { success: true };
-  }
+
 
   // Get user status
   getUserStatus() {

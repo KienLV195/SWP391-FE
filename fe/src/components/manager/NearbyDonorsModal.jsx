@@ -237,7 +237,7 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
                         <span
                           className={`distance-info distance-${donor.priority}`}
                         >
-                          {DistanceService.formatDistance(donor.distance)}
+                          {GeolibService.formatDistance(donor.distance)}
                           <small>({donor.travelTime})</small>
                         </span>
                       </div>
@@ -286,9 +286,7 @@ const NearbyDonorsModal = ({ isOpen, onClose, bloodRequest }) => {
 
                     <div className="donor-actions">
                       <a
-                        href={DistanceService.getDirectionsUrl(
-                          donor.coordinates
-                        )}
+                        href={GeolibService.getDirectionsUrl(donor.coordinates)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-sm btn-outline"

@@ -1,29 +1,29 @@
-@import '../base/variables';
-@import '../base/mixin';
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
 
 .manager-sidebar {
   width: 280px;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: $white;
+  background: vars.$manager-bg;
+  color: vars.$manager-text;
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
   flex-direction: column;
   padding: 0;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  box-shadow: 2px 0 10px vars.$manager-shadow;
   z-index: 1000;
   transition: all 0.3s ease;
   overflow: hidden;
-  backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid vars.$manager-border;
+  font-family: vars.$font-manager;
 
   &.collapsed {
     width: 80px;
 
     .sidebar-header {
-      padding: $spacing-md;
+      padding: vars.$spacing-md;
 
       .toggle-btn {
         position: relative;
@@ -31,12 +31,20 @@
         top: auto;
         margin: 0 auto;
       }
+
+      .logo {
+        font-size: 1rem;
+      }
+
+      .subtitle {
+        display: none;
+      }
     }
 
     .sidebar-nav {
       .nav-item {
         justify-content: center;
-        padding: $spacing-md;
+        padding: vars.$spacing-md;
 
         .nav-icon {
           font-size: 1.3rem;
@@ -49,112 +57,54 @@
     }
 
     .sidebar-footer {
-      padding: 0 $spacing-sm;
+      padding: 0 vars.$spacing-sm;
 
-      &.collapsed {
-        display: block;
+      .logout-btn .logout-text {
+        display: none;
       }
     }
   }
 
   .sidebar-header {
-    padding: $spacing-lg;
+    padding: vars.$spacing-lg;
     text-align: center;
     position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    backdrop-filter: blur(20px);
+    border-bottom: 1px solid vars.$manager-border;
+    background: vars.$manager-bg;
 
     .toggle-btn {
       position: absolute;
-      top: $spacing-md;
-      right: $spacing-md;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: $white;
-      padding: 0.75rem;
-      border-radius: 12px;
+      top: vars.$spacing-md;
+      right: vars.$spacing-md;
+      background: vars.$manager-bg;
+      border: 1px solid vars.$manager-border;
+      color: vars.$manager-text;
+      padding: 0.5rem;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1rem;
       transition: all 0.3s ease;
       z-index: 1001;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 
       &:hover {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-        transform: scale(1.1) rotate(180deg);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        background: vars.$manager-hover;
+        color: vars.$manager-primary;
+        border-color: vars.$manager-primary;
       }
     }
 
-    .sidebar-logo {
-      margin-bottom: $spacing-xl;
-      margin-top: $spacing-md;
-
-      a {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-      }
-
-      .logo-img {
-        width: 90px;
-        height: 90px;
-        border-radius: 20px;
-        object-fit: cover;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-
-        &:hover {
-          transform: scale(1.05) rotate(5deg);
-          border-color: rgba(255, 255, 255, 0.6);
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
-        }
-      }
+    .logo {
+      @include mix.heading(1.5rem, vars.$manager-primary);
+      font-weight: 700;
+      margin-bottom: vars.$spacing-xs;
+      letter-spacing: 0.5px;
+      font-family: vars.$font-manager;
     }
 
-    .user-info {
-      @include flex-align(center, center);
-      flex-direction: column;
-      gap: $spacing-md;
-      margin-bottom: $spacing-xl;
-      padding: $spacing-lg;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-
-      .user-avatar {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(45deg, $secondary-color, lighten($secondary-color, 10%));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: $white;
-        font-size: 1.8rem;
-        font-weight: 700;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-
-        &:hover {
-          transform: scale(1.1);
-          border-color: rgba(255, 255, 255, 0.6);
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
-        }
-      }
-
-      .user-name {
-        @include text(1.1rem, $white);
-        font-weight: 600;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        text-align: center;
-      }
+    .subtitle {
+      @include mix.text(0.9rem, vars.$manager-text-light);
+      font-weight: 400;
+      font-family: vars.$font-manager;
     }
   }
 
@@ -162,55 +112,55 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: 4px;
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: calc(100vh - 400px);
-    padding: $spacing-md 0;
+    max-height: calc(100vh - 200px);
+    padding: vars.$spacing-md 0;
 
     // Custom scrollbar
     &::-webkit-scrollbar {
-      width: 6px;
+      width: 4px;
     }
 
     &::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      margin: $spacing-sm;
+      background: vars.$manager-bg-light;
+      border-radius: 2px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-      border-radius: 3px;
+      background: vars.$manager-border;
+      border-radius: 2px;
       transition: all 0.3s ease;
 
       &:hover {
-        background: linear-gradient(45deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));
+        background: vars.$manager-text-light;
       }
     }
 
     // Firefox scrollbar
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+    scrollbar-color: vars.$manager-border vars.$manager-bg-light;
 
     .nav-item {
-      @include text(1rem, $white);
-      padding: $spacing-md $spacing-lg;
+      @include mix.text(0.95rem, vars.$manager-text);
+      padding: 12px vars.$spacing-lg;
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: $spacing-md;
+      gap: 12px;
       transition: all 0.3s ease;
       position: relative;
-      margin: 0 $spacing-sm;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
+      margin: 0 vars.$spacing-sm;
+      border-radius: 8px;
+      font-family: vars.$font-manager;
 
       .nav-icon {
-        font-size: 1.2rem;
-        min-width: 24px;
+        font-size: 1.1rem;
+        min-width: 20px;
         text-align: center;
         transition: all 0.3s ease;
+        color: vars.$manager-text-light;
       }
 
       .nav-text {
@@ -221,143 +171,108 @@
       }
 
       &:hover {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-        transform: translateX(8px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: vars.$manager-hover;
+        color: vars.$manager-primary;
 
         .nav-icon {
-          transform: scale(1.2);
-        }
-
-        .nav-text {
-          font-weight: 600;
+          color: vars.$manager-primary;
         }
       }
 
       &.active {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-        font-weight: 700;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        background: rgba(vars.$manager-primary, 0.1);
+        color: vars.$manager-primary;
+        font-weight: 600;
 
         &::before {
           content: '';
           position: absolute;
-          left: -$spacing-sm;
+          left: 0;
           top: 50%;
           transform: translateY(-50%);
-          width: 4px;
+          width: 3px;
           height: 60%;
-          background: linear-gradient(45deg, $secondary-color, lighten($secondary-color, 20%));
+          background: vars.$manager-primary;
           border-radius: 2px;
-          box-shadow: 0 2px 8px rgba($secondary-color, 0.5);
         }
 
         .nav-icon {
-          transform: scale(1.1);
-          color: $secondary-color;
-          text-shadow: 0 0 10px rgba($secondary-color, 0.5);
+          color: vars.$manager-primary;
         }
 
         .nav-text {
-          color: $secondary-color;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          color: vars.$manager-primary;
         }
       }
     }
   }
 
   .sidebar-footer {
-    padding: $spacing-lg;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: vars.$spacing-lg;
+    border-top: 1px solid vars.$manager-border;
     margin-top: auto;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-
-    &.collapsed {
-      display: none;
-    }
+    background: vars.$manager-bg;
 
     .logout-btn {
-      @include flex-align(center, center);
-      gap: $spacing-md;
+      @include mix.flex-align(center, center);
+      gap: 8px;
       text-decoration: none;
-      background: linear-gradient(135deg, #dc3545, #c82333);
-      color: $white;
-      padding: $spacing-md $spacing-lg;
-      border-radius: 16px;
-      font-weight: 700;
+      background: vars.$manager-primary;
+      color: vars.$white;
+      padding: 12px vars.$spacing-lg;
+      border-radius: 8px;
+      font-weight: 500;
       transition: all 0.3s ease;
       width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
-      backdrop-filter: blur(20px);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      border: none;
+      font-family: vars.$font-manager;
+      font-size: 0.9rem;
 
       &:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a);
-        transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
-        border-color: rgba(255, 255, 255, 0.5);
+        background: darken(vars.$manager-primary, 10%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px vars.$manager-shadow;
       }
 
-      svg {
-        font-size: 1.3rem;
+      .logout-icon {
+        font-size: 1rem;
         transition: all 0.3s ease;
       }
 
-      &:hover svg {
-        transform: rotate(180deg);
+      .logout-text {
+        transition: all 0.3s ease;
       }
     }
   }
 
   // Responsive Design
-  @include tablet {
-    width: 200px;
-
-    .sidebar-logo img {
-      width: 80px;
-    }
-
-    .user-info {
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-      }
-
-      .user-name {
-        font-size: 1rem;
-      }
-    }
+  @include mix.tablet {
+    width: 240px;
 
     .nav-item {
       font-size: 0.9rem;
-      padding: $spacing-sm $spacing-md;
+      padding: 10px vars.$spacing-md;
     }
 
     .logout-btn {
-      padding: $spacing-sm;
-      font-size: 0.9rem;
+      padding: 10px vars.$spacing-md;
+      font-size: 0.85rem;
     }
   }
 
-  @include mobile {
+  @include mix.mobile {
     width: 100%;
     height: auto;
     position: relative;
     flex-direction: column;
-    padding: $spacing-md 0;
+    padding: vars.$spacing-md 0;
 
     .sidebar-nav {
-      display: none; // Ẩn menu trên mobile, có thể thêm toggle button nếu cần
+      display: none;
     }
 
     .sidebar-footer {
-      padding: 0 $spacing-md;
+      padding: 0 vars.$spacing-md;
     }
   }
 }
@@ -369,11 +284,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 999;
   display: none;
 
-  @include mobile {
+  @include mix.mobile {
     display: block;
   }
 }

@@ -29,7 +29,7 @@ import ExternalRequestsManagement from "../pages/doctor/ExternalRequestsManageme
 import DoctorDonorManagementPage from "../pages/doctor/DoctorDonorManagementPage";
 
 import BloodInventoryViewPage from "../pages/doctor/BloodInventoryViewPage";
-import DonationSchedulePage from "../pages/manager/DonationSchedulePage";
+import DonationSchedulePageNew from "../pages/manager/DonationSchedulePageNew";
 import EligibleDonorsPage from "../pages/manager/EligibleDonorsPage";
 
 import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
@@ -156,7 +156,7 @@ const router = createBrowserRouter([
     path: "/manager/donation-schedule",
     element: (
       <ManagerRoute>
-        <DonationSchedulePage />
+        <DonationSchedulePageNew />
       </ManagerRoute>
     ),
   },
