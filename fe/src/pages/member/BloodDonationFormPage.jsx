@@ -35,24 +35,61 @@ const BloodDonationFormPage = () => {
     },
   });
   const [healthSurvey, setHealthSurvey] = useState({
+    // Basic Info
     weight: "",
     height: "",
     bloodPressure: "",
     heartRate: "",
-    lastDonationDate: "",
-    medications: "",
-    chronicDiseases: [],
-    recentIllness: false,
-    recentTravel: false,
-    recentVaccination: false,
-    alcoholConsumption: false,
-    smoking: false,
-    pregnancy: false, // For female donors
-    breastfeeding: false, // For female donors
-    tattooRecent: false,
-    surgeryRecent: false,
-    bloodTransfusion: false,
-    additionalNotes: "",
+    bloodType: "",
+
+    // Question 1: Previous Donation
+    hasDonatedBefore: null, // true/false/null
+
+    // Question 2: Current Medical Conditions
+    hasCurrentMedicalConditions: null, // true/false/null
+
+    // Question 3: Previous Serious Conditions
+    hasPreviousSeriousConditions: null, // true/false/null
+    otherPreviousConditions: "", // text input for other conditions
+
+    // Question 4: Last 12 Months
+    hadMalariaSyphilisTuberculosis: false,
+    hadBloodTransfusion: false,
+    hadVaccination: false,
+    last12MonthsNone: false,
+
+    // Question 5: Last 6 Months
+    hadTyphoidSepsis: false,
+    unexplainedWeightLoss: false,
+    persistentLymphNodes: false,
+    invasiveMedicalProcedures: false,
+    tattoosPiercings: false,
+    drugUse: false,
+    bloodExposure: false,
+    livedWithHepatitisB: false,
+    sexualContactWithInfected: false,
+    sameSexContact: false,
+    last6MonthsNone: false,
+
+    // Question 6: Last 1 Month
+    hadUrinaryInfection: false,
+    visitedEpidemicArea: false,
+    last1MonthNone: false,
+
+    // Question 7: Last 14 Days
+    hadFluSymptoms: false,
+    last14DaysNone: false,
+    otherSymptoms: "", // text input for other symptoms
+
+    // Question 8: Last 7 Days
+    tookAntibiotics: false,
+    last7DaysNone: false,
+    otherMedications: "", // text input for other medications
+
+    // Question 9: Women Only
+    isPregnantOrNursing: false,
+    hadPregnancyTermination: false,
+    womenQuestionsNone: false,
   });
 
   const [appointmentData, setAppointmentData] = useState({
@@ -97,41 +134,110 @@ const BloodDonationFormPage = () => {
   const checkEligibility = () => {
     const {
       weight,
-      chronicDiseases,
-      recentIllness,
-      recentTravel,
-      alcoholConsumption,
-      tattooRecent,
-      surgeryRecent,
-      bloodTransfusion,
+      hasCurrentMedicalConditions,
+      hasPreviousSeriousConditions,
+      otherPreviousConditions,
+      hadMalariaSyphilisTuberculosis,
+      hadBloodTransfusion,
+      hadVaccination,
+      last12MonthsNone,
+      hadTyphoidSepsis,
+      unexplainedWeightLoss,
+      persistentLymphNodes,
+      invasiveMedicalProcedures,
+      tattoosPiercings,
+      drugUse,
+      bloodExposure,
+      livedWithHepatitisB,
+      sexualContactWithInfected,
+      sameSexContact,
+      last6MonthsNone,
+      hadUrinaryInfection,
+      visitedEpidemicArea,
+      last1MonthNone,
+      hadFluSymptoms,
+      last14DaysNone,
+      otherSymptoms,
+      tookAntibiotics,
+      last7DaysNone,
+      otherMedications,
+      isPregnantOrNursing,
+      hadPregnancyTermination,
+      womenQuestionsNone
     } = healthSurvey;
 
-    // Weight check
-    if (parseFloat(weight) < 45) {
-      return { eligible: false, reason: "Cân nặng dưới 45kg" };
+    // Age check (assuming dateOfBirth is in personalInfo)
+    const age = calculateAge(personalInfo.dateOfBirth);
+    if (age < 18 || age > 60) {
+      return { eligible: false, reason: "Tuổi không đủ điều kiện (18-60 tuổi)" };
     }
 
-    // Chronic diseases check
-    const hasDisqualifyingCondition = chronicDiseases.some((disease) =>
-      disqualifyingConditions.includes(disease)
-    );
-    if (hasDisqualifyingCondition) {
-      return { eligible: false, reason: "Có bệnh nền không phù hợp" };
+    // Weight check based on gender
+    const minWeight = personalInfo.gender === "female" ? 42 : 45;
+    if (parseFloat(weight) < minWeight) {
+      return { eligible: false, reason: `Cân nặng dưới ${minWeight}kg` };
     }
 
-    // Recent conditions check
-    if (
-      recentIllness ||
-      recentTravel ||
-      alcoholConsumption ||
-      tattooRecent ||
-      surgeryRecent ||
-      bloodTransfusion
-    ) {
-      return { eligible: false, reason: "Có yếu tố rủi ro gần đây" };
+    // Question 3: Previous Serious Conditions
+    if (hasPreviousSeriousConditions === true || hasPreviousSeriousConditions === "other") {
+      return { eligible: false, reason: "Có tiền sử bệnh nghiêm trọng" };
+    }
+
+    // Question 4: Last 12 Months
+    if (!last12MonthsNone && (hadMalariaSyphilisTuberculosis || hadBloodTransfusion || hadVaccination)) {
+      return { eligible: false, reason: "Có yếu tố rủi ro trong 12 tháng qua" };
+    }
+
+    // Question 5: Last 6 Months
+    if (!last6MonthsNone && (
+      hadTyphoidSepsis ||
+      unexplainedWeightLoss ||
+      persistentLymphNodes ||
+      invasiveMedicalProcedures ||
+      tattoosPiercings ||
+      drugUse ||
+      bloodExposure ||
+      livedWithHepatitisB ||
+      sexualContactWithInfected ||
+      sameSexContact
+    )) {
+      return { eligible: false, reason: "Có yếu tố rủi ro trong 6 tháng qua" };
+    }
+
+    // Question 6: Last 1 Month
+    if (!last1MonthNone && (hadUrinaryInfection || visitedEpidemicArea)) {
+      return { eligible: false, reason: "Có yếu tố rủi ro trong 1 tháng qua" };
+    }
+
+    // Question 7: Last 14 Days
+    if (!last14DaysNone && (hadFluSymptoms || otherSymptoms)) {
+      return { eligible: false, reason: "Có triệu chứng bệnh trong 14 ngày qua" };
+    }
+
+    // Question 8: Last 7 Days
+    if (!last7DaysNone && (tookAntibiotics || otherMedications)) {
+      return { eligible: false, reason: "Đã sử dụng thuốc trong 7 ngày qua" };
+    }
+
+    // Question 9: Women Only
+    if (personalInfo.gender === "female" && !womenQuestionsNone && (isPregnantOrNursing || hadPregnancyTermination)) {
+      return { eligible: false, reason: "Không đủ điều kiện về thai sản" };
     }
 
     return { eligible: true, reason: "" };
+  };
+
+  const calculateAge = (dateOfBirth) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
   };
 
   const handleHealthSurveySubmit = async () => {
@@ -157,6 +263,7 @@ const BloodDonationFormPage = () => {
           description: `VÌ LÝ DO SỨC KHỎE: ${eligibilityResult.reason}`,
         });
       }
+
     } catch (error) {
       console.error("Error submitting health survey:", error);
       setRegistrationResult({
@@ -219,9 +326,8 @@ const BloodDonationFormPage = () => {
       // Send notification
       await NotificationService.sendAppointmentReminder(currentUser.id, {
         id: Date.now(),
-        appointmentDate: `${appointmentData.preferredDate}T${
-          appointmentData.timeSlot === "morning" ? "09:00:00" : "15:00:00"
-        }`,
+        appointmentDate: `${appointmentData.preferredDate}T${appointmentData.timeSlot === "morning" ? "09:00:00" : "15:00:00"
+          }`,
         location: "Bệnh viện XYZ - Tầng 2",
       });
 
@@ -346,7 +452,7 @@ const BloodDonationFormPage = () => {
   ) {
     return (
       <div className="blood-donation-form-page">
-        <MemberSidebar />
+
 
         <div className="registration-content">
           <div className="result-section">
@@ -387,7 +493,7 @@ const BloodDonationFormPage = () => {
                 <div className="result-actions">
                   <button
                     className="btn btn-primary"
-                    onClick={() => navigate("/member/dashboard")}
+                    onClick={() => navigate("/member/")}
                   >
                     Về trang chủ
                   </button>
@@ -403,20 +509,38 @@ const BloodDonationFormPage = () => {
                           height: "",
                           bloodPressure: "",
                           heartRate: "",
-                          lastDonationDate: "",
-                          medications: "",
-                          chronicDiseases: [],
-                          recentIllness: false,
-                          recentTravel: false,
-                          recentVaccination: false,
-                          alcoholConsumption: false,
-                          smoking: false,
-                          pregnancy: false,
-                          breastfeeding: false,
-                          tattooRecent: false,
-                          surgeryRecent: false,
-                          bloodTransfusion: false,
-                          additionalNotes: "",
+                          bloodType: "",
+                          hasDonatedBefore: null,
+                          hasCurrentMedicalConditions: null,
+                          hasPreviousSeriousConditions: null,
+                          otherPreviousConditions: "",
+                          hadMalariaSyphilisTuberculosis: false,
+                          hadBloodTransfusion: false,
+                          hadVaccination: false,
+                          last12MonthsNone: false,
+                          hadTyphoidSepsis: false,
+                          unexplainedWeightLoss: false,
+                          persistentLymphNodes: false,
+                          invasiveMedicalProcedures: false,
+                          tattoosPiercings: false,
+                          drugUse: false,
+                          bloodExposure: false,
+                          livedWithHepatitisB: false,
+                          sexualContactWithInfected: false,
+                          sameSexContact: false,
+                          last6MonthsNone: false,
+                          hadUrinaryInfection: false,
+                          visitedEpidemicArea: false,
+                          last1MonthNone: false,
+                          hadFluSymptoms: false,
+                          last14DaysNone: false,
+                          otherSymptoms: "",
+                          tookAntibiotics: false,
+                          last7DaysNone: false,
+                          otherMedications: "",
+                          isPregnantOrNursing: false,
+                          hadPregnancyTermination: false,
+                          womenQuestionsNone: false,
                         });
                       }}
                     >
@@ -443,17 +567,15 @@ const BloodDonationFormPage = () => {
 
           <div className="progress-steps">
             <div
-              className={`step ${step >= 1 ? "active" : ""} ${
-                step > 1 ? "completed" : ""
-              }`}
+              className={`step ${step >= 1 ? "active" : ""} ${step > 1 ? "completed" : ""
+                }`}
             >
               <div className="step-number">1</div>
               <div className="step-text">Thông tin cá nhân</div>
             </div>
             <div
-              className={`step ${step >= 2 ? "active" : ""} ${
-                step > 2 ? "completed" : ""
-              }`}
+              className={`step ${step >= 2 ? "active" : ""} ${step > 2 ? "completed" : ""
+                }`}
             >
               <div className="step-number">2</div>
               <div className="step-text">Khảo sát sức khỏe</div>
@@ -589,9 +711,7 @@ const BloodDonationFormPage = () => {
           <div className="health-survey-section">
             <div className="form-card">
               <h2>🏥 Khảo sát sức khỏe</h2>
-              <p>
-                Vui lòng điền đầy đủ thông tin để đánh giá tình trạng sức khỏe
-              </p>
+              <p>Vui lòng trả lời các câu hỏi sau để đánh giá tình trạng sức khỏe</p>
 
               <form className="health-form">
                 {/* Basic Health Info */}
@@ -628,165 +748,494 @@ const BloodDonationFormPage = () => {
                       />
                     </div>
                   </div>
-
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Huyết áp</label>
+                      <label>
+                        Nhóm máu <span className="required">*</span>
+                      </label>
+                      <select
+                        value={healthSurvey.bloodType}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("bloodType", e.target.value)
+                        }
+                        required
+                      >
+                        <option value="">Chọn nhóm máu</option>
+                        {Object.entries(BLOOD_TYPES).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Huyết áp (mmHg)</label>
                       <input
                         type="text"
                         value={healthSurvey.bloodPressure}
                         onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "bloodPressure",
-                            e.target.value
-                          )
+                          handleHealthSurveyChange("bloodPressure", e.target.value)
                         }
-                        placeholder="VD: 120/80"
+                        placeholder="Ví dụ: 120/80"
                       />
                     </div>
-                    <div className="form-group">
-                      <label>Nhịp tim (bpm)</label>
+                  </div>
+                </div>
+
+                {/* Question 1 */}
+                <div className="form-section">
+                  <h3>1. Anh/chị từng hiến máu chưa?</h3>
+                  <div className="radio-group">
+                    <label className="radio-item">
                       <input
-                        type="number"
-                        value={healthSurvey.heartRate}
+                        type="radio"
+                        name="hasDonatedBefore"
+                        value="true"
+                        checked={healthSurvey.hasDonatedBefore === true}
                         onChange={(e) =>
-                          handleHealthSurveyChange("heartRate", e.target.value)
+                          handleHealthSurveyChange("hasDonatedBefore", e.target.value === "true")
                         }
-                        placeholder="VD: 72"
-                        min="40"
-                        max="200"
+                      />
+                      <span>Có</span>
+                    </label>
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasDonatedBefore"
+                        value="false"
+                        checked={healthSurvey.hasDonatedBefore === false}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasDonatedBefore", e.target.value === "true")
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Question 2 */}
+                <div className="form-section">
+                  <h3>2. Hiện tại, anh/chị có mắc bệnh lý nào không?</h3>
+                  <div className="radio-group">
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasCurrentMedicalConditions"
+                        value="true"
+                        checked={healthSurvey.hasCurrentMedicalConditions === true}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasCurrentMedicalConditions", e.target.value === "true")
+                        }
+                      />
+                      <span>Có</span>
+                    </label>
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasCurrentMedicalConditions"
+                        value="false"
+                        checked={healthSurvey.hasCurrentMedicalConditions === false}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasCurrentMedicalConditions", e.target.value === "true")
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Question 3 */}
+                <div className="form-section">
+                  <h3>3. Trước đây, anh/chị có từng mắc một trong các bệnh: viêm gan siêu vi B, C, HIV, vảy nến, phì đại tiền liệt tuyến, sốc phản vệ, tai biến mạch máu não, nhồi máu cơ tim, lupus ban đỏ, động kinh, ung thư, hen, được cấy ghép mô tạng?</h3>
+                  <div className="radio-group">
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasPreviousSeriousConditions"
+                        value="true"
+                        checked={healthSurvey.hasPreviousSeriousConditions === true}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasPreviousSeriousConditions", e.target.value === "true")
+                        }
+                      />
+                      <span>Có</span>
+                    </label>
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasPreviousSeriousConditions"
+                        value="false"
+                        checked={healthSurvey.hasPreviousSeriousConditions === false}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasPreviousSeriousConditions", e.target.value === "true")
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                    <label className="radio-item">
+                      <input
+                        type="radio"
+                        name="hasPreviousSeriousConditions"
+                        value="other"
+                        checked={healthSurvey.hasPreviousSeriousConditions === "other"}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hasPreviousSeriousConditions", "other")
+                        }
+                      />
+                      <span>Bệnh khác</span>
+                    </label>
+                  </div>
+                  {healthSurvey.hasPreviousSeriousConditions === "other" && (
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        value={healthSurvey.otherPreviousConditions}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("otherPreviousConditions", e.target.value)
+                        }
+                        placeholder="Vui lòng mô tả bệnh"
                       />
                     </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Lần hiến máu cuối cùng</label>
-                    <input
-                      type="date"
-                      value={healthSurvey.lastDonationDate}
-                      onChange={(e) =>
-                        handleHealthSurveyChange(
-                          "lastDonationDate",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </div>
+                  )}
                 </div>
 
-                {/* Chronic Diseases */}
+                {/* Question 4 */}
                 <div className="form-section">
-                  <h3>Bệnh nền</h3>
-                  <div className="checkbox-grid">
-                    {disqualifyingConditions.map((disease) => (
-                      <label key={disease} className="checkbox-item">
-                        <input
-                          type="checkbox"
-                          checked={healthSurvey.chronicDiseases.includes(
-                            disease
-                          )}
-                          onChange={(e) =>
-                            handleChronicDiseaseChange(
-                              disease,
-                              e.target.checked
-                            )
-                          }
-                        />
-                        <span>{disease}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Risk Factors */}
-                <div className="form-section">
-                  <h3>Yếu tố rủi ro</h3>
+                  <h3>4. Trong 12 tháng gần đây, anh/chị có:</h3>
                   <div className="checkbox-list">
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.recentIllness}
+                        checked={healthSurvey.hadMalariaSyphilisTuberculosis}
                         onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "recentIllness",
-                            e.target.checked
-                          )
+                          handleHealthSurveyChange("hadMalariaSyphilisTuberculosis", e.target.checked)
                         }
                       />
-                      <span>Bị ốm trong 2 tuần qua</span>
+                      <span>Khỏi bệnh sau khi mắc một trong các bệnh: sốt rét, giang mai, lao, viêm não-màng não, uốn ván, phẫu thuật ngoại khoa</span>
                     </label>
-
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.recentTravel}
+                        checked={healthSurvey.hadBloodTransfusion}
                         onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "recentTravel",
-                            e.target.checked
-                          )
+                          handleHealthSurveyChange("hadBloodTransfusion", e.target.checked)
                         }
                       />
-                      <span>Du lịch nước ngoài trong 6 tháng qua</span>
+                      <span>Được truyền máu hoặc các chế phẩm máu</span>
                     </label>
-
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.alcoholConsumption}
+                        checked={healthSurvey.hadVaccination}
                         onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "alcoholConsumption",
-                            e.target.checked
-                          )
+                          handleHealthSurveyChange("hadVaccination", e.target.checked)
                         }
                       />
-                      <span>Uống rượu trong 24 giờ qua</span>
+                      <span>Tiêm Vacxin</span>
                     </label>
-
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.tattooRecent}
+                        checked={healthSurvey.last12MonthsNone}
                         onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "tattooRecent",
-                            e.target.checked
-                          )
+                          handleHealthSurveyChange("last12MonthsNone", e.target.checked)
                         }
                       />
-                      <span>Xăm hình trong 6 tháng qua</span>
-                    </label>
-
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.surgeryRecent}
-                        onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "surgeryRecent",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      <span>Phẫu thuật trong 6 tháng qua</span>
-                    </label>
-
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.bloodTransfusion}
-                        onChange={(e) =>
-                          handleHealthSurveyChange(
-                            "bloodTransfusion",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      <span>Truyền máu trong 12 tháng qua</span>
+                      <span>Không</span>
                     </label>
                   </div>
                 </div>
+
+                {/* Question 5 */}
+                <div className="form-section">
+                  <h3>5. Trong 06 tháng gần đây, anh/chị có:</h3>
+                  <div className="checkbox-list">
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.hadTyphoidSepsis}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hadTyphoidSepsis", e.target.checked)
+                        }
+                      />
+                      <span>Khỏi bệnh sau khi mắc một trong các bệnh: thương hàn, nhiễm trùng máu, bị rắn cắn, viêm tắc động mạch, viêm tắc tĩnh mạch, viêm tụy, viêm tủy xương</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.unexplainedWeightLoss}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("unexplainedWeightLoss", e.target.checked)
+                        }
+                      />
+                      <span>Sút cân nhanh không rõ nguyên nhân</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.persistentLymphNodes}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("persistentLymphNodes", e.target.checked)
+                        }
+                      />
+                      <span>Nổi hạch kéo dài</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.invasiveMedicalProcedures}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("invasiveMedicalProcedures", e.target.checked)
+                        }
+                      />
+                      <span>Thực hiện thủ thuật y tế xâm lấn (chữa răng, châm cứu, lăn kim, nội soi,…)</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.tattoosPiercings}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("tattoosPiercings", e.target.checked)
+                        }
+                      />
+                      <span>Xăm, xỏ lỗ tai, lỗ mũi hoặc các vị trí khác trên cơ thể</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.drugUse}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("drugUse", e.target.checked)
+                        }
+                      />
+                      <span>Sử dụng ma túy</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.bloodExposure}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("bloodExposure", e.target.checked)
+                        }
+                      />
+                      <span>Tiếp xúc trực tiếp với máu, dịch tiết của người khác hoặc bị thương bởi kim tiêm</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.livedWithHepatitisB}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("livedWithHepatitisB", e.target.checked)
+                        }
+                      />
+                      <span>Sinh sống chung với người nhiễm bệnh Viêm gan siêu vi B</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.sexualContactWithInfected}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("sexualContactWithInfected", e.target.checked)
+                        }
+                      />
+                      <span>Quan hệ tình dục với người nhiễm viêm gan siêu vi B, C, HIV, giang mai hoặc người có nguy cơ nhiễm viêm gan siêu vi B, C, HIV, giang mai</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.sameSexContact}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("sameSexContact", e.target.checked)
+                        }
+                      />
+                      <span>Quan hệ tình dục với người cùng giới</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.last6MonthsNone}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("last6MonthsNone", e.target.checked)
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Question 6 */}
+                <div className="form-section">
+                  <h3>6. Trong 01 tháng gần đây, anh/chị có:</h3>
+                  <div className="checkbox-list">
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.hadUrinaryInfection}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hadUrinaryInfection", e.target.checked)
+                        }
+                      />
+                      <span>Khỏi bệnh sau khi mắc bệnh viêm đường tiết niệu, viêm da nhiễm trùng, viêm phế quản, viêm phổi, sởi, ho gà, quai bị, sốt xuất huyết, kiết lỵ, tả, Rubella</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.visitedEpidemicArea}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("visitedEpidemicArea", e.target.checked)
+                        }
+                      />
+                      <span>Đi vào vùng có dịch bệnh lưu hành (sốt rét, sốt xuất huyết, Zika,…)</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.last1MonthNone}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("last1MonthNone", e.target.checked)
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Question 7 */}
+                <div className="form-section">
+                  <h3>7. Trong 14 ngày gần đây, anh/chị có:</h3>
+                  <div className="checkbox-list">
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.hadFluSymptoms}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("hadFluSymptoms", e.target.checked)
+                        }
+                      />
+                      <span>Bị cúm, cảm lạnh, ho, nhức đầu, sốt, đau họng</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.last14DaysNone}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("last14DaysNone", e.target.checked)
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.otherSymptoms}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("otherSymptoms", e.target.checked)
+                        }
+                      />
+                      <span>Khác (cụ thể)</span>
+                    </label>
+                  </div>
+                  {healthSurvey.otherSymptoms && (
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        value={healthSurvey.otherSymptoms}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("otherSymptoms", e.target.value)
+                        }
+                        placeholder="Vui lòng mô tả triệu chứng"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 8 */}
+                <div className="form-section">
+                  <h3>8. Trong 07 ngày gần đây, anh/chị có:</h3>
+                  <div className="checkbox-list">
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.tookAntibiotics}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("tookAntibiotics", e.target.checked)
+                        }
+                      />
+                      <span>Dùng thuốc kháng sinh, kháng viêm, Aspirin, Corticoid</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.last7DaysNone}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("last7DaysNone", e.target.checked)
+                        }
+                      />
+                      <span>Không</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={healthSurvey.otherMedications}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("otherMedications", e.target.checked)
+                        }
+                      />
+                      <span>Khác (cụ thể)</span>
+                    </label>
+                  </div>
+                  {healthSurvey.otherMedications && (
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        value={healthSurvey.otherMedications}
+                        onChange={(e) =>
+                          handleHealthSurveyChange("otherMedications", e.target.value)
+                        }
+                        placeholder="Vui lòng mô tả thuốc"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 9 - Women Only */}
+                {personalInfo.gender === "female" && (
+                  <div className="form-section">
+                    <h3>9. Câu hỏi dành cho phụ nữ:</h3>
+                    <div className="checkbox-list">
+                      <label className="checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={healthSurvey.isPregnantOrNursing}
+                          onChange={(e) =>
+                            handleHealthSurveyChange("isPregnantOrNursing", e.target.checked)
+                          }
+                        />
+                        <span>Hiện chị đang mang thai hoặc nuôi con dưới 12 tháng tuổi</span>
+                      </label>
+                      <label className="checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={healthSurvey.hadPregnancyTermination}
+                          onChange={(e) =>
+                            handleHealthSurveyChange("hadPregnancyTermination", e.target.checked)
+                          }
+                        />
+                        <span>Chấm dứt thai kỳ trong 12 tháng gần đây (sảy thai, phá thai, thai ngoài tử cung)</span>
+                      </label>
+                      <label className="checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={healthSurvey.womenQuestionsNone}
+                          onChange={(e) =>
+                            handleHealthSurveyChange("womenQuestionsNone", e.target.checked)
+                          }
+                        />
+                        <span>Không</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
 
                 <div className="form-actions">
                   <button

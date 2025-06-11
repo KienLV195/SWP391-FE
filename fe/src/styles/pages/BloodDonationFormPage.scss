@@ -1,497 +1,420 @@
-@import '../base/variables';
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
 
 .blood-donation-form-page {
+  @include mix.body-base;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: vars.$spacing-lg 0;
 
   .registration-content {
-    padding: 2rem;
-    margin-top: 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 vars.$spacing-base;
 
     .page-header {
-      margin-bottom: 2rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      padding: 2rem;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: vars.$spacing-xl;
 
       h1 {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-        font-weight: 700;
+        @include mix.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$primary-color);
+        margin-bottom: vars.$spacing-sm;
       }
 
       p {
-        color: #6c757d;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        font-weight: 500;
+        @include mix.text(vars.$font-size-lg, vars.$text-secondary);
       }
 
       .progress-steps {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-bottom: 2rem;
+        @include mix.flex-between;
+        margin-top: vars.$spacing-xl;
+        position: relative;
+        padding: 0 vars.$spacing-xl;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 20px;
+          left: vars.$spacing-xl;
+          right: vars.$spacing-xl;
+          height: 2px;
+          background: vars.$border-light;
+          z-index: 1;
+        }
 
         .step {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-          opacity: 0.5;
-          transition: all 0.3s ease;
-
-          &.active {
-            opacity: 1;
-          }
-
-          &.completed {
-            opacity: 1;
-
-            .step-number {
-              background: linear-gradient(45deg, #28a745, #20c997);
-              color: white;
-            }
-          }
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          flex: 1;
 
           .step-number {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #e9ecef;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
+            @include mix.flex-center;
+            width: 40px;
+            height: 40px;
+            border-radius: vars.$border-radius-full;
+            background: vars.$background-card;
+            border: 2px solid vars.$border-light;
+            margin: 0 auto vars.$spacing-sm;
+            font-weight: vars.$font-weight-semibold;
+            color: vars.$text-secondary;
+            transition: all 0.3s;
           }
 
           .step-text {
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            text-align: center;
+            @include mix.text(vars.$font-size-sm, vars.$text-secondary);
           }
 
           &.active {
             .step-number {
-              background: linear-gradient(135deg, #667eea, #764ba2);
-              color: white;
-              transform: scale(1.1);
-              box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+              background: vars.$primary-color;
+              border-color: vars.$primary-color;
+              color: vars.$white;
             }
 
             .step-text {
-              color: white;
-              font-weight: 700;
+              color: vars.$primary-color;
+              font-weight: vars.$font-weight-semibold;
+            }
+          }
+
+          &.completed {
+            .step-number {
+              background: vars.$success-color;
+              border-color: vars.$success-color;
+              color: vars.$white;
             }
           }
         }
       }
     }
 
-    .personal-info-section,
-    .health-survey-section,
-    .appointment-section {
-      .form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    .form-card {
+      @include mix.card-base;
+      @include mix.shadow-elevation(2);
+      padding: vars.$spacing-xl;
+      margin-bottom: vars.$spacing-xl;
 
-        h2 {
-          background: linear-gradient(135deg, #667eea, #764ba2);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 1rem;
-          font-size: 1.8rem;
-          font-weight: 700;
-          text-align: center;
+      h2 {
+        @include mix.heading(vars.$font-size-2xl, vars.$font-weight-semibold);
+        margin-bottom: vars.$spacing-sm;
+      }
+
+      p {
+        @include mix.text(vars.$font-size-base, vars.$text-secondary);
+        margin-bottom: vars.$spacing-lg;
+      }
+
+      .form-section {
+        margin-bottom: vars.$spacing-xl;
+
+        h3 {
+          @include mix.heading(vars.$font-size-lg, vars.$font-weight-semibold);
+          margin-bottom: vars.$spacing-md;
         }
 
-        p {
-          text-align: center;
-          color: #6c757d;
-          margin-bottom: 2rem;
-          font-size: 1.1rem;
+        .form-row {
+          @include mix.flex-between;
+          gap: vars.$spacing-md;
+          margin-bottom: vars.$spacing-md;
+
+          @include mix.tablet {
+            flex-direction: column;
+            gap: vars.$spacing-sm;
+          }
         }
 
-        .personal-form,
-        .health-form,
-        .appointment-form {
-          .form-section {
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid #e9ecef;
+        .form-group {
+          flex: 1;
 
-            &:last-child {
-              border-bottom: none;
-              margin-bottom: 0;
-            }
-
-            h3 {
-              margin: 0 0 1.5rem 0;
-              color: #495057;
-              font-size: 1.3rem;
-              font-weight: 700;
-              padding-bottom: 0.5rem;
-              border-bottom: 2px solid #dc3545;
-              display: inline-block;
-            }
-
-            .form-row {
-              display: flex;
-              gap: 1.5rem;
-              margin-bottom: 1.5rem;
-
-              .form-group {
-                flex: 1;
-              }
-            }
-
-            .form-group {
-              margin-bottom: 1.5rem;
-
-              label {
-                display: block;
-                margin-bottom: 0.75rem;
-                font-weight: 700;
-                color: #495057;
-                font-size: 1rem;
-
-                .required {
-                  color: #dc3545;
-                  margin-left: 0.25rem;
-                }
-              }
-
-              input,
-              select {
-                width: 100%;
-                padding: 1rem;
-                border: 2px solid #e9ecef;
-                border-radius: 12px;
-                font-size: 1rem;
-                font-weight: 500;
-                transition: all 0.3s ease;
-
-                &:focus {
-                  outline: none;
-                  border-color: #dc3545;
-                  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
-                  transform: translateY(-2px);
-                }
-
-                &::placeholder {
-                  color: #adb5bd;
-                }
-              }
-            }
-
-            .checkbox-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-              gap: 1rem;
-
-              .checkbox-item {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 1rem;
-                background: #f8f9fa;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-
-                &:hover {
-                  background: #e9ecef;
-                  transform: translateY(-2px);
-                }
-
-                input[type="checkbox"] {
-                  width: 20px;
-                  height: 20px;
-                  accent-color: #dc3545;
-                }
-
-                span {
-                  font-weight: 500;
-                  color: #495057;
-                }
-              }
-            }
-
-            .checkbox-list {
-              .checkbox-item {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 1rem;
-                background: #f8f9fa;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                margin-bottom: 1rem;
-
-                &:hover {
-                  background: #e9ecef;
-                  transform: translateY(-2px);
-                }
-
-                input[type="checkbox"] {
-                  width: 20px;
-                  height: 20px;
-                  accent-color: #dc3545;
-                }
-
-                span {
-                  font-weight: 500;
-                  color: #495057;
-                }
-              }
-            }
-
-            .time-slots {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-              gap: 1rem;
-
-              .time-slot {
-                cursor: pointer;
-
-                input[type="radio"] {
-                  display: none;
-                }
-
-                .slot-content {
-                  padding: 1.5rem;
-                  background: #f8f9fa;
-                  border: 2px solid #e9ecef;
-                  border-radius: 15px;
-                  text-align: center;
-                  transition: all 0.3s ease;
-
-                  .slot-time {
-                    font-size: 1.2rem;
-                    font-weight: 700;
-                    color: #495057;
-                    margin-bottom: 0.5rem;
-                  }
-
-                  .slot-label {
-                    color: #6c757d;
-                    font-weight: 500;
-                  }
-                }
-
-                &:hover .slot-content {
-                  background: #e9ecef;
-                  transform: translateY(-2px);
-                }
-
-                input:checked + .slot-content {
-                  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(253, 126, 20, 0.1));
-                  border-color: #dc3545;
-                  transform: translateY(-2px);
-                  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
-
-                  .slot-time {
-                    color: #dc3545;
-                  }
-                }
-              }
-            }
-
-            .location-note {
-              margin-top: 1rem;
-              color: #6c757d;
-              font-size: 0.9rem;
-              font-style: italic;
-            }
+          label {
+            @include mix.form-label;
           }
 
-          .form-actions {
-            text-align: center;
-            margin-top: 2rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+          input,
+          select {
+            @include mix.form-input;
+          }
+        }
+      }
 
-            .btn {
-              padding: 1rem 2rem;
-              border: none;
-              border-radius: 12px;
-              font-weight: 700;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-              font-size: 1.1rem;
+      .checkbox-list,
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: vars.$spacing-sm;
 
-              &.btn-primary {
-                background: linear-gradient(135deg, #667eea, #764ba2);
-                color: white;
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .checkbox-item,
+        .radio-item {
+          @include mix.flex-align(flex-start, center);
+          gap: vars.$spacing-sm;
+          cursor: pointer;
 
-                &:hover:not(:disabled) {
-                  transform: translateY(-2px);
-                  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-                }
+          input[type="checkbox"],
+          input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+          }
 
-                &:disabled {
-                  opacity: 0.6;
-                  cursor: not-allowed;
-                  transform: none;
-                }
-              }
+          span {
+            @include mix.text(vars.$font-size-base, vars.$text-primary);
+          }
+        }
+      }
 
-              &.btn-secondary {
-                background: linear-gradient(135deg, #6c757d, #495057);
-                color: white;
-                box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+      .form-actions {
+        @include mix.flex-between;
+        margin-top: vars.$spacing-xl;
+        gap: vars.$spacing-md;
 
-                &:hover {
-                  transform: translateY(-2px);
-                  box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
-                }
-              }
-            }
+        .btn {
+          flex: 1;
+          max-width: 200px;
+
+          &.btn-primary {
+            @include mix.button-primary;
+          }
+
+          &.btn-secondary {
+            @include mix.button-secondary;
           }
         }
       }
     }
 
     .result-section {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 60vh;
-
       .result-card {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        @include mix.card-base;
+        @include mix.shadow-elevation(2);
+        padding: vars.$spacing-xl;
         text-align: center;
-        max-width: 600px;
-        width: 100%;
-
-        &.failed {
-          border: 2px solid #dc3545;
-        }
-
-        &.scheduled {
-          border: 2px solid #28a745;
-        }
+        max-width: 800px;
+        margin: 0 auto;
+        border-radius: vars.$border-radius-lg;
+        transition: all 0.3s ease;
 
         .result-icon {
-          font-size: 4rem;
-          margin-bottom: 1.5rem;
+          font-size: vars.$font-size-4xl;
+          margin-bottom: vars.$spacing-md;
+          display: inline-block;
+          padding: vars.$spacing-lg;
+          border-radius: 50%;
+          width: 100px;
+          height: 100px;
+          line-height: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .result-content {
           h2 {
-            margin: 0 0 1rem 0;
-            font-size: 2rem;
-            font-weight: 700;
-
-            .failed & {
-              color: #dc3545;
-            }
-
-            .scheduled & {
-              color: #28a745;
-            }
+            @include mix.heading(vars.$font-size-2xl, vars.$font-weight-bold);
+            margin-bottom: vars.$spacing-sm;
+            text-transform: uppercase;
+            letter-spacing: 1px;
           }
 
           p {
-            color: #6c757d;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
+            @include mix.text(vars.$font-size-lg, vars.$text-secondary);
+            margin-bottom: vars.$spacing-lg;
             line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+        }
+
+        &.failed {
+          border: 2px solid vars.$error-color;
+          background: linear-gradient(135deg, rgba(vars.$error-color, 0.05) 0%, rgba(vars.$error-color, 0.1) 100%);
+
+          .result-icon {
+            color: vars.$error-color;
+            background: rgba(vars.$error-color, 0.1);
+            animation: shake 0.5s ease-in-out;
+          }
+
+          h2 {
+            color: vars.$error-color;
+          }
+
+          .result-actions {
+            @include mix.flex-center;
+            gap: vars.$spacing-md;
+            margin-top: vars.$spacing-xl;
+            padding-top: vars.$spacing-xl;
+            border-top: 1px solid vars.$border-light;
+
+            .btn {
+              min-width: 200px;
+              padding: vars.$spacing-md vars.$spacing-lg;
+              font-size: vars.$font-size-base;
+              font-weight: vars.$font-weight-semibold;
+              border-radius: vars.$border-radius-lg;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: vars.$spacing-sm;
+
+              &.btn-primary {
+                @include mix.button-primary;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(vars.$primary-color, 0.2);
+                }
+
+                &::before {
+                  content: '🏠';
+                  font-size: vars.$font-size-lg;
+                }
+              }
+
+              &.btn-secondary {
+                @include mix.button-secondary;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(vars.$text-secondary, 0.2);
+                }
+
+                &::before {
+                  content: '🔄';
+                  font-size: vars.$font-size-lg;
+                }
+              }
+            }
+          }
+        }
+
+        &.scheduled {
+          border: 2px solid vars.$success-color;
+          background: linear-gradient(135deg, rgba(vars.$success-color, 0.05) 0%, rgba(vars.$success-color, 0.1) 100%);
+
+          .result-icon {
+            color: vars.$success-color;
+            background: rgba(vars.$success-color, 0.1);
+            animation: bounce 0.5s ease-in-out;
+          }
+
+          h2 {
+            color: vars.$success-color;
           }
 
           .appointment-summary {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
             text-align: left;
+            margin-top: vars.$spacing-xl;
+            padding: vars.$spacing-xl;
+            background: vars.$white;
+            border-radius: vars.$border-radius-lg;
+            border: 1px solid vars.$border-light;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
             h3 {
-              margin: 0 0 1.5rem 0;
-              color: #495057;
-              font-size: 1.2rem;
-              font-weight: 700;
+              @include mix.heading(vars.$font-size-lg, vars.$font-weight-semibold);
+              margin-bottom: vars.$spacing-lg;
+              color: vars.$primary-color;
+              display: flex;
+              align-items: center;
+              gap: vars.$spacing-sm;
+              padding-bottom: vars.$spacing-sm;
+              border-bottom: 2px solid vars.$border-light;
+
+              &::before {
+                content: '📅';
+                font-size: vars.$font-size-xl;
+              }
             }
 
             .appointment-details {
-              .detail-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1rem;
-                padding-bottom: 0.75rem;
-                border-bottom: 1px solid #e9ecef;
+              display: grid;
+              gap: vars.$spacing-md;
 
-                &:last-child {
-                  margin-bottom: 0;
-                  border-bottom: none;
+              .detail-item {
+                @include mix.text(vars.$font-size-base, vars.$text-primary);
+                padding: vars.$spacing-lg;
+                background: vars.$background-light;
+                border-radius: vars.$border-radius-lg;
+                border: 1px solid vars.$border-light;
+                display: flex;
+                align-items: center;
+                gap: vars.$spacing-lg;
+                transition: all 0.3s ease;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                  border-color: vars.$primary-color;
+                }
+
+                &::before {
+                  font-size: vars.$font-size-xl;
+                  width: 40px;
+                  height: 40px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  background: rgba(vars.$primary-color, 0.1);
+                  border-radius: 50%;
                 }
 
                 strong {
-                  color: #495057;
-                  font-weight: 700;
+                  font-weight: vars.$font-weight-semibold;
+                  color: vars.$primary-color;
+                  min-width: 120px;
+                }
+
+                &:nth-child(1)::before {
+                  content: '📅';
+                }
+
+                &:nth-child(2)::before {
+                  content: '⏰';
+                }
+
+                &:nth-child(3)::before {
+                  content: '🏥';
+                }
+
+                &:nth-child(4)::before {
+                  content: '📍';
                 }
               }
             }
           }
 
           .result-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
+            @include mix.flex-center;
+            gap: vars.$spacing-md;
+            margin-top: vars.$spacing-xl;
+            padding-top: vars.$spacing-xl;
+            border-top: 1px solid vars.$border-light;
 
             .btn {
-              padding: 0.75rem 1.5rem;
-              border: none;
-              border-radius: 12px;
-              font-weight: 700;
-              cursor: pointer;
+              min-width: 200px;
+              padding: vars.$spacing-md vars.$spacing-lg;
+              font-size: vars.$font-size-base;
+              font-weight: vars.$font-weight-semibold;
+              border-radius: vars.$border-radius-lg;
               transition: all 0.3s ease;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: vars.$spacing-sm;
 
               &.btn-primary {
-                background: linear-gradient(45deg, #28a745, #20c997);
-                color: white;
-                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                @include mix.button-primary;
 
                 &:hover {
                   transform: translateY(-2px);
-                  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+                  box-shadow: 0 4px 12px rgba(vars.$primary-color, 0.2);
                 }
-              }
 
-              &.btn-secondary {
-                background: linear-gradient(45deg, #6c757d, #495057);
-                color: white;
-                box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-
-                &:hover {
-                  transform: translateY(-2px);
-                  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+                &::before {
+                  content: '🏠';
+                  font-size: vars.$font-size-lg;
                 }
               }
             }
@@ -502,76 +425,95 @@
   }
 }
 
+@keyframes shake {
 
-// Responsive
-@media (max-width: 768px) {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Responsive adjustments
+@include mix.tablet {
   .blood-donation-form-page {
     .registration-content {
-      padding: 1rem;
-      margin-top: 70px;
-
       .page-header {
-        h1 {
-          font-size: 2rem;
-        }
-
         .progress-steps {
-          gap: 1rem;
-
-          .step .step-number {
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
-          }
+          padding: 0 vars.$spacing-md;
         }
       }
 
-      .health-survey-section,
-      .appointment-section {
-        .form-card {
-          padding: 1.5rem;
+      .form-card {
+        padding: vars.$spacing-lg;
+      }
+    }
 
-          .personal-form,
-          .health-form,
-          .appointment-form {
-            .form-section {
-              .form-row {
+    .result-section {
+      .result-card {
+        padding: vars.$spacing-lg;
+        margin: vars.$spacing-md;
+
+        .result-icon {
+          width: 80px;
+          height: 80px;
+          font-size: vars.$font-size-3xl;
+        }
+
+        &.scheduled {
+          .appointment-summary {
+            padding: vars.$spacing-lg;
+
+            .appointment-details {
+              .detail-item {
+                padding: vars.$spacing-md;
                 flex-direction: column;
-                gap: 1rem;
-              }
+                text-align: center;
+                gap: vars.$spacing-sm;
 
-              .checkbox-grid {
-                grid-template-columns: 1fr;
-              }
-
-              .time-slots {
-                grid-template-columns: 1fr;
-              }
-            }
-
-            .form-actions {
-              flex-direction: column;
-              gap: 1rem;
-
-              .btn {
-                width: 100%;
+                strong {
+                  min-width: auto;
+                }
               }
             }
           }
+
+          .result-actions {
+            flex-direction: column;
+            width: 100%;
+
+            .btn {
+              width: 100%;
+            }
+          }
         }
-      }
 
-      .result-section {
-        .result-card {
-          padding: 2rem;
+        &.failed {
+          .result-actions {
+            flex-direction: column;
+            width: 100%;
 
-          .result-content {
-            .result-actions {
-              flex-direction: column;
-
-              .btn {
-                width: 100%;
-              }
+            .btn {
+              width: 100%;
             }
           }
         }
@@ -580,392 +522,23 @@
   }
 }
 
-// Special styling for personal info form
-.blood-donation-form-page .registration-content .personal-info-section .form-card {
-  .profile-info-notice {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-    border: 1px solid rgba(102, 126, 234, 0.2);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
+@include mix.mobile {
+  .blood-donation-form-page {
+    .registration-content {
+      .page-header {
+        .progress-steps {
+          padding: 0 vars.$spacing-sm;
 
-    .notice-icon {
-      font-size: 1.2rem;
-      margin-top: 0.1rem;
-    }
-
-    .notice-content {
-      flex: 1;
-
-      strong {
-        color: #667eea;
-        font-size: 1rem;
-        font-weight: 700;
-        display: block;
-        margin-bottom: 0.25rem;
-      }
-
-      p {
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin: 0;
-        line-height: 1.4;
-      }
-    }
-  }
-
-  .personal-form {
-  .form-section {
-    background: rgba(102, 126, 234, 0.05);
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid rgba(102, 126, 234, 0.1);
-    margin-bottom: 2rem;
-
-    h3 {
-      color: #667eea;
-      margin-bottom: 1.5rem;
-      font-size: 1.2rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-
-    }
-
-    .form-group {
-      label {
-        color: #495057;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-
-        .required {
-          color: #dc3545;
-          font-weight: 700;
-        }
-      }
-
-      input,
-      select {
-        background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(102, 126, 234, 0.2);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        width: 100%;
-
-        &:focus {
-          border-color: #667eea;
-          box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-          background: white;
-          transform: translateY(-1px);
-          outline: none;
-        }
-
-        &::placeholder {
-          color: #adb5bd;
-          font-style: italic;
-        }
-      }
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .location-note {
-      background: rgba(102, 126, 234, 0.1);
-      padding: 1rem;
-      border-radius: 10px;
-      color: #495057;
-      font-size: 0.9rem;
-      font-style: italic;
-      border-left: 4px solid #667eea;
-      margin-top: 1rem;
-    }
-  }
-
-  .form-actions {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid rgba(102, 126, 234, 0.1);
-
-    .btn {
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: 16px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-
-      &.btn-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-
-        &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-        }
-      }
-    }
-  }
-  }
-}
-
-// Responsive for personal form
-@media (max-width: 768px) {
-  .blood-donation-form-page .registration-content .personal-info-section .form-card .personal-form {
-    .form-section {
-      padding: 1rem;
-
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-      }
-
-      h3 {
-        font-size: 1.1rem;
-      }
-    }
-
-    .form-actions .btn {
-      padding: 0.75rem 2rem;
-      font-size: 1rem;
-      width: 100%;
-    }
-  }
-
-  // Distance Info Styling
-  .section-description {
-    color: #6c757d;
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #17a2b8;
-  }
-
-  .location-picker-section {
-    margin-top: 1.5rem;
-
-    label {
-      display: block;
-      margin-bottom: 0.75rem;
-      font-weight: 600;
-      color: #495057;
-    }
-  }
-
-  .distance-info {
-    margin-top: 1rem;
-
-    .distance-card {
-      background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
-      border: 1px solid #e1bee7;
-      border-radius: 12px;
-      padding: 1rem;
-
-      .distance-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
-
-        .distance-icon {
-          font-size: 1.2rem;
-        }
-
-        .distance-text {
-          font-weight: 600;
-          color: #495057;
-        }
-      }
-
-      .distance-details {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-
-        .distance-value {
-          font-size: 1.2rem;
-          color: #2196f3;
-        }
-
-        .travel-time {
-          color: #6c757d;
-          font-size: 0.9rem;
-        }
-
-        .priority-level {
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
-          font-size: 0.8rem;
-          font-weight: 600;
-
-          &.very-close {
-            background: #d4edda;
-            color: #155724;
-          }
-
-          &.close {
-            background: #fff3cd;
-            color: #856404;
-          }
-
-          &.moderate {
-            background: #ffeaa7;
-            color: #d68910;
-          }
-
-          &.far {
-            background: #f8d7da;
-            color: #721c24;
-          }
-        }
-
-        .hospital-info {
-          margin-top: 0.75rem;
-          padding-top: 0.75rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.3);
-
-          .hospital-address {
-            color: #6c757d;
-            font-size: 0.9rem;
-            font-weight: 500;
-          }
-        }
-      }
-    }
-  }
-
-  .location-summary {
-    .location-info-card,
-    .hospital-info-card {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border: 1px solid #dee2e6;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-
-      .location-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
-
-        .location-icon {
-          font-size: 1.2rem;
-        }
-
-        .location-title {
-          font-weight: 600;
-          color: #495057;
-        }
-      }
-
-      .location-details {
-        .address-text {
-          color: #495057;
-          margin-bottom: 0.75rem;
-          font-size: 0.95rem;
-          line-height: 1.4;
-        }
-
-        .distance-summary {
-          display: flex;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-
-          .distance-badge,
-          .travel-time-badge,
-          .priority-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-          }
-
-          .distance-badge {
-            background: #e3f2fd;
-            color: #1976d2;
-          }
-
-          .travel-time-badge {
-            background: #f3e5f5;
-            color: #7b1fa2;
-          }
-
-          .priority-badge {
-            &.very-close {
-              background: #d4edda;
-              color: #155724;
-            }
-
-            &.close {
-              background: #fff3cd;
-              color: #856404;
-            }
-
-            &.moderate {
-              background: #ffeaa7;
-              color: #d68910;
-            }
-
-            &.far {
-              background: #f8d7da;
-              color: #721c24;
+          .step {
+            .step-text {
+              font-size: vars.$font-size-xs;
             }
           }
         }
       }
-    }
 
-    .hospital-info-card {
-      background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
-      border: 1px solid #c3e6c3;
-
-      .hospital-details {
-        .hospital-name {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #2e7d32;
-          margin-bottom: 0.5rem;
-        }
-
-        .hospital-address {
-          color: #495057;
-          font-size: 0.95rem;
-          margin-bottom: 0.5rem;
-          line-height: 1.4;
-        }
-
-        .hospital-department {
-          color: #6c757d;
-          font-size: 0.9rem;
-          font-weight: 600;
-          background: rgba(46, 125, 50, 0.1);
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
-          display: inline-block;
-        }
+      .form-card {
+        padding: vars.$spacing-md;
       }
     }
   }
