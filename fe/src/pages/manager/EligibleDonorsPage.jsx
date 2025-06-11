@@ -32,12 +32,14 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import PageHeader from "../../components/manager/PageHeader";
 import ProcessWorkflowModal, {
   DONATION_STATUSES,
 } from "../../components/shared/ProcessWorkflowModal";
 import GeolibService from "../../services/geolibService";
 import authService from "../../services/authService";
 import "../../styles/pages/EligibleDonorsPage.scss";
+import "../../styles/components/PageHeader.scss";
 
 const { Option } = Select;
 const { Search } = Input;
@@ -502,35 +504,35 @@ const EligibleDonorsPage = () => {
       <ManagerSidebar />
 
       <div className="donors-content">
-        <div className="page-header">
-          <div className="header-info">
-            <h1>👥 Người hiến đủ điều kiện</h1>
-            <p>Danh sách người hiến máu đã đủ 84 ngày kể từ lần hiến cuối</p>
-          </div>
-          <div className="header-actions">
-            <Space>
-              <div className="view-mode-toggle">
-                <span>Chế độ xem:</span>
-                <Switch
-                  checkedChildren={<AppstoreOutlined />}
-                  unCheckedChildren={<TableOutlined />}
-                  checked={viewMode === "card"}
-                  onChange={(checked) =>
-                    setViewMode(checked ? "card" : "table")
-                  }
-                />
-              </div>
-              <Button
-                type="primary"
-                icon={<ReloadOutlined />}
-                onClick={loadEligibleDonors}
-                loading={loading}
-              >
-                Làm mới
-              </Button>
-            </Space>
-          </div>
-        </div>
+        <PageHeader
+          title="Người hiến đủ điều kiện"
+          description="Danh sách người hiến máu đã đủ 84 ngày kể từ lần hiến cuối"
+          icon={UserOutlined}
+          actions={[
+            {
+              label: (
+                <div className="view-mode-toggle">
+                  <span>Chế độ xem:</span>
+                  <Switch
+                    checkedChildren={<AppstoreOutlined />}
+                    unCheckedChildren={<TableOutlined />}
+                    checked={viewMode === "card"}
+                    onChange={(checked) =>
+                      setViewMode(checked ? "card" : "table")
+                    }
+                  />
+                </div>
+              ),
+            },
+            {
+              label: "Làm mới",
+              type: "primary",
+              icon: <ReloadOutlined />,
+              onClick: loadEligibleDonors,
+              loading: loading,
+            },
+          ]}
+        />
 
         {/* Filters */}
         <div className="filters-section">

@@ -1,6 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import {
+  Row,
+  Col,
+  Card,
+  Statistic,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Progress,
+  List,
+  Avatar,
+  Typography,
+} from "antd";
+import {
+  HomeOutlined,
+  ReloadOutlined,
+  UserOutlined,
+  HeartOutlined,
+  DatabaseOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import WelcomeBanner from "../../components/manager/dashboard/WelcomeBanner";
 import StatisticsCards from "../../components/manager/dashboard/StatisticsCards";
 import ChartsSection from "../../components/manager/dashboard/ChartsSection";
@@ -8,16 +32,15 @@ import NotificationsPanel from "../../components/manager/dashboard/Notifications
 import authService from "../../services/authService";
 import {
   mockBloodRequests,
-  mockDonationHistory,
   mockUsers,
-  mockBloodInventory,
   REQUEST_STATUS,
   getBloodInventoryWithStatus,
 } from "../../services/mockData";
-import "../../styles/pages/ManagerDashboard.scss";
+import "../../styles/base/manager-design-system.scss";
+
+const { Title, Text } = Typography;
 
 const ManagerDashboard = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [dashboardData, setDashboardData] = useState({
     totalDonors: 0,
@@ -25,9 +48,8 @@ const ManagerDashboard = () => {
     totalBloodUnits: 0,
     totalRequests: 0,
     bloodInventory: [],
-    bloodGroupData: [],
-    monthlyRequestsData: [],
-    notifications: [],
+    recentDonations: [],
+    upcomingAppointments: [],
   });
 
   useEffect(() => {
@@ -92,34 +114,30 @@ const ManagerDashboard = () => {
   }
 
   return (
-    <div className="manager-dashboard">
-      <ManagerSidebar />
-
-      <div className="dashboard-main">
+    <ManagerLayout>
+      <div className="dashboard-content">
         {/* Welcome Banner */}
         <WelcomeBanner managerName={user.profile.fullName} />
 
-        <div className="dashboard-content">
-          {/* Statistics Cards */}
-          <StatisticsCards
-            statistics={{
-              totalBloodUnits: dashboardData.totalBloodUnits,
-              totalDonors: dashboardData.totalDonors,
-              totalRequests: dashboardData.totalRequests,
-            }}
-          />
+        {/* Statistics Cards */}
+        <StatisticsCards
+          statistics={{
+            totalBloodUnits: dashboardData.totalBloodUnits,
+            totalDonors: dashboardData.totalDonors,
+            totalRequests: dashboardData.totalRequests,
+          }}
+        />
 
-          {/* Charts Section */}
-          <ChartsSection
-            bloodGroupData={dashboardData.bloodGroupData}
-            monthlyRequestsData={dashboardData.monthlyRequestsData}
-          />
+        {/* Charts Section */}
+        <ChartsSection
+          bloodGroupData={dashboardData.bloodGroupData}
+          monthlyRequestsData={dashboardData.monthlyRequestsData}
+        />
 
-          {/* Notifications Panel */}
-          <NotificationsPanel notifications={dashboardData.notifications} />
-        </div>
+        {/* Notifications Panel */}
+        <NotificationsPanel notifications={dashboardData.notifications} />
       </div>
-    </div>
+    </ManagerLayout>
   );
 };
 

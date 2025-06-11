@@ -1,0 +1,79 @@
+@use '../base/variables' as vars;
+@use '../base/mixin' as mix;
+
+.manager-page {
+  min-height: 100vh;
+  background: vars.$manager-bg-light;
+  display: flex;
+  flex-direction: row;
+
+  .ant-layout {
+    background: transparent;
+  }
+
+  .main-content-layout {
+    position: relative;
+    margin-left: 280px;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
+    width: calc(100% - 280px);
+
+    &.sidebar-collapsed {
+      margin-left: 80px;
+      width: calc(100% - 80px);
+    }
+  }
+
+  .manager-content {
+    padding: 24px;
+    width: 100%;
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    padding: 24px;
+    background: #ffffff;
+
+    &.collapsed {
+      margin-left: 80px;
+    }
+  }
+}
+
+@include mix.tablet {
+  .manager-page {
+    .main-content-layout {
+      margin-left: 80px;
+      width: calc(100% - 80px);
+
+      &.sidebar-collapsed {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+    
+    .manager-content {
+      padding: 16px;
+    }
+
+    .page-header {
+      margin-bottom: 16px;
+      padding: 16px;
+    }
+  }
+}
+
+@include mix.mobile {
+  .manager-page {
+    .main-content-layout {
+      margin-left: 0;
+      width: 100%;
+    }
+    
+    .manager-content {
+      padding: 12px;
+
+      .page-header {
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+    }
+  }
+}

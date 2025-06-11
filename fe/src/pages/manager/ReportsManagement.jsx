@@ -1,24 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import ManagerSidebar from '../../components/manager/ManagerSidebar';
-import { 
-  mockBloodRequests, 
-  mockDonationHistory, 
+import React, { useState, useEffect } from "react";
+import { Button, Space } from "antd";
+import {
+  BarChartOutlined,
+  FileTextOutlined,
+  ReloadOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
+import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import PageHeader from "../../components/manager/PageHeader";
+import {
+  mockBloodRequests,
+  mockDonationHistory,
   mockUsers,
   mockBloodInventory,
   REQUEST_STATUS,
-  URGENCY_LEVELS 
-} from '../../services/mockData';
-import '../../styles/pages/ReportsManagement.scss';
+  URGENCY_LEVELS,
+} from "../../services/mockData";
+import "../../styles/pages/ReportsManagement.scss";
+import "../../styles/components/PageHeader.scss";
 
 const ReportsManagement = () => {
   const [reportData, setReportData] = useState({
     bloodRequests: [],
     donations: [],
     users: [],
-    inventory: []
+    inventory: [],
   });
-  const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const [selectedReport, setSelectedReport] = useState('overview');
+  const [selectedPeriod, setSelectedPeriod] = useState("month");
+  const [selectedReport, setSelectedReport] = useState("overview");
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
@@ -27,9 +36,19 @@ const ReportsManagement = () => {
       bloodRequests: mockBloodRequests,
       donations: mockDonationHistory,
       users: mockUsers,
-      inventory: mockBloodInventory
+      inventory: mockBloodInventory,
     });
   }, []);
+
+  const loadReports = () => {
+    // TODO_API_REPLACE: Replace with actual API call - GET /api/manager/reports/refresh
+    setReportData({
+      bloodRequests: mockBloodRequests,
+      donations: mockDonationHistory,
+      users: mockUsers,
+      inventory: mockBloodInventory,
+    });
+  };
 
   // Calculate statistics based on selected period
   const getFilteredData = () => {
@@ -37,16 +56,16 @@ const ReportsManagement = () => {
     const filterDate = new Date();
 
     switch (selectedPeriod) {
-      case 'week':
+      case "week":
         filterDate.setDate(now.getDate() - 7);
         break;
-      case 'month':
+      case "month":
         filterDate.setMonth(now.getMonth() - 1);
         break;
-      case 'quarter':
+      case "quarter":
         filterDate.setMonth(now.getMonth() - 3);
         break;
-      case 'year':
+      case "year":
         filterDate.setFullYear(now.getFullYear() - 1);
         break;
       default:
@@ -54,12 +73,12 @@ const ReportsManagement = () => {
     }
 
     return {
-      requests: reportData.bloodRequests.filter(req => 
-        new Date(req.createdTime) >= filterDate
+      requests: reportData.bloodRequests.filter(
+        (req) => new Date(req.createdTime) >= filterDate
       ),
-      donations: reportData.donations.filter(donation => 
-        new Date(donation.donationDate) >= filterDate
-      )
+      donations: reportData.donations.filter(
+        (donation) => new Date(donation.donationDate) >= filterDate
+      ),
     };
   };
 
@@ -68,15 +87,28 @@ const ReportsManagement = () => {
   // Overview Statistics
   const overviewStats = {
     totalRequests: filteredData.requests.length,
-    pendingRequests: filteredData.requests.filter(r => r.status === REQUEST_STATUS.PENDING).length,
-    completedRequests: filteredData.requests.filter(r => r.status === REQUEST_STATUS.COMPLETED).length,
-    urgentRequests: filteredData.requests.filter(r => r.urgencyLevel >= URGENCY_LEVELS.URGENT).length,
+    pendingRequests: filteredData.requests.filter(
+      (r) => r.status === REQUEST_STATUS.PENDING
+    ).length,
+    completedRequests: filteredData.requests.filter(
+      (r) => r.status === REQUEST_STATUS.COMPLETED
+    ).length,
+    urgentRequests: filteredData.requests.filter(
+      (r) => r.urgencyLevel >= URGENCY_LEVELS.URGENT
+    ).length,
     totalDonations: filteredData.donations.length,
-    successfulDonations: filteredData.donations.filter(d => d.isSuccessful).length,
-    totalBloodUnits: filteredData.donations.reduce((sum, d) => sum + (d.quantity || 0), 0),
-    totalUsers: reportData.users.filter(u => u.role === 'Member').length,
+    successfulDonations: filteredData.donations.filter((d) => d.isSuccessful)
+      .length,
+    totalBloodUnits: filteredData.donations.reduce(
+      (sum, d) => sum + (d.quantity || 0),
+      0
+    ),
+    totalUsers: reportData.users.filter((u) => u.role === "Member").length,
     inventoryItems: reportData.inventory.length,
-    totalInventoryUnits: reportData.inventory.reduce((sum, i) => sum + i.quantity, 0)
+    totalInventoryUnits: reportData.inventory.reduce(
+      (sum, i) => sum + i.quantity,
+      0
+    ),
   };
 
   // Blood Type Distribution
@@ -88,19 +120,19 @@ const ReportsManagement = () => {
   // Monthly trends (simplified)
   const monthlyTrends = {
     requests: [12, 19, 15, 25, 22, 18, 28, 24, 20, 16, 21, 19],
-    donations: [8, 14, 12, 18, 16, 13, 22, 19, 15, 12, 17, 14]
+    donations: [8, 14, 12, 18, 16, 13, 22, 19, 15, 12, 17, 14],
   };
 
   const handleGenerateReport = async () => {
     setIsGenerating(true);
-    
+
     // Simulate report generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // In a real app, this would generate and download a PDF/Excel file
     const reportContent = generateReportContent();
     downloadReport(reportContent);
-    
+
     setIsGenerating(false);
   };
 
@@ -115,68 +147,89 @@ const ReportsManagement = () => {
         trends: monthlyTrends,
         details: {
           requests: filteredData.requests,
-          donations: filteredData.donations
-        }
-      }
+          donations: filteredData.donations,
+        },
+      },
     };
   };
 
   const downloadReport = (content) => {
     const dataStr = JSON.stringify(content, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `blood_management_report_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `blood_management_report_${selectedPeriod}_${
+      new Date().toISOString().split("T")[0]
+    }.json`;
+
+    const linkElement = document.createElement("a");
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportFileDefaultName);
     linkElement.click();
   };
 
   const getReportTitle = () => {
     switch (selectedReport) {
-      case 'overview': return 'Tổng quan';
-      case 'requests': return 'Yêu cầu máu';
-      case 'donations': return 'Hiến máu';
-      case 'inventory': return 'Kho máu';
-      default: return 'Tổng quan';
+      case "overview":
+        return "Tổng quan";
+      case "requests":
+        return "Yêu cầu máu";
+      case "donations":
+        return "Hiến máu";
+      case "inventory":
+        return "Kho máu";
+      default:
+        return "Tổng quan";
     }
   };
 
   const getPeriodText = () => {
     switch (selectedPeriod) {
-      case 'week': return '7 ngày qua';
-      case 'month': return '30 ngày qua';
-      case 'quarter': return '3 tháng qua';
-      case 'year': return '12 tháng qua';
-      default: return '30 ngày qua';
+      case "week":
+        return "7 ngày qua";
+      case "month":
+        return "30 ngày qua";
+      case "quarter":
+        return "3 tháng qua";
+      case "year":
+        return "12 tháng qua";
+      default:
+        return "30 ngày qua";
     }
   };
 
   return (
     <div className="reports-management">
       <ManagerSidebar />
-      
+
       <div className="reports-content">
-        <div className="page-header">
-          <div>
-            <h1>📊 Báo cáo & Thống kê</h1>
-            <p>Tạo và xuất báo cáo chi tiết về hoạt động quản lý máu</p>
-          </div>
-          <button 
-            className="btn btn-primary"
-            onClick={handleGenerateReport}
-            disabled={isGenerating}
-          >
-            {isGenerating ? '⏳ Đang tạo...' : '📄 Xuất báo cáo'}
-          </button>
-        </div>
+        <PageHeader
+          title="Báo cáo & Thống kê"
+          description="Tạo và xuất báo cáo chi tiết về hoạt động quản lý máu"
+          icon={BarChartOutlined}
+          actions={[
+            {
+              label: isGenerating ? "Đang tạo..." : "Xuất báo cáo",
+              type: "primary",
+              icon: isGenerating ? <ReloadOutlined /> : <DownloadOutlined />,
+              onClick: handleGenerateReport,
+              disabled: isGenerating,
+              loading: isGenerating,
+              style: { backgroundColor: "#D93E4C", borderColor: "#D93E4C" },
+            },
+            {
+              label: "Làm mới",
+              icon: <ReloadOutlined />,
+              onClick: loadReports,
+            },
+          ]}
+        />
 
         {/* Report Controls */}
         <div className="report-controls">
           <div className="control-group">
             <label>Loại báo cáo:</label>
-            <select 
+            <select
               value={selectedReport}
               onChange={(e) => setSelectedReport(e.target.value)}
             >
@@ -189,7 +242,7 @@ const ReportsManagement = () => {
 
           <div className="control-group">
             <label>Thời gian:</label>
-            <select 
+            <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
             >
@@ -246,22 +299,28 @@ const ReportsManagement = () => {
         <div className="detailed-stats">
           <div className="stats-section">
             <h2>📈 Thống kê chi tiết - {getPeriodText()}</h2>
-            
+
             <div className="stats-row">
               <div className="stat-item">
                 <h4>Yêu cầu máu</h4>
                 <div className="stat-breakdown">
                   <div className="breakdown-item">
                     <span className="label">Đang chờ:</span>
-                    <span className="value pending">{overviewStats.pendingRequests}</span>
+                    <span className="value pending">
+                      {overviewStats.pendingRequests}
+                    </span>
                   </div>
                   <div className="breakdown-item">
                     <span className="label">Hoàn thành:</span>
-                    <span className="value completed">{overviewStats.completedRequests}</span>
+                    <span className="value completed">
+                      {overviewStats.completedRequests}
+                    </span>
                   </div>
                   <div className="breakdown-item">
                     <span className="label">Khẩn cấp:</span>
-                    <span className="value urgent">{overviewStats.urgentRequests}</span>
+                    <span className="value urgent">
+                      {overviewStats.urgentRequests}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -271,14 +330,21 @@ const ReportsManagement = () => {
                 <div className="stat-breakdown">
                   <div className="breakdown-item">
                     <span className="label">Thành công:</span>
-                    <span className="value success">{overviewStats.successfulDonations}</span>
+                    <span className="value success">
+                      {overviewStats.successfulDonations}
+                    </span>
                   </div>
                   <div className="breakdown-item">
                     <span className="label">Tỷ lệ thành công:</span>
                     <span className="value rate">
-                      {overviewStats.totalDonations > 0 
-                        ? Math.round((overviewStats.successfulDonations / overviewStats.totalDonations) * 100)
-                        : 0}%
+                      {overviewStats.totalDonations > 0
+                        ? Math.round(
+                            (overviewStats.successfulDonations /
+                              overviewStats.totalDonations) *
+                              100
+                          )
+                        : 0}
+                      %
                     </span>
                   </div>
                 </div>
@@ -290,20 +356,28 @@ const ReportsManagement = () => {
           <div className="stats-section">
             <h2>🩸 Phân bố nhóm máu trong kho</h2>
             <div className="blood-type-chart">
-              {Object.entries(bloodTypeDistribution).map(([bloodType, quantity]) => (
-                <div key={bloodType} className="blood-type-item">
-                  <div className="blood-type-label">{bloodType}</div>
-                  <div className="blood-type-bar">
-                    <div 
-                      className="blood-type-fill"
-                      style={{ 
-                        width: `${(quantity / Math.max(...Object.values(bloodTypeDistribution))) * 100}%` 
-                      }}
-                    ></div>
+              {Object.entries(bloodTypeDistribution).map(
+                ([bloodType, quantity]) => (
+                  <div key={bloodType} className="blood-type-item">
+                    <div className="blood-type-label">{bloodType}</div>
+                    <div className="blood-type-bar">
+                      <div
+                        className="blood-type-fill"
+                        style={{
+                          width: `${
+                            (quantity /
+                              Math.max(
+                                ...Object.values(bloodTypeDistribution)
+                              )) *
+                            100
+                          }%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="blood-type-value">{quantity} đơn vị</div>
                   </div>
-                  <div className="blood-type-value">{quantity} đơn vị</div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
 
@@ -325,14 +399,18 @@ const ReportsManagement = () => {
                 {monthlyTrends.requests.map((value, index) => (
                   <div key={index} className="chart-month">
                     <div className="chart-bars-container">
-                      <div 
+                      <div
                         className="chart-bar requests"
                         style={{ height: `${(value / 30) * 100}%` }}
                         title={`Yêu cầu: ${value}`}
                       ></div>
-                      <div 
+                      <div
                         className="chart-bar donations"
-                        style={{ height: `${(monthlyTrends.donations[index] / 30) * 100}%` }}
+                        style={{
+                          height: `${
+                            (monthlyTrends.donations[index] / 30) * 100
+                          }%`,
+                        }}
                         title={`Hiến máu: ${monthlyTrends.donations[index]}`}
                       ></div>
                     </div>
@@ -348,7 +426,7 @@ const ReportsManagement = () => {
         <div className="recent-activities">
           <h2>🕒 Hoạt động gần đây</h2>
           <div className="activities-list">
-            {filteredData.requests.slice(0, 5).map(request => (
+            {filteredData.requests.slice(0, 5).map((request) => (
               <div key={request.requestID} className="activity-item">
                 <div className="activity-icon">📋</div>
                 <div className="activity-content">
@@ -356,16 +434,24 @@ const ReportsManagement = () => {
                     Yêu cầu máu {request.bloodType} - {request.quantity} đơn vị
                   </div>
                   <div className="activity-time">
-                    {new Date(request.createdTime).toLocaleString('vi-VN')}
+                    {new Date(request.createdTime).toLocaleString("vi-VN")}
                   </div>
                 </div>
-                <div className={`activity-status status-${request.status === REQUEST_STATUS.PENDING ? 'warning' : 'success'}`}>
-                  {request.status === REQUEST_STATUS.PENDING ? 'Đang chờ' : 'Đã xử lý'}
+                <div
+                  className={`activity-status status-${
+                    request.status === REQUEST_STATUS.PENDING
+                      ? "warning"
+                      : "success"
+                  }`}
+                >
+                  {request.status === REQUEST_STATUS.PENDING
+                    ? "Đang chờ"
+                    : "Đã xử lý"}
                 </div>
               </div>
             ))}
-            
-            {filteredData.donations.slice(0, 3).map(donation => (
+
+            {filteredData.donations.slice(0, 3).map((donation) => (
               <div key={donation.donationID} className="activity-item">
                 <div className="activity-icon">🩸</div>
                 <div className="activity-content">
@@ -373,11 +459,15 @@ const ReportsManagement = () => {
                     Hiến máu {donation.bloodType} - {donation.quantity}ml
                   </div>
                   <div className="activity-time">
-                    {new Date(donation.donationDate).toLocaleString('vi-VN')}
+                    {new Date(donation.donationDate).toLocaleString("vi-VN")}
                   </div>
                 </div>
-                <div className={`activity-status status-${donation.isSuccessful ? 'success' : 'warning'}`}>
-                  {donation.isSuccessful ? 'Thành công' : 'Đang xử lý'}
+                <div
+                  className={`activity-status status-${
+                    donation.isSuccessful ? "success" : "warning"
+                  }`}
+                >
+                  {donation.isSuccessful ? "Thành công" : "Đang xử lý"}
                 </div>
               </div>
             ))}

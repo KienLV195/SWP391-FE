@@ -31,11 +31,13 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import PageHeader from "../../components/manager/PageHeader";
 import ProcessWorkflowModal, {
   DONATION_STATUSES,
 } from "../../components/shared/ProcessWorkflowModal";
 import authService from "../../services/authService";
 import "../../styles/pages/DonationSchedulePage.scss";
+import "../../styles/components/PageHeader.scss";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -531,22 +533,20 @@ const DonationSchedulePageNew = () => {
       <ManagerSidebar />
       <div className="schedule-content">
         {/* Page Header */}
-        <div className="page-header">
-          <div className="header-info">
-            <h1>📅 Lịch & Quy trình hiến máu</h1>
-            <p>Quản lý lịch hẹn và theo dõi quy trình hiến máu</p>
-          </div>
-          <div className="header-actions">
-            <Button
-              type="primary"
-              icon={<ReloadOutlined />}
-              onClick={loadAllDonations}
-              loading={loading}
-            >
-              Làm mới
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title="Lịch & Quy trình hiến máu"
+          description="Quản lý lịch hẹn và theo dõi quy trình hiến máu"
+          icon={CalendarOutlined}
+          actions={[
+            {
+              label: "Làm mới",
+              type: "primary",
+              icon: <ReloadOutlined />,
+              onClick: loadAllDonations,
+              loading: loading,
+            },
+          ]}
+        />
 
         {/* Main Content with Tabs */}
         <div className="main-content">
@@ -640,7 +640,7 @@ const DonationSchedulePageNew = () => {
                           new Date(date).toLocaleDateString("vi-VN"),
                       },
                       {
-                        title: "Loại máu",
+                        title: "Nhóm máu",
                         dataIndex: "bloodType",
                         key: "bloodType",
                         width: 100,
@@ -879,7 +879,7 @@ const DonationSchedulePageNew = () => {
                           new Date(date).toLocaleDateString("vi-VN"),
                       },
                       {
-                        title: "Loại máu",
+                        title: "Nhóm máu",
                         dataIndex: "bloodType",
                         key: "bloodType",
                         width: 100,

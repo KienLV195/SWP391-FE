@@ -1,0 +1,226 @@
+// Manager PageHeader Component Styles
+// Medical color scheme: #D93E4C, #20374E, #DECCAA, #D91022
+
+@use '../base/variables' as *;
+@use '../base/mixin' as *;
+
+.manager-page-header {
+  background: $manager-bg;
+  padding: $spacing-lg;
+  border-radius: 12px;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 2px 8px $manager-shadow;
+  border: 1px solid $manager-border;
+  @include flex-align(space-between, flex-start);
+  gap: $spacing-md;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-md;
+    padding: $spacing-md;
+  }
+
+  .header-info {
+    flex: 1;
+    min-width: 0; // Prevent flex item from overflowing
+
+    .header-title-section {
+      @include flex-align(flex-start, flex-start);
+      gap: $spacing-md;
+
+      @media (max-width: 576px) {
+        flex-direction: column;
+        gap: $spacing-sm;
+      }
+
+      .header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+        border-radius: 12px;
+        color: white;
+        font-size: 24px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba($primary-color, 0.4);
+        }
+
+        @media (max-width: 576px) {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+        }
+      }
+
+      .header-text {
+        flex: 1;
+        min-width: 0;
+
+        .header-title {
+          margin: 0 0 4px 0 !important;
+          font-size: 1.8rem;
+          font-weight: 600;
+          color: $manager-text;
+          font-family: $font-manager;
+          line-height: 1.2;
+          word-wrap: break-word;
+
+          @media (max-width: 768px) {
+            font-size: 1.5rem;
+          }
+
+          @media (max-width: 576px) {
+            font-size: 1.3rem;
+          }
+        }
+
+        .header-description {
+          margin: 0;
+          color: $manager-text-light;
+          font-size: 1rem;
+          font-family: $font-manager;
+          line-height: 1.4;
+          word-wrap: break-word;
+
+          @media (max-width: 768px) {
+            font-size: 0.9rem;
+          }
+
+          @media (max-width: 576px) {
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      
+      .ant-space {
+        width: 100%;
+        justify-content: center;
+        
+        @media (max-width: 576px) {
+          flex-direction: column;
+          
+          .ant-space-item {
+            width: 100%;
+            
+            .ant-btn {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+
+    .ant-btn {
+      font-family: $font-manager;
+      border-radius: 8px;
+      font-weight: 500;
+      height: 40px;
+      padding: 0 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &.ant-btn-primary {
+        background: $primary-color;
+        border-color: $primary-color;
+
+        &:hover:not(:disabled) {
+          background: darken($primary-color, 8%);
+          border-color: darken($primary-color, 8%);
+        }
+      }
+
+      &.ant-btn-default {
+        background: white;
+        border-color: $manager-border;
+        color: $manager-text;
+
+        &:hover:not(:disabled) {
+          border-color: $primary-color;
+          color: $primary-color;
+        }
+      }
+
+      @media (max-width: 576px) {
+        height: 36px;
+        font-size: 14px;
+        padding: 0 16px;
+      }
+    }
+  }
+
+  // Hover effect for entire header
+  &:hover {
+    box-shadow: 0 4px 16px rgba($manager-shadow, 0.15);
+    border-color: rgba($primary-color, 0.2);
+  }
+
+  // Custom variants
+  &.compact {
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    .header-info .header-title-section {
+      .header-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+
+      .header-text .header-title {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  &.minimal {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: $spacing-md 0;
+
+    &:hover {
+      box-shadow: none;
+      border-color: transparent;
+    }
+  }
+}
+
+// Dark theme support
+.dark-theme {
+  .manager-page-header {
+    background: darken($manager-bg, 5%);
+    border-color: darken($manager-border, 10%);
+
+    .header-info .header-title-section .header-text {
+      .header-title {
+        color: lighten($manager-text, 10%);
+      }
+
+      .header-description {
+        color: lighten($manager-text-light, 15%);
+      }
+    }
+  }
+}

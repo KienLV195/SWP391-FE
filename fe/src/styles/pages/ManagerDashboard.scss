@@ -2,28 +2,133 @@
 @use '../base/mixin' as mix;
 
 .manager-dashboard {
-  display: flex;
-  min-height: 100vh;
-  background: vars.$manager-bg-light;
+  width: 100%;
   font-family: vars.$font-manager;
+  
+  .dashboard-content {
+    height: 100%;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+      display: grid;
+      gap: vars.$spacing-lg;
+      max-width: 100%; // Changed to full width
+      margin: 0;
+      padding: 20px; // Added padding for content spacing
 
-  .dashboard-main {
-    flex: 1;
-    margin-left: 280px;
-    padding: vars.$spacing-lg;
-    transition: margin-left 0.3s ease;
+      // Welcome Banner
+      .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: vars.$spacing-lg;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
-    &.collapsed {
-      margin-left: 80px;
-    }
+        .welcome-content {
+          display: flex;
+          align-items: center;
+          gap: vars.$spacing-lg;
+          color: white;
 
-    .dashboard-content {
-      // Content styling is now handled by individual components
-      // This container just provides spacing and layout structure
+          .welcome-icon {
+            font-size: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: vars.$spacing-md;
+            border-radius: 50%;
+          }
 
+          .welcome-text {
+            h2 {
+              color: white !important;
+              margin-bottom: vars.$spacing-sm !important;
+            }
 
+            .ant-typography {
+              color: rgba(255, 255, 255, 0.85);
+            }
+          }
+        }
+      }
 
+      // Statistics Cards
+      .statistics-cards {
+        .ant-card {
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
 
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          .ant-statistic {
+            .ant-statistic-title {
+              color: vars.$manager-text-light;
+              font-size: 1rem;
+              margin-bottom: vars.$spacing-sm;
+            }
+
+            .ant-statistic-content {
+              font-size: 2rem;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
+      // Charts Section
+      .charts-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: vars.$spacing-lg;
+
+        @include mix.tablet {
+          grid-template-columns: 1fr;
+        }
+
+        .chart-card {
+          background: white;
+          border-radius: 12px;
+          padding: vars.$spacing-lg;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          h3 {
+            margin-bottom: vars.$spacing-md;
+            color: vars.$manager-text;
+          }
+        }
+      }
+
+      // Notifications Panel
+      .notifications-panel {
+        background: white;
+        border-radius: 12px;
+        padding: vars.$spacing-lg;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        .notification-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: vars.$spacing-md;
+
+          h3 {
+            margin: 0;
+            color: vars.$manager-text;
+          }
+        }
+
+        .ant-list-item {
+          padding: vars.$spacing-md;
+          border-radius: 8px;
+          margin-bottom: vars.$spacing-sm;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.02);
+          }
+        }
+      }
     }
   }
 }
@@ -32,11 +137,37 @@
 @include mix.tablet {
   .manager-dashboard {
     .dashboard-main {
-      margin-left: 240px;
+      margin-left: 0;
       padding: vars.$spacing-md;
 
       &.collapsed {
         margin-left: 80px;
+      }
+
+      .dashboard-content {
+        padding: vars.$spacing-sm;
+
+        .statistics-cards {
+          .ant-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+            margin-bottom: vars.$spacing-md;
+          }
+        }
+
+        .welcome-banner {
+          .welcome-content {
+            flex-direction: column;
+            text-align: center;
+            gap: vars.$spacing-md;
+
+            .welcome-text {
+              h2 {
+                font-size: 1.5rem;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -47,6 +178,29 @@
     .dashboard-main {
       margin-left: 0;
       padding: vars.$spacing-sm;
+
+      .dashboard-content {
+        padding: vars.$spacing-xs;
+
+        .welcome-banner {
+          padding: vars.$spacing-md;
+        }
+
+        .charts-section {
+          grid-template-columns: 1fr;
+          gap: vars.$spacing-md;
+        }
+
+        .notifications-panel {
+          padding: vars.$spacing-md;
+
+          .notification-header {
+            flex-direction: column;
+            gap: vars.$spacing-sm;
+            text-align: center;
+          }
+        }
+      }
     }
   }
 }

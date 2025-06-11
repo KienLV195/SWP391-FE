@@ -10,7 +10,7 @@ import BlogPage from "../pages/guest/BlogPage";
 import BloodDonationGuide from "../pages/guest/DonationGuide";
 import ManagerHomePage from "../pages/manager/ManagerHomePage";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
-import BloodRequestsManagement from "../pages/manager/BloodRequestsManagement";
+import BloodRequestsPage from "../pages/manager/BloodRequestsPage";
 
 import BloodInventoryManagement from "../pages/manager/BloodInventoryManagement";
 import ReportsManagement from "../pages/manager/ReportsManagement";
@@ -122,7 +122,7 @@ const router = createBrowserRouter([
     path: "/manager/blood-requests",
     element: (
       <ManagerRoute>
-        <BloodRequestsManagement />
+        <BloodRequestsPage />
       </ManagerRoute>
     ),
   },

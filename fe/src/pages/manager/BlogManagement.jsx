@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Space } from "antd";
+import { EditOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import PageHeader from "../../components/manager/PageHeader";
 import blogService from "../../services/blogService";
 import authService from "../../services/authService";
 import "../../styles/pages/BlogManagement.scss";
+import "../../styles/components/PageHeader.scss";
 
 const ManagerBlogManagement = () => {
   const navigate = useNavigate();
@@ -22,14 +26,14 @@ const ManagerBlogManagement = () => {
       setLoading(true);
       const currentUser = authService.getCurrentUser();
       const response = await blogService.getBlogsByAuthor(currentUser.id);
-      
+
       if (response.success) {
         setBlogs(response.data);
       } else {
-        console.error('Failed to load blogs:', response.message);
+        console.error("Failed to load blogs:", response.message);
       }
     } catch (error) {
-      console.error('Error loading blogs:', error);
+      console.error("Error loading blogs:", error);
     } finally {
       setLoading(false);
     }
@@ -39,8 +43,10 @@ const ManagerBlogManagement = () => {
     const matchesSearch =
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || blog.status === statusFilter;
-    const matchesCategory = categoryFilter === "all" || blog.category === categoryFilter;
+    const matchesStatus =
+      statusFilter === "all" || blog.status === statusFilter;
+    const matchesCategory =
+      categoryFilter === "all" || blog.category === categoryFilter;
 
     return matchesSearch && matchesStatus && matchesCategory;
   });
@@ -70,13 +76,13 @@ const ManagerBlogManagement = () => {
       try {
         const response = await blogService.deleteBlog(blogId);
         if (response.success) {
-          setBlogs(blogs.filter(blog => blog.id !== blogId));
+          setBlogs(blogs.filter((blog) => blog.id !== blogId));
           alert("Xóa bài viết thành công!");
         } else {
           alert("Lỗi: " + response.message);
         }
       } catch (error) {
-        console.error('Error deleting blog:', error);
+        console.error("Error deleting blog:", error);
         alert("Có lỗi xảy ra khi xóa bài viết!");
       }
     }
@@ -105,16 +111,26 @@ const ManagerBlogManagement = () => {
       <ManagerSidebar />
       <div className="manager-content">
         <div className="blog-management">
-          <div className="page-header">
-            <div className="header-content">
-              <h1>Quản lý Blog</h1>
-              <p>Tạo và quản lý Tin tức & Thông báo nội bộ (không được đăng Tài liệu)</p>
-            </div>
-            <button className="btn-primary" onClick={handleCreateBlog}>
-              <i className="fas fa-plus"></i>
-              Tạo bài viết mới
-            </button>
-          </div>
+          <PageHeader
+            title="Quản lý Blog"
+            description="Tạo và quản lý Tin tức & Thông báo nội bộ (không được đăng Tài liệu)"
+            icon={EditOutlined}
+            actions={[
+              {
+                label: "Tạo bài viết mới",
+                type: "primary",
+                icon: <PlusOutlined />,
+                onClick: handleCreateBlog,
+                style: { backgroundColor: "#D93E4C", borderColor: "#D93E4C" },
+              },
+              {
+                label: "Làm mới",
+                icon: <ReloadOutlined />,
+                onClick: loadBlogs,
+                loading: loading,
+              },
+            ]}
+          />
 
           <div className="filters-section">
             <div className="search-box">
@@ -155,7 +171,9 @@ const ManagerBlogManagement = () => {
               <div className="empty-state">
                 <i className="fas fa-blog"></i>
                 <h3>Chưa có bài viết nào</h3>
-                <p>Hãy tạo bài viết đầu tiên để chia sẻ tin tức hoặc thông báo</p>
+                <p>
+                  Hãy tạo bài viết đầu tiên để chia sẻ tin tức hoặc thông báo
+                </p>
                 <button className="btn-primary" onClick={handleCreateBlog}>
                   Tạo bài viết mới
                 </button>
@@ -189,11 +207,17 @@ const ManagerBlogManagement = () => {
                   <div className="blog-content">
                     <h3 className="blog-title">{blog.title}</h3>
                     <p className="blog-excerpt">{blog.excerpt}</p>
-                    
+
                     <div className="blog-stats">
-                      <span className="stat">📅 {formatDate(blog.createdAt)}</span>
-                      <span className="stat">👁️ {blog.views || 0} lượt xem</span>
-                      <span className="stat">❤️ {blog.likes || 0} lượt thích</span>
+                      <span className="stat">
+                        📅 {formatDate(blog.createdAt)}
+                      </span>
+                      <span className="stat">
+                        👁️ {blog.views || 0} lượt xem
+                      </span>
+                      <span className="stat">
+                        ❤️ {blog.likes || 0} lượt thích
+                      </span>
                     </div>
                   </div>
                 </div>
