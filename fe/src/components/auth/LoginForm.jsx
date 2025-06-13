@@ -85,7 +85,7 @@ export default function LoginForm() {
           />
 
           {error && <div className="login-form__error">{error}</div>}
-          <button
+          <button onClick={() => navigate("/member/blood-info")}
             className="login-form__submit"
             type="submit"
             disabled={isLoading}

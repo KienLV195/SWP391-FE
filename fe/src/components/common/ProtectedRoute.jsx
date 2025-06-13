@@ -7,7 +7,7 @@ import { ROLES } from "../../services/mockData";
 const ProtectedRoute = ({
   children,
   requireAuth = true,
-  allowedRoles = [],
+  allowedRoles = [ROLES.MEMBER],
   redirectTo = "/login",
 }) => {
   const location = useLocation();

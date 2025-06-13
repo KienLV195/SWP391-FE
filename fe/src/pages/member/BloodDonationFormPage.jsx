@@ -768,17 +768,7 @@ const BloodDonationFormPage = () => {
                         ))}
                       </select>
                     </div>
-                    <div className="form-group">
-                      <label>Huyết áp (mmHg)</label>
-                      <input
-                        type="text"
-                        value={healthSurvey.bloodPressure}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("bloodPressure", e.target.value)
-                        }
-                        placeholder="Ví dụ: 120/80"
-                      />
-                    </div>
+
                   </div>
                 </div>
 

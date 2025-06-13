@@ -3,10 +3,10 @@
 // User roles matching database Roles table
 export const ROLES = {
   GUEST: 'Guest',
-  MEMBER: 'Member',
-  STAFF_DOCTOR: 'Staff-Doctor',
-  STAFF_BLOOD_MANAGER: 'Staff-BloodManager',
-  ADMIN: 'Admin'
+  MEMBER: '1',
+  STAFF_DOCTOR: '2',
+  STAFF_BLOOD_MANAGER: '3',
+  ADMIN: '4'
 };
 
 // User status matching database Users table
@@ -684,8 +684,8 @@ export const getBloodInventoryWithStatus = () => {
       bloodType: `${item.bloodGroup}${item.rhType}`,
       status,
       statusIcon: status === 'critical' ? '🚨' :
-                  status === 'low' ? '⚠️' :
-                  status === 'high' ? '✅' : '🔵'
+        status === 'low' ? '⚠️' :
+          status === 'high' ? '✅' : '🔵'
     };
   });
 };

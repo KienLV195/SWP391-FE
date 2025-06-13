@@ -70,57 +70,89 @@ class AuthService {
   // Login with email and password
   async login(email, password) {
     try {
-      // Try real API call first
       const response = await axios.post(
-        'https://localhost:7021/api/auth/login',
+        'http://localhost:5000/api/Auth/Login',
         {
           email: email,
           password: password
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
       );
 
-      console.log('Login response:', response);
-
-      // Check if login was successful
       if (response.status === 200 && response.data) {
-        const userData = response.data;
+        const token = response.data;
+        console.log('Login response (token):', token); // Debug log
 
-        // Extract user information from response
-        const user = {
-          id: userData.id || userData.userId,
-          email: userData.email,
-          name: userData.name || userData.fullName,
-          role: userData.role,
-          status: userData.status || 1,
-          profile: userData.profile || {
-            email: userData.email,
-            fullName: userData.name || userData.fullName,
-            phone: userData.phone || '',
-            address: userData.address || '',
-            bloodType: userData.bloodType || '',
-            dateOfBirth: userData.dateOfBirth || '',
-            gender: userData.gender || ''
-          },
-          isFirstLogin: userData.isFirstLogin || false
-        };
-
-        // Save authentication data
-        this.currentUser = user;
-        this.isAuthenticated = true;
-
-        // Save token if provided
-        if (userData.token) {
-          localStorage.setItem('authToken', userData.token);
+        if (!token) {
+          console.error('No token received');
+          return {
+            success: false,
+            error: 'Không nhận được token xác thực'
+          };
         }
 
-        // Save user to localStorage
-        this.saveUserToStorage(user);
+        // Decode JWT token
+        const tokenParts = token.split('.');
+        if (tokenParts.length !== 3) {
+          console.error('Invalid token format');
+          return {
+            success: false,
+            error: 'Token không hợp lệ'
+          };
+        }
 
-        return {
-          success: true,
-          user: user,
-          token: userData.token
-        };
+        try {
+          const payload = JSON.parse(atob(tokenParts[1]));
+          console.log('Decoded token payload:', payload); // Debug log
+
+          // Extract user information from token payload
+          const user = {
+            id: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+            email: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
+            name: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'].split('@')[0],
+            role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Member',
+            status: 1,
+            profile: {
+              email: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
+              fullName: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'].split('@')[0],
+              phone: '',
+              address: '',
+              bloodType: '',
+              dateOfBirth: '',
+              gender: '',
+              department: ''
+            },
+            isFirstLogin: true
+          };
+
+          console.log('Mapped user object:', user); // Debug log
+
+          // Save authentication data
+          this.currentUser = user;
+          this.isAuthenticated = true;
+
+          // Save token
+          localStorage.setItem('authToken', token);
+
+          // Save user to localStorage
+          this.saveUserToStorage(user);
+
+          return {
+            success: true,
+            user: user,
+            token: token
+          };
+        } catch (decodeError) {
+          console.error('Error decoding token:', decodeError);
+          return {
+            success: false,
+            error: 'Không thể xác thực token'
+          };
+        }
       } else {
         return {
           success: false,
@@ -128,35 +160,21 @@ class AuthService {
         };
       }
     } catch (error) {
-      console.error('API Login failed, falling back to mock data:', error.message);
+      console.error('Login error:', error);
 
-      // Fallback to mock data when API is not available
-      if (error.request || error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
-        console.log('Using mock authentication...');
-
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Use mock authentication
-        const user = authenticateUser(email, password);
-        if (user) {
-          this.currentUser = user;
-          this.isAuthenticated = true;
-          this.saveUserToStorage(user);
-          return { success: true, user };
-        } else {
-          return { success: false, error: 'Thông tin đăng nhập không chính xác' };
-        }
-      }
-
-      // Handle other API errors
       if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
         const errorMessage = error.response.data?.message ||
-                           error.response.data?.error ||
-                           'Thông tin đăng nhập không chính xác';
+          error.response.data?.error ||
+          'Thông tin đăng nhập không chính xác';
         return { success: false, error: errorMessage };
+      } else if (error.request) {
+        // The request was made but no response was received
+        return { success: false, error: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.' };
       } else {
-        return { success: false, error: 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau' };
+        // Something happened in setting up the request that triggered an Error
+        return { success: false, error: 'Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.' };
       }
     }
   }
@@ -164,32 +182,39 @@ class AuthService {
   // Register new user
   async register(userData) {
     try {
-      // TODO_API_REPLACE: Replace with actual API call
-      // const response = await fetch(`${config.api.baseUrl}/auth/register`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(userData)
-      // });
-      // const data = await response.json();
-      // if (response.ok) {
-      //   return { success: true, message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.' };
-      // } else {
-      //   return { success: false, error: data.message };
-      // }
+      const response = await axios.post(
+        'http://localhost:5000/api/Auth/Register',
+        {
+          ...userData,
+          roleId: 2, // Set roleId to 2 for Member role
+          status: 1  // Active status
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      );
 
-      // MOCK_DATA: Remove this section when implementing real API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      return { success: true, message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.' };
+      if (response.status === 200 || response.status === 201) {
+        return {
+          success: true,
+          message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.'
+        };
+      } else {
+        return {
+          success: false,
+          error: response.data?.message || 'Đăng ký không thành công'
+        };
+      }
     } catch (error) {
       console.error('Register error:', error);
 
-      // Handle different types of errors
       if (error.response) {
         const errorMessage = error.response.data?.message ||
-                           error.response.data?.error ||
-                           'Đăng ký không thành công';
+          error.response.data?.error ||
+          'Đăng ký không thành công';
         return { success: false, error: errorMessage };
       } else if (error.request) {
         return { success: false, error: 'Không thể kết nối đến hệ thống. Vui lòng thử lại sau' };
@@ -207,7 +232,7 @@ class AuthService {
       if (token) {
         try {
           await axios.post(
-            'https://localhost:7021/api/auth/logout',
+            'http://localhost:5000/api/Auth/Logout',
             {},
             {
               headers: {
@@ -258,8 +283,6 @@ class AuthService {
       localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
     }
   }
-
-
 
   // Get user status
   getUserStatus() {

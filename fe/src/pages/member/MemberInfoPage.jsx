@@ -270,26 +270,24 @@ const MemberInfoPage = () => {
                   {form.documentType === "passport"
                     ? "hộ chiếu"
                     : form.documentType === "cmnd"
-                    ? "chứng minh nhân dân"
-                    : "căn cước công dân"}{" "}
+                      ? "chứng minh nhân dân"
+                      : "căn cước công dân"}{" "}
                   <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${
-                    errors.documentNumber ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.documentNumber ? " is-invalid" : ""
+                    }`}
                   name="documentNumber"
                   value={form.documentNumber}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
-                  placeholder={`Nhập ${
-                    form.documentType === "passport"
-                      ? "số hộ chiếu"
-                      : form.documentType === "cmnd"
+                  placeholder={`Nhập ${form.documentType === "passport"
+                    ? "số hộ chiếu"
+                    : form.documentType === "cmnd"
                       ? "số CMND (9 hoặc 12 số)"
                       : "số CCCD (12 số)"
-                  }`}
+                    }`}
                 />
                 {errors.documentNumber && (
                   <div className="invalid-feedback">
@@ -303,9 +301,8 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${
-                    errors.fullName ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.fullName ? " is-invalid" : ""
+                    }`}
                   name="fullName"
                   value={form.fullName}
                   onChange={handleChange}
@@ -322,9 +319,8 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="date"
-                  className={`form-control form-control-lg${
-                    errors.dob ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.dob ? " is-invalid" : ""
+                    }`}
                   name="dob"
                   value={form.dob}
                   onChange={handleChange}
@@ -427,9 +423,8 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${
-                    errors.address ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.address ? " is-invalid" : ""
+                    }`}
                   name="address"
                   value={form.address}
                   onChange={handleChange}
@@ -444,9 +439,8 @@ const MemberInfoPage = () => {
                 <label style={{ fontSize: "1.1rem" }}>Email</label>
                 <input
                   type="email"
-                  className={`form-control form-control-lg${
-                    errors.email ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.email ? " is-invalid" : ""
+                    }`}
                   name="email"
                   value={form.email}
                   onChange={handleChange}
@@ -461,9 +455,8 @@ const MemberInfoPage = () => {
                 <label style={{ fontSize: "1.1rem" }}>Số điện thoại</label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${
-                    errors.phone ? " is-invalid" : ""
-                  }`}
+                  className={`form-control form-control-lg${errors.phone ? " is-invalid" : ""
+                    }`}
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}

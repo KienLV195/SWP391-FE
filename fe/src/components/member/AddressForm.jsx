@@ -542,7 +542,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                   🗺️ Xem đường đi trên OpenStreetMap
                 </a>
                 <a
-                  href={GeolibService.getGoogleDirectionsUrl(coordinates)}
+                  href={GeolibService.getDirectionsUrl(coordinates)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="directions-link google-link"

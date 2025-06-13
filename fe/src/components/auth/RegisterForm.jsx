@@ -7,6 +7,7 @@ import {
   validateFullName,
 } from "../../utils/validation";
 import "../../styles/components/RegisterForm.scss";
+import authService from "../../services/authService";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -78,25 +79,35 @@ export default function RegisterForm() {
     }
 
     setIsLoading(true);
+    setErrors({});
 
     try {
-      // Simulate API call to register user
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const registerData = {
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName
+      };
 
-      // Navigate to email verification page
-      navigate("/register/verify-email", {
-        state: {
-          email: formData.email,
-          fullName: formData.fullName,
-          password: formData.password,
-          isRegister: true,
-        },
-      });
+      const result = await authService.register(registerData);
+
+      if (result.success) {
+        // Navigate to email verification page
+        navigate("/register/verify-email", {
+          state: {
+            email: formData.email,
+            fullName: formData.fullName,
+            isRegister: true,
+          },
+        });
+      } else {
+        setErrors({
+          submit: result.error || "Đăng ký không thành công. Vui lòng thử lại sau."
+        });
+      }
     } catch (error) {
       console.error("Registration failed:", error);
       setErrors({
-        submit:
-          "Đăng ký không thành công. Vui lòng kiểm tra lại thông tin và thử lại.",
+        submit: "Đăng ký không thành công. Vui lòng thử lại sau."
       });
     } finally {
       setIsLoading(false);
@@ -115,9 +126,8 @@ export default function RegisterForm() {
           <div className="form-group">
             <label className="register-form__label">HỌ VÀ TÊN</label>
             <input
-              className={`register-form__input ${
-                errors.fullName ? "error" : ""
-              }`}
+              className={`register-form__input ${errors.fullName ? "error" : ""
+                }`}
               type="text"
               name="fullName"
               value={formData.fullName}
@@ -149,9 +159,8 @@ export default function RegisterForm() {
           <div className="form-group">
             <label className="register-form__label">MẬT KHẨU</label>
             <input
-              className={`register-form__input ${
-                errors.password ? "error" : ""
-              }`}
+              className={`register-form__input ${errors.password ? "error" : ""
+                }`}
               type="password"
               name="password"
               value={formData.password}
@@ -167,9 +176,8 @@ export default function RegisterForm() {
           <div className="form-group">
             <label className="register-form__label">XÁC NHẬN MẬT KHẨU</label>
             <input
-              className={`register-form__input ${
-                errors.confirmPassword ? "error" : ""
-              }`}
+              className={`register-form__input ${errors.confirmPassword ? "error" : ""
+                }`}
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
