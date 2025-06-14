@@ -71,7 +71,7 @@ class AuthService {
   async login(email, password) {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/Auth/Login',
+        'https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/login',
         {
           email: email,
           password: password
@@ -183,7 +183,7 @@ class AuthService {
   async register(userData) {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/Auth/Register',
+        'https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/Register',
         {
           ...userData,
           roleId: 2, // Set roleId to 2 for Member role
@@ -232,7 +232,7 @@ class AuthService {
       if (token) {
         try {
           await axios.post(
-            'http://localhost:5000/api/Auth/Logout',
+            'https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/logout',
             {},
             {
               headers: {
