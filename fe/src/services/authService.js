@@ -73,7 +73,7 @@ class AuthService {
   async login(email, password) {
     try {
       const response = await axios.post(
-        "/api/Auth/login",
+        "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/login",
         {
           email: email,
           password: password,
@@ -131,29 +131,29 @@ class AuthService {
             ],
             email:
               payload[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
               ],
             name:
               payload[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
               ] ||
               payload[
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
               ].split("@")[0],
             role: mapRole(
               payload[
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
               ]
             ),
             status: 1,
             profile: {
               email:
                 payload[
-                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
                 ],
               fullName:
                 payload[
-                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
                 ] ||
                 payload[
                   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
@@ -239,7 +239,7 @@ class AuthService {
   async register(userData) {
     try {
       const response = await axios.post(
-        "/api/Auth/Register",
+        "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/Register",
         {
           ...userData,
           roleId: 2, // Set roleId to 2 for Member role
