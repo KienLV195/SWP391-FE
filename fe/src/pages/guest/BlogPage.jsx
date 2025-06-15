@@ -77,8 +77,8 @@ const blogPosts = [
 ];
 
 const BlogPage = ({ CustomNavbar, hideNavbar }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm] = useState("");
+  const [currentPage] = useState(1);
   const navigate = useNavigate();
   const pageSize = 6; // Số bài viết mỗi trang (3 hàng x 2 bài/hàng)
 

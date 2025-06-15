@@ -37,3 +37,9 @@ export async function deleteBloodArticle(articleId) {
   if (!response.ok) throw new Error('Lỗi khi xóa bài viết tài liệu');
   return response.json();
 }
+
+export async function fetchBloodArticleDetail(articleId) {
+  const response = await fetch(`${API_URL}/${articleId}`);
+  if (!response.ok) throw new Error('Lỗi khi lấy chi tiết bài viết tài liệu');
+  return response.json();
+}

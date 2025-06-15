@@ -59,6 +59,7 @@ import ProtectedRoute, {
   ManagerRoute,
   AdminRoute,
 } from "../components/common/ProtectedRoute";
+import ArticleDetailPage from "../pages/guest/ArticleDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -276,6 +277,10 @@ const router = createBrowserRouter([
         <NotificationsPage />
       </MemberRoute>
     ),
+  },
+  {
+    path: "/articles/:id",
+    element: <ArticleDetailPage />,
   },
 
   // === ADMIN ROUTES ===
