@@ -224,6 +224,7 @@ const MemberInfoPage = () => {
           roleID: currentUser.roleID || 1,
           department: currentUser.department || "",
           createdAt: new Date().toISOString(),
+          password: currentUser.password || "",
         };
 
         console.log("Data being sent:", dataToSave);
@@ -268,7 +269,6 @@ const MemberInfoPage = () => {
       } catch (error) {
         console.error("Lỗi khi lưu thông tin:", error);
         if (error.response) {
-          console.error("Response data:", error.response.data);
           console.error("Response status:", error.response.status);
         }
         alert("Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.");
