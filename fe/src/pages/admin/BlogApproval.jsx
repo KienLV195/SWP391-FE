@@ -51,23 +51,37 @@ const BlogApproval = () => {
   const [editMode, setEditMode] = useState(false);
   const [form] = Form.useForm();
   const [editImage, setEditImage] = useState(null);
-  const [editTags, setEditTags] = useState([]);
+  const [setEditTags] = useState([]);
 
   useEffect(() => {
     setLoading(true);
     fetchBloodArticles()
       .then((data) => {
+        // Xử lý lỗi font: decode các ký tự lỗi về Unicode chuẩn (nếu có)
+        const decodeString = (str) => {
+          if (!str || typeof str !== "string") return str;
+          try {
+            return decodeURIComponent(escape(str));
+          } catch {
+            return str;
+          }
+        };
         setBlogs(
           (Array.isArray(data) ? data : []).map((item) => ({
-            articleId: item.bloodArticleID,
-            title: item.title,
-            userName: item.authorName || item.author || "",
+            articleId: item.articleId || item.bloodArticleID || item.id,
+            title: decodeString(item.title),
+            userName: decodeString(
+              item.userName || item.authorName || item.author || ""
+            ),
             tags: item.tags
               ? Array.isArray(item.tags)
-                ? item.tags
-                : item.tags.split(",")
+                ? item.tags.map(decodeString)
+                : item.tags.split(",").map(decodeString)
               : [],
             imgUrl: item.imgUrl || item.featuredImage || item.image || "",
+            category: item.category || "Tài liệu",
+            excerpt: decodeString(item.excerpt || ""),
+            content: decodeString(item.content),
           }))
         );
       })
@@ -78,9 +92,9 @@ const BlogApproval = () => {
   const filteredBlogs = blogs.filter(
     (blog) =>
       blog.category === activeTab &&
-      (blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()))
+      (blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const columns = [
@@ -106,9 +120,18 @@ const BlogApproval = () => {
       dataIndex: "tags",
       key: "tags",
       render: (tags) =>
-        tags && tags.length > 0
-          ? tags.map((tag) => <Tag key={tag}>{tag}</Tag>)
-          : null,
+        tags && tags.length > 0 ? (
+          <>
+            {tags.slice(0, 3).map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+            {tags.length > 3 && (
+              <span style={{ color: "#1890ff", cursor: "pointer" }}>
+                +{tags.length - 3}...
+              </span>
+            )}
+          </>
+        ) : null,
     },
     {
       title: "Thumbnail",
@@ -134,6 +157,19 @@ const BlogApproval = () => {
       align: "center",
       render: (_, record) => (
         <Row gutter={8} justify="center">
+          <Col>
+            <Button
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelectedBlog(record);
+                setEditMode(false);
+                setShowModal(true);
+              }}
+              size="small"
+            >
+              Xem
+            </Button>
+          </Col>
           <Col>
             <Button
               icon={<EditOutlined />}
@@ -203,7 +239,13 @@ const BlogApproval = () => {
         setBlogs((prev) =>
           prev.map((b) =>
             b.articleId === selectedBlog.articleId
-              ? { ...b, ...values, tags: values.tags, imgUrl: editImage }
+              ? {
+                  ...b,
+                  ...values,
+                  tags: values.tags,
+                  imgUrl: editImage,
+                  content: values.content,
+                }
               : b
           )
         );
@@ -227,7 +269,10 @@ const BlogApproval = () => {
           width: "100%",
           maxWidth: 1200,
           margin: "0 auto",
-          boxShadow: "0 2px 8px #f0f1f2",
+          boxShadow: "0 4px 24px #e6e6e6",
+          borderRadius: 16,
+          border: "1px solid #f0f0f0",
+          background: "#fcfcfc",
         }}
       >
         <Row gutter={16} style={{ marginBottom: 16 }}>
@@ -257,11 +302,15 @@ const BlogApproval = () => {
           <Table
             columns={columns}
             dataSource={filteredBlogs}
-            rowKey="id"
-            pagination={{ pageSize: 8 }}
+            rowKey="articleId"
+            pagination={{ pageSize: 8, showSizeChanger: false }}
             bordered
-            size="middle"
-            style={{ background: "#fff" }}
+            size="large"
+            style={{
+              background: "#fff",
+              borderRadius: 12,
+              boxShadow: "0 2px 8px #f0f1f2",
+            }}
           />
         </Spin>
       </Card>
@@ -288,30 +337,63 @@ const BlogApproval = () => {
             : null
         }
         width={700}
-        destroyOnClose
       >
         {selectedBlog && !editMode && (
-          <div>
-            <div style={{ marginBottom: 8 }}>
-              <Badge color="blue" text={selectedBlog.category} />
-              <span style={{ marginLeft: 16 }}>
-                {selectedBlog.author} (
-                {selectedBlog.authorRole === "doctor" ? "Bác sĩ" : "Quản lý"})
-              </span>
-              <span style={{ float: "right", color: "#888" }}>
-                {new Date(selectedBlog.publishedAt).toLocaleString("vi-VN")}
-              </span>
-            </div>
-            <div style={{ fontWeight: 500, fontSize: 18, marginBottom: 8 }}>
+          <div style={{ padding: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 600, marginBottom: 8 }}>
               {selectedBlog.title}
             </div>
-            <div style={{ color: "#888", marginBottom: 8 }}>
-              {selectedBlog.excerpt}
+            <div style={{ marginBottom: 8, color: "#888" }}>
+              <b>ID:</b> {selectedBlog.articleId} &nbsp;|&nbsp;
+              <b>Người viết:</b>{" "}
+              {selectedBlog.userName || selectedBlog.author || "-"}{" "}
+              &nbsp;|&nbsp;
+              <b>Loại:</b> {selectedBlog.category}
             </div>
-            <div
-              style={{ background: "#fafafa", padding: 16, borderRadius: 8 }}
-              dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
-            />
+            {selectedBlog.imgUrl && (
+              <div style={{ marginBottom: 12 }}>
+                <img
+                  src={selectedBlog.imgUrl}
+                  alt="thumbnail"
+                  style={{
+                    maxWidth: 200,
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px #eee",
+                  }}
+                />
+              </div>
+            )}
+            <div style={{ marginBottom: 8 }}>
+              <b>Tags:</b>{" "}
+              {selectedBlog.tags && selectedBlog.tags.length > 0
+                ? selectedBlog.tags.map((tag, idx) => (
+                    <Tag key={idx}>{tag}</Tag>
+                  ))
+                : "-"}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>Mô tả ngắn:</b> {selectedBlog.title || "-"}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>Nội dung:</b>
+              <div
+                style={{
+                  background: "#fafafa",
+                  padding: 12,
+                  borderRadius: 6,
+                  marginTop: 4,
+                  minHeight: 60,
+                }}
+              >
+                {selectedBlog.content ? (
+                  <div style={{ whiteSpace: "pre-line" }}>
+                    {selectedBlog.content}
+                  </div>
+                ) : (
+                  <span style={{ color: "#aaa" }}>Không có nội dung</span>
+                )}
+              </div>
+            </div>
             <Row justify="end" style={{ marginTop: 16 }} gutter={8}>
               <Col>
                 <Button onClick={() => setShowModal(false)}>Đóng</Button>
@@ -319,7 +401,7 @@ const BlogApproval = () => {
               <Col>
                 <Popconfirm
                   title="Bạn có chắc chắn muốn xóa bài viết này?"
-                  onConfirm={() => handleDeleteBlog(selectedBlog.id)}
+                  onConfirm={() => handleDeleteBlog(selectedBlog.articleId)}
                   okText="Xóa"
                   cancelText="Hủy"
                 >
@@ -336,19 +418,12 @@ const BlogApproval = () => {
             form={form}
             layout="vertical"
             initialValues={{ ...selectedBlog }}
+            // Bỏ hết rules ràng buộc, cho phép sửa bất kỳ trường nào
           >
-            <Form.Item
-              name="title"
-              label="Tiêu đề"
-              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-            >
+            <Form.Item name="title" label="Tiêu đề">
               <Input />
             </Form.Item>
-            <Form.Item
-              name="content"
-              label="Nội dung"
-              rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-            >
+            <Form.Item name="content" label="Nội dung">
               <Input.TextArea rows={6} />
             </Form.Item>
             <Form.Item name="imgUrl" label="Ảnh thumbnail">
@@ -379,17 +454,7 @@ const BlogApproval = () => {
               </Upload>
             </Form.Item>
             <Form.Item name="tags" label="Tags">
-              <Select
-                mode="tags"
-                style={{ width: "100%" }}
-                value={editTags}
-                onChange={setEditTags}
-                tokenSeparators={[","]}
-                placeholder="Nhập tags"
-              />
-            </Form.Item>
-            <Form.Item name="userName" label="Người viết">
-              <Input disabled />
+              <Select mode="tags" style={{ width: "100%" }} allowClear />
             </Form.Item>
           </Form>
         )}

@@ -8,6 +8,7 @@ export async function fetchBloodArticles() {
 }
 
 export async function updateBloodArticle(articleId, data) {
+  // Đổi sang dùng POST đúng API yêu cầu
   const response = await fetch(`${API_URL}/${articleId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -17,8 +18,9 @@ export async function updateBloodArticle(articleId, data) {
   return response.json();
 }
 
-// Sử dụng PUT cho update blog đúng chuẩn RESTful
+
 export async function putBlog(articleId, data) {
+  // Đổi sang dùng PUT đúng API yêu cầu mới
   const response = await fetch(`${API_URL}/${articleId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
