@@ -1,0 +1,135 @@
+@use "../../base/variables" as vars;
+@use "../../base/mixin" as mix;
+
+.userManagement {
+  padding: vars.$spacing-lg;
+  background: vars.$white;
+  border-radius: vars.$border-radius-lg;
+  box-shadow: vars.$shadow-sm;
+
+  .header {
+    @include mix.flex-align(space-between, center);
+    margin-bottom: vars.$spacing-lg;
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: vars.$text-primary;
+      margin: 0;
+    }
+  }
+
+  :global {
+    .ant-table-wrapper {
+      background: vars.$white;
+      border-radius: vars.$border-radius-md;
+      overflow: hidden;
+    }
+
+    .ant-table {
+      .ant-table-thead > tr > th {
+        background: vars.$bg-light;
+        font-weight: 600;
+        color: vars.$text-primary;
+      }
+
+      .ant-table-tbody > tr > td {
+        vertical-align: middle;
+      }
+
+      .ant-table-row:hover {
+        background: vars.$bg-hover;
+      }
+    }
+
+    .ant-modal {
+      .ant-modal-header {
+        border-bottom: 1px solid vars.$border-color;
+        padding: vars.$spacing-lg;
+      }
+
+      .ant-modal-body {
+        padding: vars.$spacing-lg;
+      }
+
+      .ant-modal-footer {
+        border-top: 1px solid vars.$border-color;
+        padding: vars.$spacing-md vars.$spacing-lg;
+      }
+    }
+
+    .ant-form {
+      .ant-form-item-label {
+        font-weight: 500;
+      }
+
+      .ant-input-affix-wrapper {
+        &:hover,
+        &:focus {
+          border-color: vars.$primary-color;
+        }
+      }
+
+      .ant-select-selector {
+        &:hover {
+          border-color: vars.$primary-color;
+        }
+      }
+    }
+
+    .ant-btn {
+      &-primary {
+        background: vars.$primary-color;
+        border-color: vars.$primary-color;
+
+        &:hover {
+          background: darken(vars.$primary-color, 10%);
+          border-color: darken(vars.$primary-color, 10%);
+        }
+      }
+
+      &-danger {
+        background: vars.$error-color;
+        border-color: vars.$error-color;
+
+        &:hover {
+          background: darken(vars.$error-color, 10%);
+          border-color: darken(vars.$error-color, 10%);
+        }
+      }
+    }
+  }
+
+  @include mix.tablet {
+    padding: vars.$spacing-md;
+
+    .header {
+      flex-direction: column;
+      gap: vars.$spacing-md;
+      align-items: flex-start;
+
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  @include mix.mobile {
+    padding: vars.$spacing-sm;
+
+    .header {
+      h1 {
+        font-size: 1.1rem;
+      }
+    }
+
+    :global {
+      .ant-table {
+        .ant-table-thead > tr > th,
+        .ant-table-tbody > tr > td {
+          padding: vars.$spacing-sm;
+        }
+      }
+    }
+  }
+}

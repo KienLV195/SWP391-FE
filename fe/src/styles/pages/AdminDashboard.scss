@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 // Layout for Admin with sidebar
 .admin-layout {
@@ -31,8 +31,17 @@
 }
 
 .admin-dashboard {
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 16px;
+  min-height: calc(100vh - 64px); // Subtract header height
+  background-color: #f0f2f5;
+
+  .dashboard-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 64px);
+    background-color: #f0f2f5;
+  }
 
   .dashboard-header {
     @include mixins.flex-between;
@@ -43,7 +52,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          vars.$text-primary
+        );
         @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
         margin-bottom: vars.$spacing-2;
       }
@@ -95,7 +108,7 @@
       overflow: hidden;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -142,7 +155,10 @@
         }
 
         .requests & {
-          @include mixins.gradient-bg(vars.$secondary-color, vars.$secondary-hover);
+          @include mixins.gradient-bg(
+            vars.$secondary-color,
+            vars.$secondary-hover
+          );
         }
       }
 
@@ -150,21 +166,33 @@
         flex: 1;
 
         h3 {
-          @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-bold);
+          @include mixins.text(
+            vars.$font-size-base,
+            vars.$text-secondary,
+            vars.$font-weight-bold
+          );
           margin: 0 0 vars.$spacing-2 0;
           text-transform: uppercase;
           letter-spacing: 1px;
         }
 
         .stat-number {
-          @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-extrabold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-3xl,
+            vars.$font-weight-extrabold,
+            vars.$text-primary
+          );
           margin: 0 0 vars.$spacing-2 0;
         }
 
         .stat-change {
           @include mixins.flex-align(flex-start, center);
           gap: vars.$spacing-1;
-          @include mixins.text(vars.$font-size-sm, vars.$text-muted, vars.$font-weight-medium);
+          @include mixins.text(
+            vars.$font-size-sm,
+            vars.$text-muted,
+            vars.$font-weight-medium
+          );
 
           &.positive {
             color: vars.$success-color;
@@ -204,13 +232,21 @@
         background: vars.$background-section;
 
         h2 {
-          @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-xl,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin: 0;
         }
 
         .view-all-link {
           @include mixins.button-ghost(vars.$primary-color);
-          @include mixins.text(vars.$font-size-sm, vars.$primary-color, vars.$font-weight-medium);
+          @include mixins.text(
+            vars.$font-size-sm,
+            vars.$primary-color,
+            vars.$font-weight-medium
+          );
           text-decoration: none;
 
           &:hover {
@@ -221,7 +257,11 @@
         .system-status {
           @include mixins.flex-align(center, center);
           gap: vars.$spacing-2;
-          @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+          @include mixins.text(
+            vars.$font-size-sm,
+            vars.$text-secondary,
+            vars.$font-weight-medium
+          );
 
           &.good {
             color: vars.$success-color;
@@ -297,7 +337,11 @@
 
               .activity-message,
               .alert-title {
-                @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+                @include mixins.text(
+                  vars.$font-size-sm,
+                  vars.$text-primary,
+                  vars.$font-weight-medium
+                );
                 margin: 0 0 vars.$spacing-1 0;
                 line-height: vars.$line-height-tight;
               }
@@ -350,7 +394,11 @@
     @include mixins.shadow-elevation(2);
 
     h2 {
-      @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-semibold, vars.$text-primary);
+      @include mixins.heading(
+        vars.$font-size-2xl,
+        vars.$font-weight-semibold,
+        vars.$text-primary
+      );
       margin: 0 0 vars.$spacing-6 0;
       text-align: center;
     }
@@ -392,7 +440,11 @@
         }
 
         span {
-          @include mixins.text(vars.$font-size-base, inherit, vars.$font-weight-medium);
+          @include mixins.text(
+            vars.$font-size-base,
+            inherit,
+            vars.$font-weight-medium
+          );
           text-align: center;
         }
       }
@@ -421,12 +473,17 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
     }
     50% {
@@ -557,5 +614,10 @@
         }
       }
     }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    padding: 12px;
   }
 }

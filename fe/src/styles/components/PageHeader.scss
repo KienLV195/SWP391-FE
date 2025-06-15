@@ -1,8 +1,9 @@
 // Manager PageHeader Component Styles
 // Medical color scheme: #D93E4C, #20374E, #DECCAA, #D91022
 
-@use '../base/variables' as *;
-@use '../base/mixin' as *;
+@use "../base/variables" as *;
+@use "../base/mixin" as *;
+@import "../base/admin-design-system.scss";
 
 .manager-page-header {
   background: $manager-bg;
@@ -41,7 +42,11 @@
         justify-content: center;
         width: 48px;
         height: 48px;
-        background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+        background: linear-gradient(
+          135deg,
+          $primary-color 0%,
+          darken($primary-color, 10%) 100%
+        );
         border-radius: 12px;
         color: white;
         font-size: 24px;
@@ -105,20 +110,20 @@
 
   .header-actions {
     flex-shrink: 0;
-    
+
     @media (max-width: 768px) {
       width: 100%;
-      
+
       .ant-space {
         width: 100%;
         justify-content: center;
-        
+
         @media (max-width: 576px) {
           flex-direction: column;
-          
+
           .ant-space-item {
             width: 100%;
-            
+
             .ant-btn {
               width: 100%;
             }
@@ -220,6 +225,113 @@
 
       .header-description {
         color: lighten($manager-text-light, 15%);
+      }
+    }
+  }
+}
+
+.page-header {
+  background-color: $background-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-card;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-lg;
+
+  .header-content {
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .header-title-section {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      flex: 1;
+      min-width: 200px;
+
+      .header-icon {
+        font-size: 24px;
+        color: $primary-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba($primary-color, 0.1);
+        border-radius: $border-radius-base;
+      }
+
+      .header-title {
+        margin: 0;
+        color: $text-primary;
+        font-weight: 500;
+      }
+
+      .header-description {
+        margin-top: $spacing-xs;
+        color: $text-secondary;
+      }
+    }
+
+    .header-breadcrumb {
+      margin: $spacing-sm 0;
+      color: $text-secondary;
+      font-size: $font-size-sm;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: $spacing-sm;
+      flex-wrap: wrap;
+
+      .ant-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-xs;
+        height: 32px;
+        padding: 0 $spacing-md;
+        border-radius: $border-radius-base;
+        font-size: $font-size-base;
+        transition: all $transition-duration $transition-timing;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+
+        &.ant-btn-primary {
+          background-color: $primary-color;
+          border-color: $primary-color;
+
+          &:hover {
+            background-color: darken($primary-color, 10%);
+            border-color: darken($primary-color, 10%);
+          }
+        }
+
+        .anticon {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media screen and (max-width: 768px) {
+  .page-header {
+    padding: $spacing-md;
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .header-title-section {
+        width: 100%;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: flex-end;
       }
     }
   }

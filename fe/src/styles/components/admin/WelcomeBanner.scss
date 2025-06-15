@@ -1,0 +1,67 @@
+.welcome-banner {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.1);
+  color: white;
+
+  .welcome-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .welcome-text {
+    flex: 1;
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      .greeting-icon {
+        font-size: 20px;
+      }
+
+      .greeting-message {
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+
+    .welcome-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  }
+
+  .welcome-info {
+    .date-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
+
+      .time-icon {
+        font-size: 16px;
+      }
+
+      .current-date {
+        font-size: 13px;
+        font-weight: 500;
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+.statistics-cards {
+  margin-bottom: 16px;
+
+  /* Removed custom gutter handling, relying on Ant Design's Row gutter */
+
+  .statistic-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .ant-statistic {
+      .ant-statistic-title {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.65);
+        margin-bottom: 6px;
+      }
+
+      .ant-statistic-content {
+        display: flex;
+        align-items: center;
+
+        .ant-statistic-content-prefix {
+          margin-right: 6px;
+          font-size: 20px; /* Adjust icon size */
+        }
+
+        .ant-statistic-content-value {
+          font-size: 20px;
+          font-weight: 600;
+          white-space: nowrap; /* Prevent number from wrapping */
+        }
+
+        .ant-statistic-content-suffix {
+          font-size: 13px;
+          margin-left: 4px;
+          color: rgba(0, 0, 0, 0.45);
+          white-space: nowrap; /* Prevent suffix from wrapping */
+        }
+      }
+    }
+  }
+}

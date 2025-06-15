@@ -1,0 +1,150 @@
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
+
+.admin-layout {
+  min-height: 100vh;
+  background: vars.$manager-bg-light;
+  font-family: vars.$font-manager;
+  position: relative;
+  display: flex;
+
+  .ant-layout {
+    background: transparent;
+  }
+
+  .admin-main-layout {
+    flex: 1;
+    background: vars.$manager-bg-light;
+    min-height: 100vh;
+    width: 100%;
+    margin-left: 285px !important;
+    transition: margin-left 0.3s ease;
+
+    &.ant-layout-sider-collapsed {
+      margin-left: 80px !important;
+    }
+  }
+
+  .admin-content {
+    padding: vars.$spacing-lg;
+    min-height: 100vh;
+    background: vars.$manager-bg;
+
+    .admin-page-content {
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+
+      .page-header {
+        background: vars.$manager-bg;
+        padding: vars.$spacing-lg;
+        border-radius: vars.$border-radius-lg;
+        margin-bottom: vars.$spacing-lg;
+        box-shadow: 0 2px 8px vars.$manager-shadow;
+        border: 1px solid vars.$manager-border;
+        @include mix.flex-align(space-between, flex-start);
+        gap: vars.$spacing-md;
+
+        h1 {
+          margin: 0 0 0.5rem 0;
+          font-size: vars.$font-size-2xl;
+          font-weight: vars.$font-weight-semibold;
+          color: vars.$manager-text;
+          font-family: vars.$font-manager;
+        }
+
+        p {
+          margin: 0;
+          color: vars.$manager-text-light;
+          font-size: vars.$font-size-base;
+          font-family: vars.$font-manager;
+        }
+      }
+
+      .admin-card {
+        background: vars.$manager-bg;
+        border-radius: vars.$border-radius-lg;
+        padding: vars.$spacing-lg;
+        box-shadow: 0 2px 8px vars.$manager-shadow;
+        border: 1px solid vars.$manager-border;
+        margin-bottom: vars.$spacing-lg;
+        transition: all 0.3s ease;
+
+        &:hover {
+          box-shadow: 0 4px 12px vars.$manager-shadow;
+        }
+
+        .card-header {
+          @include mix.flex-align(space-between, center);
+          margin-bottom: vars.$spacing-md;
+          padding-bottom: vars.$spacing-sm;
+          border-bottom: 1px solid vars.$manager-border;
+
+          h3 {
+            margin: 0;
+            font-size: vars.$font-size-lg;
+            font-weight: vars.$font-weight-semibold;
+            color: vars.$manager-text;
+            font-family: vars.$font-manager;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@include mix.tablet {
+  .admin-layout {
+    .admin-main-layout {
+      margin-left: 80px !important;
+    }
+
+    .admin-content {
+      padding: vars.$spacing-md;
+
+      .admin-page-content {
+        .page-header {
+          padding: vars.$spacing-md;
+          margin-bottom: vars.$spacing-md;
+        }
+
+        .admin-card {
+          padding: vars.$spacing-md;
+          margin-bottom: vars.$spacing-md;
+        }
+      }
+    }
+  }
+}
+
+@include mix.mobile {
+  .admin-layout {
+    .admin-main-layout {
+      margin-left: 0 !important;
+    }
+
+    .admin-content {
+      padding: vars.$spacing-sm;
+
+      .admin-page-content {
+        .page-header {
+          padding: vars.$spacing-sm;
+          margin-bottom: vars.$spacing-sm;
+          flex-direction: column;
+          align-items: stretch;
+          gap: vars.$spacing-sm;
+
+          h1 {
+            font-size: vars.$font-size-xl;
+          }
+        }
+
+        .admin-card {
+          padding: vars.$spacing-sm;
+          margin-bottom: vars.$spacing-sm;
+        }
+      }
+    }
+  }
+}

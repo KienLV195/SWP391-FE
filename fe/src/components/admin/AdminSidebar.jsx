@@ -1,27 +1,60 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Layout, Menu, Button, Avatar, Typography } from "antd";
+import {
+  DashboardOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../../contexts/AuthContext";
-import "../../styles/components/AdminSidebarNew.scss";
+import "../../styles/base/manager-design-system.scss";
 
-const AdminSidebar = () => {
+const { Sider } = Layout;
+const { Text } = Typography;
+
+const AdminSidebar = ({ collapsed, onCollapse }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  const menuItems = [
-    { path: "/admin/dashboard", label: "📊 Tổng quan hệ thống" },
-    { path: "/admin/users", label: "👥 Quản lý người dùng" },
-    { path: "/admin/blogs", label: "📝 Quản lý blog" },
-    { path: "/admin/reports", label: "📈 Báo cáo & Thống kê" },
-    { path: "/admin/system", label: "⚙️ Cài đặt hệ thống" },
+  const navItems = [
+    {
+      key: "/admin/dashboard",
+      label: "Tổng quan hệ thống",
+      icon: <DashboardOutlined />,
+      path: "/admin/dashboard",
+      exact: true,
+    },
+    {
+      key: "/admin/users",
+      label: "Quản lý người dùng",
+      icon: <UserOutlined />,
+      path: "/admin/users",
+    },
+    {
+      key: "/admin/blogs",
+      label: "Quản lý blog",
+      icon: <FileTextOutlined />,
+      path: "/admin/blogs",
+    },
+    {
+      key: "/admin/reports",
+      label: "Báo cáo & Thống kê",
+      icon: <BarChartOutlined />,
+      path: "/admin/reports",
+    },
+    {
+      key: "/admin/system",
+      label: "Cài đặt hệ thống",
+      icon: <SettingOutlined />,
+      path: "/admin/system",
+    },
   ];
-
-  const userInfo = {
-    name: user?.name || "Admin",
-    role: "Quản trị viên",
-    avatar: user?.name ? user.name.charAt(0).toUpperCase() : "A",
-  };
 
   const handleLogout = async () => {
     try {
@@ -32,72 +65,164 @@ const AdminSidebar = () => {
     }
   };
 
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
+  const getSelectedKey = () => {
+    const currentPath = location.pathname;
+    const exactMatch = navItems.find(
+      (item) => item.exact && item.path === currentPath
+    );
+    if (exactMatch) return [exactMatch.key];
+
+    const pathMatch = navItems.find(
+      (item) => !item.exact && currentPath.startsWith(item.path)
+    );
+    return pathMatch ? [pathMatch.key] : [];
   };
 
+  const menuItems = navItems.map((item) => ({
+    key: item.key,
+    icon: item.icon,
+    label: (
+      <Link to={item.path} style={{ color: "inherit", textDecoration: "none" }}>
+        {item.label}
+      </Link>
+    ),
+  }));
+
   return (
-    <div className={`admin-sidebar ${isExpanded ? "expanded" : ""}`}>
-      <div className="sidebar-header">
-        <div className="logo-section">
-          <Link to="/admin/dashboard" className="logo-link">
-            <div className="logo-icon">
-              <i className="fas fa-hospital"></i>
-            </div>
-            {isExpanded && (
-              <div className="logo-text">
-                <span className="hospital-name">Ánh Dương</span>
-                <span className="system-name">Admin Panel</span>
+    <Sider
+      className="admin-sidebar"
+      collapsible
+      collapsed={collapsed}
+      onCollapse={onCollapse}
+      width={280}
+      collapsedWidth={80}
+      trigger={null}
+      style={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 1000,
+        background: "#20374E",
+        overflow: "auto",
+        height: "100vh",
+      }}
+    >
+      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        {/* Header */}
+        <div
+          style={{
+            padding: collapsed ? "16px 8px" : "24px 16px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            textAlign: collapsed ? "center" : "left",
+          }}
+        >
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => onCollapse(!collapsed)}
+            style={{
+              fontSize: "16px",
+              width: collapsed ? 40 : 64,
+              height: 40,
+              color: "white",
+              marginBottom: collapsed ? 0 : 16,
+            }}
+          />
+
+          {!collapsed && (
+            <>
+              <div
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  fontFamily: "Inter, sans-serif",
+                  marginBottom: "4px",
+                }}
+              >
+                Ánh Dương
               </div>
-            )}
-          </Link>
+              <Text
+                style={{
+                  color: "rgba(255, 255, 255, 0.7)",
+                  fontSize: "14px",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Admin Panel
+              </Text>
+            </>
+          )}
         </div>
 
-        <button className="toggle-btn" onClick={toggleSidebar}>
-          <i
-            className={`fas ${
-              isExpanded ? "fa-chevron-left" : "fa-chevron-right"
-            }`}
-          ></i>
-        </button>
-      </div>
+        {/* Navigation Menu */}
+        <Menu
+          mode="inline"
+          selectedKeys={getSelectedKey()}
+          items={menuItems}
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            color: "white",
+            overflow: "auto",
+          }}
+          theme="dark"
+        />
 
-      <div className="user-section">
-        <div className="user-avatar">{userInfo.avatar}</div>
-        {isExpanded && (
-          <div className="user-info">
-            <div className="user-name">{userInfo.name}</div>
-            <div className="user-role">{userInfo.role}</div>
-          </div>
-        )}
-      </div>
-
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`nav-item ${
-              location.pathname === item.path ? "active" : ""
-            }`}
-            title={!isExpanded ? item.label : ""}
-          >
-            <span className="nav-text">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
-
-      <div className="sidebar-footer">
-        <button
-          className="logout-btn"
-          onClick={handleLogout}
-          title={!isExpanded ? "Đăng xuất" : ""}
+        {/* Footer */}
+        <div
+          style={{
+            padding: collapsed ? "16px 8px" : "16px",
+            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            background: "#20374E",
+          }}
         >
-          <i className="fas fa-sign-out-alt"></i>
-          {isExpanded && <span>Đăng xuất</span>}
-        </button>
+          {!collapsed && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+                color: "white",
+              }}
+            >
+              <Avatar
+                size={32}
+                style={{ backgroundColor: "#D93E4C", marginRight: "8px" }}
+                icon={<UserOutlined />}
+              />
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: "14px",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                {user?.name || "Admin"}
+              </Text>
+            </div>
+          )}
+
+          <Button
+            type="text"
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            style={{
+              width: "100%",
+              color: "rgba(255, 255, 255, 0.8)",
+              fontFamily: "Inter, sans-serif",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: collapsed ? "center" : "flex-start",
+            }}
+          >
+            {!collapsed && "Đăng xuất"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </Sider>
   );
 };
 

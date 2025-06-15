@@ -1,310 +1,400 @@
 import React, { useState, useEffect } from "react";
-import AdminSidebar from "../../components/admin/AdminSidebar";
-import blogService from "../../services/blogService";
-import "../../styles/pages/BlogApproval.scss";
+import AdminLayout from "../../components/admin/AdminLayout";
+import AdminPageHeader from "../../components/admin/AdminPageHeader";
+import {
+  Card,
+  Tabs,
+  Table,
+  Button,
+  Modal,
+  Input,
+  Badge,
+  Popconfirm,
+  Spin,
+  Row,
+  Col,
+  message,
+  Form,
+  Select,
+  Tag,
+  Upload,
+} from "antd";
+import {
+  EyeOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  NotificationOutlined,
+  FileTextOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import {
+  fetchBloodArticles,
+  deleteBloodArticle,
+  putBlog,
+} from "../../services/bloodArticleService";
+
+const { TabPane } = Tabs;
+const { Option } = Select;
+
+const CATEGORY_OPTIONS = [
+  { value: "Tài liệu", label: "Tài liệu", icon: <FileTextOutlined /> },
+  { value: "Tin tức", label: "Tin tức", icon: <NotificationOutlined /> },
+];
 
 const BlogApproval = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("Tài liệu");
   const [selectedBlog, setSelectedBlog] = useState(null);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [form] = Form.useForm();
+  const [editImage, setEditImage] = useState(null);
+  const [editTags, setEditTags] = useState([]);
 
-  // Load published blogs for admin monitoring
   useEffect(() => {
-    loadBlogs();
+    setLoading(true);
+    fetchBloodArticles()
+      .then((data) => {
+        setBlogs(
+          (Array.isArray(data) ? data : []).map((item) => ({
+            articleId: item.bloodArticleID,
+            title: item.title,
+            userName: item.authorName || item.author || "",
+            tags: item.tags
+              ? Array.isArray(item.tags)
+                ? item.tags
+                : item.tags.split(",")
+              : [],
+            imgUrl: item.imgUrl || item.featuredImage || item.image || "",
+          }))
+        );
+      })
+      .catch(() => message.error("Không thể tải danh sách bài viết"))
+      .finally(() => setLoading(false));
   }, []);
 
-  const loadBlogs = async () => {
-    try {
-      setLoading(true);
-      const response = await blogService.getAllBlogsForAdmin({
-        category: categoryFilter,
-        search: searchTerm,
-      });
+  const filteredBlogs = blogs.filter(
+    (blog) =>
+      blog.category === activeTab &&
+      (blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
-      if (response.success) {
-        setBlogs(response.data);
-      } else {
-        console.error("Failed to load blogs:", response.message);
-      }
-    } catch (error) {
-      console.error("Error loading blogs:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "articleId",
+      key: "articleId",
+      width: 80,
+    },
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
+      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>,
+    },
+    {
+      title: "Người viết",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      render: (tags) =>
+        tags && tags.length > 0
+          ? tags.map((tag) => <Tag key={tag}>{tag}</Tag>)
+          : null,
+    },
+    {
+      title: "Thumbnail",
+      dataIndex: "imgUrl",
+      key: "imgUrl",
+      render: (url) =>
+        url ? (
+          <img
+            src={url}
+            alt="thumbnail"
+            style={{
+              width: 60,
+              height: 40,
+              objectFit: "cover",
+              borderRadius: 4,
+            }}
+          />
+        ) : null,
+    },
+    {
+      title: "Thao tác",
+      key: "actions",
+      align: "center",
+      render: (_, record) => (
+        <Row gutter={8} justify="center">
+          <Col>
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => handleEditBlog(record)}
+              size="small"
+            >
+              Sửa
+            </Button>
+          </Col>
+          <Col>
+            <Popconfirm
+              title="Bạn có chắc chắn muốn xóa bài viết này?"
+              onConfirm={() => handleDeleteBlog(record.articleId)}
+              okText="Xóa"
+              cancelText="Hủy"
+            >
+              <Button icon={<DeleteOutlined />} danger size="small">
+                Xóa
+              </Button>
+            </Popconfirm>
+          </Col>
+        </Row>
+      ),
+    },
+  ];
 
-  // Reload when filters change
-  useEffect(() => {
-    loadBlogs();
-  }, [categoryFilter, searchTerm]);
-
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch =
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "all" || blog.category === categoryFilter;
-
-    return matchesSearch && matchesCategory;
-  });
-
-  const handlePreviewBlog = (blog) => {
+  const handleEditBlog = (blog) => {
     setSelectedBlog(blog);
-    setShowPreviewModal(true);
-  };
-
-  const handleDeleteBlog = async (blogId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
-      try {
-        const response = await blogService.deleteBlog(blogId);
-        if (response.success) {
-          setBlogs(blogs.filter((blog) => blog.id !== blogId));
-          alert("Xóa bài viết thành công!");
-        } else {
-          alert("Lỗi: " + response.message);
-        }
-      } catch (error) {
-        console.error("Error deleting blog:", error);
-        alert("Có lỗi xảy ra khi xóa bài viết!");
-      }
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
+    setEditMode(true);
+    setShowModal(true);
+    setEditImage(blog.imgUrl);
+    setEditTags(blog.tags);
+    form.setFieldsValue({
+      title: blog.title,
+      content: blog.content,
+      imgUrl: blog.imgUrl,
+      tags: blog.tags,
+      userName: blog.userName,
     });
   };
 
-  const getCategoryColor = (category) => {
-    switch (category) {
-      case "Tài liệu":
-        return "#007bff";
-      case "Tin tức":
-        return "#28a745";
-      case "Thông báo":
-        return "#ffc107";
-      default:
-        return "#6c757d";
+  const handleDeleteBlog = async (blogId) => {
+    try {
+      await deleteBloodArticle(blogId);
+      setBlogs((prev) => prev.filter((b) => b.id !== blogId));
+      message.success("Đã xóa bài viết!");
+      setShowModal(false);
+    } catch {
+      message.error("Xóa bài viết thất bại!");
     }
   };
 
-  const getAuthorRoleText = (role) => {
-    switch (role) {
-      case "doctor":
-        return "Bác sĩ";
-      case "manager":
-        return "Quản lý";
-      default:
-        return "Khác";
-    }
+  const handleEditSubmit = () => {
+    form.validateFields().then(async (values) => {
+      if (!values.title || !values.content) {
+        message.error("Tiêu đề và nội dung không được để trống!");
+        return;
+      }
+      try {
+        await putBlog(selectedBlog.articleId, {
+          ...values,
+          tags: Array.isArray(values.tags)
+            ? values.tags.join(",")
+            : values.tags,
+          imgUrl: editImage,
+        });
+        setBlogs((prev) =>
+          prev.map((b) =>
+            b.articleId === selectedBlog.articleId
+              ? { ...b, ...values, tags: values.tags, imgUrl: editImage }
+              : b
+          )
+        );
+        setShowModal(false);
+        message.success("Cập nhật bài viết thành công!");
+      } catch {
+        message.error("Cập nhật bài viết thất bại!");
+      }
+    });
   };
-
-  if (loading) {
-    return (
-      <div className="admin-layout">
-        <AdminSidebar />
-        <div className="admin-content">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Đang tải dữ liệu...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
-      <div className="admin-content">
-        <div className="blog-approval-page">
-          <div className="page-header">
-            <div className="header-content">
-              <h1>Quản lý Blog</h1>
-              <p>
-                Xem và xóa các bài viết đã đăng từ Doctor/Manager (tự động đăng)
-              </p>
+    <AdminLayout>
+      <AdminPageHeader
+        title="Quản lý Blog"
+        icon={<FileTextOutlined />}
+        subtitle="Xem, chỉnh sửa, xóa các bài viết tài liệu và tin tức của hệ thống"
+      />
+      <Card
+        style={{
+          width: "100%",
+          maxWidth: 1200,
+          margin: "0 auto",
+          boxShadow: "0 2px 8px #f0f1f2",
+        }}
+      >
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col xs={24} sm={12} md={8}>
+            <Input
+              prefix={<SearchOutlined />}
+              placeholder="Tìm kiếm theo tiêu đề, tác giả..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              allowClear
+            />
+          </Col>
+        </Row>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={CATEGORY_OPTIONS.map((cat) => ({
+            key: cat.value,
+            label: (
+              <span>
+                {cat.icon} {cat.label}
+              </span>
+            ),
+          }))}
+        />
+        <Spin spinning={loading} tip="Đang tải dữ liệu...">
+          <Table
+            columns={columns}
+            dataSource={filteredBlogs}
+            rowKey="id"
+            pagination={{ pageSize: 8 }}
+            bordered
+            size="middle"
+            style={{ background: "#fff" }}
+          />
+        </Spin>
+      </Card>
+      <Modal
+        title={
+          editMode
+            ? "Chỉnh sửa bài viết"
+            : selectedBlog
+            ? selectedBlog.title
+            : ""
+        }
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        footer={
+          editMode
+            ? [
+                <Button key="cancel" onClick={() => setShowModal(false)}>
+                  Hủy
+                </Button>,
+                <Button key="submit" type="primary" onClick={handleEditSubmit}>
+                  Lưu
+                </Button>,
+              ]
+            : null
+        }
+        width={700}
+        destroyOnClose
+      >
+        {selectedBlog && !editMode && (
+          <div>
+            <div style={{ marginBottom: 8 }}>
+              <Badge color="blue" text={selectedBlog.category} />
+              <span style={{ marginLeft: 16 }}>
+                {selectedBlog.author} (
+                {selectedBlog.authorRole === "doctor" ? "Bác sĩ" : "Quản lý"})
+              </span>
+              <span style={{ float: "right", color: "#888" }}>
+                {new Date(selectedBlog.publishedAt).toLocaleString("vi-VN")}
+              </span>
             </div>
-            <div className="header-stats">
-              <div className="stat-item">
-                <span className="stat-number">
-                  {blogs.filter((b) => b.category === "Tài liệu").length}
-                </span>
-                <span className="stat-label">Tài liệu</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">
-                  {blogs.filter((b) => b.category === "Tin tức").length}
-                </span>
-                <span className="stat-label">Tin tức</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">
-                  {blogs.filter((b) => b.category === "Thông báo").length}
-                </span>
-                <span className="stat-label">Thông báo</span>
-              </div>
+            <div style={{ fontWeight: 500, fontSize: 18, marginBottom: 8 }}>
+              {selectedBlog.title}
             </div>
-          </div>
-
-          <div className="filters-section">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo tiêu đề, tác giả..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
+            <div style={{ color: "#888", marginBottom: 8 }}>
+              {selectedBlog.excerpt}
             </div>
-
-            <div className="filter-controls">
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">Tất cả danh mục</option>
-                <option value="Tài liệu">Tài liệu</option>
-                <option value="Tin tức">Tin tức</option>
-                <option value="Thông báo">Thông báo</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="blogs-grid">
-            {filteredBlogs.length === 0 ? (
-              <div className="no-blogs">
-                <p>Không có bài viết nào được tìm thấy.</p>
-              </div>
-            ) : (
-              filteredBlogs.map((blog) => (
-                <div key={blog.id} className="blog-card">
-                  <div className="blog-header">
-                    <div className="blog-meta">
-                      <span
-                        className="category-badge"
-                        style={{
-                          backgroundColor: getCategoryColor(blog.category),
-                        }}
-                      >
-                        {blog.category}
-                      </span>
-                      <span className="author-info">
-                        {blog.author} ({getAuthorRoleText(blog.authorRole)})
-                      </span>
-                    </div>
-                    <div className="blog-date">
-                      {formatDate(blog.publishedAt)}
-                    </div>
-                  </div>
-
-                  <div className="blog-content">
-                    <h3 className="blog-title">{blog.title}</h3>
-                    <p className="blog-excerpt">{blog.excerpt}</p>
-
-                    <div className="blog-stats">
-                      <span className="stat">
-                        👁️ {blog.views || 0} lượt xem
-                      </span>
-                      <span className="stat">
-                        ❤️ {blog.likes || 0} lượt thích
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="blog-actions">
-                    <button
-                      className="action-btn preview"
-                      onClick={() => handlePreviewBlog(blog)}
-                      title="Xem trước"
-                    >
-                      <i className="fas fa-eye"></i>
-                    </button>
-
-                    <span className="auto-published-badge">
-                      <i className="fas fa-check-circle"></i>
-                      Tự động đăng
-                    </span>
-
-                    <button
-                      className="action-btn delete"
-                      onClick={() => handleDeleteBlog(blog.id)}
-                      title="Xóa bài viết"
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Preview Modal */}
-        {showPreviewModal && selectedBlog && (
-          <div
-            className="modal-overlay"
-            onClick={() => setShowPreviewModal(false)}
-          >
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>Xem trước bài viết</h2>
-                <button
-                  className="close-btn"
-                  onClick={() => setShowPreviewModal(false)}
+            <div
+              style={{ background: "#fafafa", padding: 16, borderRadius: 8 }}
+              dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
+            />
+            <Row justify="end" style={{ marginTop: 16 }} gutter={8}>
+              <Col>
+                <Button onClick={() => setShowModal(false)}>Đóng</Button>
+              </Col>
+              <Col>
+                <Popconfirm
+                  title="Bạn có chắc chắn muốn xóa bài viết này?"
+                  onConfirm={() => handleDeleteBlog(selectedBlog.id)}
+                  okText="Xóa"
+                  cancelText="Hủy"
                 >
-                  ×
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="blog-preview">
-                  <div className="preview-meta">
-                    <span className="category">{selectedBlog.category}</span>
-                    <span className="author">{selectedBlog.author}</span>
-                    <span className="date">
-                      {formatDate(selectedBlog.publishedAt)}
-                    </span>
-                  </div>
-                  <h1 className="preview-title">{selectedBlog.title}</h1>
-                  <div className="preview-excerpt">{selectedBlog.excerpt}</div>
-                  <div
-                    className="preview-content"
-                    dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
-                  />
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button
-                  className="btn-secondary"
-                  onClick={() => setShowPreviewModal(false)}
-                >
-                  Đóng
-                </button>
-                <button
-                  className="btn-danger"
-                  onClick={() => {
-                    handleDeleteBlog(selectedBlog.id);
-                    setShowPreviewModal(false);
-                  }}
-                >
-                  Xóa bài viết
-                </button>
-              </div>
-            </div>
+                  <Button danger icon={<DeleteOutlined />}>
+                    Xóa bài viết
+                  </Button>
+                </Popconfirm>
+              </Col>
+            </Row>
           </div>
         )}
-      </div>
-    </div>
+        {selectedBlog && editMode && (
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={{ ...selectedBlog }}
+          >
+            <Form.Item
+              name="title"
+              label="Tiêu đề"
+              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="content"
+              label="Nội dung"
+              rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+            >
+              <Input.TextArea rows={6} />
+            </Form.Item>
+            <Form.Item name="imgUrl" label="Ảnh thumbnail">
+              <Upload
+                listType="picture-card"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  const reader = new FileReader();
+                  reader.onload = (e) => setEditImage(e.target.result);
+                  reader.readAsDataURL(file);
+                  return false;
+                }}
+              >
+                {editImage ? (
+                  <img
+                    src={editImage}
+                    alt="thumbnail"
+                    style={{
+                      width: 80,
+                      height: 60,
+                      objectFit: "cover",
+                      borderRadius: 4,
+                    }}
+                  />
+                ) : (
+                  <div>Chọn ảnh</div>
+                )}
+              </Upload>
+            </Form.Item>
+            <Form.Item name="tags" label="Tags">
+              <Select
+                mode="tags"
+                style={{ width: "100%" }}
+                value={editTags}
+                onChange={setEditTags}
+                tokenSeparators={[","]}
+                placeholder="Nhập tags"
+              />
+            </Form.Item>
+            <Form.Item name="userName" label="Người viết">
+              <Input disabled />
+            </Form.Item>
+          </Form>
+        )}
+      </Modal>
+    </AdminLayout>
   );
 };
 

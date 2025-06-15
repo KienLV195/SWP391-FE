@@ -1,32 +1,41 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: 'localhost',
+    host: "localhost",
     port: 5173,
     strictPort: false,
     hmr: {
-      overlay: false
+      overlay: false,
     },
-    open: true
+    open: true,
+    proxy: {
+      "/api": {
+        target:
+          "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+    },
   },
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['antd', '@ant-design/icons'],
-          utils: ['axios', 'aos']
-        }
-      }
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["antd", "@ant-design/icons"],
+          utils: ["axios", "aos"],
+        },
+      },
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
-  }
-})
+    include: ["react", "react-dom", "react-router-dom"],
+  },
+});

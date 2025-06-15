@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import AdminSidebar from '../../components/admin/AdminSidebar';
-import '../../styles/pages/Reports.scss';
+import React, { useState, useEffect } from "react";
+import AdminLayout from "../../components/admin/AdminLayout";
+import AdminPageHeader from "../../components/admin/AdminPageHeader";
+import { BarChartOutlined } from "@ant-design/icons";
+import "../../styles/pages/Reports.scss";
 
 const Reports = () => {
   const [reportData, setReportData] = useState({
@@ -8,18 +10,17 @@ const Reports = () => {
     userStats: {},
     bloodStats: {},
     blogStats: {},
-    systemStats: {}
+    systemStats: {},
   });
   const [loading, setLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const [selectedReport, setSelectedReport] = useState('overview');
+  const [selectedReport, setSelectedReport] = useState("overview");
 
   useEffect(() => {
     // Mock API call - replace with actual API
     const fetchReportData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         const mockData = {
           overview: {
             totalUsers: 1247,
@@ -27,45 +28,45 @@ const Reports = () => {
             totalRequests: 456,
             totalDonations: 234,
             activeUsers: 892,
-            pendingApprovals: 12
+            pendingApprovals: 12,
           },
           userStats: {
             newRegistrations: [
-              { month: 'Jan', count: 45 },
-              { month: 'Feb', count: 52 },
-              { month: 'Mar', count: 38 },
-              { month: 'Apr', count: 67 },
-              { month: 'May', count: 71 },
-              { month: 'Jun', count: 59 }
+              { month: "Jan", count: 45 },
+              { month: "Feb", count: 52 },
+              { month: "Mar", count: 38 },
+              { month: "Apr", count: 67 },
+              { month: "May", count: 71 },
+              { month: "Jun", count: 59 },
             ],
             usersByRole: [
-              { role: 'Member', count: 1089, percentage: 87.3 },
-              { role: 'Doctor', count: 89, percentage: 7.1 },
-              { role: 'Manager', count: 45, percentage: 3.6 },
-              { role: 'Admin', count: 24, percentage: 1.9 }
+              { role: "Member", count: 1089, percentage: 87.3 },
+              { role: "Doctor", count: 89, percentage: 7.1 },
+              { role: "Manager", count: 45, percentage: 3.6 },
+              { role: "Admin", count: 24, percentage: 1.9 },
             ],
             activeUsers: 892,
-            inactiveUsers: 355
+            inactiveUsers: 355,
           },
           bloodStats: {
             requestsByType: [
-              { type: 'O+', count: 89, percentage: 32.1 },
-              { type: 'A+', count: 67, percentage: 24.2 },
-              { type: 'B+', count: 45, percentage: 16.2 },
-              { type: 'AB+', count: 23, percentage: 8.3 },
-              { type: 'O-', count: 34, percentage: 12.3 },
-              { type: 'A-', count: 12, percentage: 4.3 },
-              { type: 'B-', count: 5, percentage: 1.8 },
-              { type: 'AB-', count: 2, percentage: 0.7 }
+              { type: "O+", count: 89, percentage: 32.1 },
+              { type: "A+", count: 67, percentage: 24.2 },
+              { type: "B+", count: 45, percentage: 16.2 },
+              { type: "AB+", count: 23, percentage: 8.3 },
+              { type: "O-", count: 34, percentage: 12.3 },
+              { type: "A-", count: 12, percentage: 4.3 },
+              { type: "B-", count: 5, percentage: 1.8 },
+              { type: "AB-", count: 2, percentage: 0.7 },
             ],
             monthlyRequests: [
-              { month: 'Jan', requests: 78, donations: 45 },
-              { month: 'Feb', requests: 82, donations: 52 },
-              { month: 'Mar', requests: 65, donations: 38 },
-              { month: 'Apr', requests: 91, donations: 67 },
-              { month: 'May', requests: 88, donations: 71 },
-              { month: 'Jun', requests: 76, donations: 59 }
-            ]
+              { month: "Jan", requests: 78, donations: 45 },
+              { month: "Feb", requests: 82, donations: 52 },
+              { month: "Mar", requests: 65, donations: 38 },
+              { month: "Apr", requests: 91, donations: 67 },
+              { month: "May", requests: 88, donations: 71 },
+              { month: "Jun", requests: 76, donations: 59 },
+            ],
           },
           blogStats: {
             totalBlogs: 89,
@@ -73,46 +74,40 @@ const Reports = () => {
             pendingBlogs: 12,
             rejectedBlogs: 10,
             blogsByCategory: [
-              { category: 'Kinh nghiệm', count: 34 },
-              { category: 'Tin tức', count: 23 },
-              { category: 'Câu chuyện', count: 18 },
-              { category: 'Hướng dẫn', count: 14 }
+              { category: "Kinh nghiệm", count: 34 },
+              { category: "Tin tức", count: 23 },
+              { category: "Câu chuyện", count: 18 },
+              { category: "Hướng dẫn", count: 14 },
             ],
             monthlyBlogs: [
-              { month: 'Jan', count: 12 },
-              { month: 'Feb', count: 15 },
-              { month: 'Mar', count: 8 },
-              { month: 'Apr', count: 18 },
-              { month: 'May', count: 21 },
-              { month: 'Jun', count: 15 }
-            ]
+              { month: "Jan", count: 12 },
+              { month: "Feb", count: 15 },
+              { month: "Mar", count: 8 },
+              { month: "Apr", count: 18 },
+              { month: "May", count: 21 },
+              { month: "Jun", count: 15 },
+            ],
           },
           systemStats: {
-            serverUptime: '99.8%',
-            averageResponseTime: '245ms',
+            serverUptime: "99.8%",
+            averageResponseTime: "245ms",
             totalPageViews: 45678,
             uniqueVisitors: 12345,
-            storageUsed: '2.3GB',
-            storageTotal: '10GB'
-          }
+            storageUsed: "2.3GB",
+            storageTotal: "10GB",
+          },
         };
-        
+
         setReportData(mockData);
       } catch (error) {
-        console.error('Error fetching report data:', error);
+        console.error("Error fetching report data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReportData();
-  }, [selectedPeriod]);
-
-  const handleExportReport = (format) => {
-    // Mock export functionality
-    alert(`Đang xuất báo cáo định dạng ${format.toUpperCase()}...`);
-    console.log(`Exporting report in ${format} format`);
-  };
+  }, []);
 
   const renderOverviewReport = () => (
     <div className="report-section">
@@ -124,8 +119,12 @@ const Reports = () => {
           </div>
           <div className="card-content">
             <h3>Tổng người dùng</h3>
-            <div className="number">{reportData.overview.totalUsers?.toLocaleString()}</div>
-            <div className="subtitle">Hoạt động: {reportData.overview.activeUsers}</div>
+            <div className="number">
+              {reportData.overview.totalUsers?.toLocaleString()}
+            </div>
+            <div className="subtitle">
+              Hoạt động: {reportData.overview.activeUsers}
+            </div>
           </div>
         </div>
 
@@ -136,7 +135,9 @@ const Reports = () => {
           <div className="card-content">
             <h3>Tổng bài viết</h3>
             <div className="number">{reportData.overview.totalBlogs}</div>
-            <div className="subtitle">Chờ duyệt: {reportData.overview.pendingApprovals}</div>
+            <div className="subtitle">
+              Chờ duyệt: {reportData.overview.pendingApprovals}
+            </div>
           </div>
         </div>
 
@@ -147,7 +148,9 @@ const Reports = () => {
           <div className="card-content">
             <h3>Yêu cầu máu</h3>
             <div className="number">{reportData.overview.totalRequests}</div>
-            <div className="subtitle">Hiến máu: {reportData.overview.totalDonations}</div>
+            <div className="subtitle">
+              Hiến máu: {reportData.overview.totalDonations}
+            </div>
           </div>
         </div>
       </div>
@@ -177,8 +180,8 @@ const Reports = () => {
                   <span className="role-count">{role.count}</span>
                 </div>
                 <div className="role-bar">
-                  <div 
-                    className="role-progress" 
+                  <div
+                    className="role-progress"
                     style={{ width: `${role.percentage}%` }}
                   ></div>
                 </div>
@@ -205,8 +208,8 @@ const Reports = () => {
                   <span className="blood-count">{type.count}</span>
                 </div>
                 <div className="blood-bar">
-                  <div 
-                    className="blood-progress" 
+                  <div
+                    className="blood-progress"
                     style={{ width: `${type.percentage}%` }}
                   ></div>
                 </div>
@@ -239,15 +242,21 @@ const Reports = () => {
           </div>
           <div className="blog-stat-card">
             <h4>Đã đăng</h4>
-            <div className="stat-number">{reportData.blogStats.publishedBlogs}</div>
+            <div className="stat-number">
+              {reportData.blogStats.publishedBlogs}
+            </div>
           </div>
           <div className="blog-stat-card">
             <h4>Chờ duyệt</h4>
-            <div className="stat-number">{reportData.blogStats.pendingBlogs}</div>
+            <div className="stat-number">
+              {reportData.blogStats.pendingBlogs}
+            </div>
           </div>
           <div className="blog-stat-card">
             <h4>Từ chối</h4>
-            <div className="stat-number">{reportData.blogStats.rejectedBlogs}</div>
+            <div className="stat-number">
+              {reportData.blogStats.rejectedBlogs}
+            </div>
           </div>
         </div>
 
@@ -272,24 +281,33 @@ const Reports = () => {
       <div className="system-grid">
         <div className="system-card">
           <h4>Uptime Server</h4>
-          <div className="system-value">{reportData.systemStats.serverUptime}</div>
+          <div className="system-value">
+            {reportData.systemStats.serverUptime}
+          </div>
         </div>
         <div className="system-card">
           <h4>Thời gian phản hồi</h4>
-          <div className="system-value">{reportData.systemStats.averageResponseTime}</div>
+          <div className="system-value">
+            {reportData.systemStats.averageResponseTime}
+          </div>
         </div>
         <div className="system-card">
           <h4>Lượt xem trang</h4>
-          <div className="system-value">{reportData.systemStats.totalPageViews?.toLocaleString()}</div>
+          <div className="system-value">
+            {reportData.systemStats.totalPageViews?.toLocaleString()}
+          </div>
         </div>
         <div className="system-card">
           <h4>Khách truy cập</h4>
-          <div className="system-value">{reportData.systemStats.uniqueVisitors?.toLocaleString()}</div>
+          <div className="system-value">
+            {reportData.systemStats.uniqueVisitors?.toLocaleString()}
+          </div>
         </div>
         <div className="system-card">
           <h4>Dung lượng sử dụng</h4>
           <div className="system-value">
-            {reportData.systemStats.storageUsed} / {reportData.systemStats.storageTotal}
+            {reportData.systemStats.storageUsed} /{" "}
+            {reportData.systemStats.storageTotal}
           </div>
         </div>
       </div>
@@ -298,15 +316,15 @@ const Reports = () => {
 
   const renderReportContent = () => {
     switch (selectedReport) {
-      case 'overview':
+      case "overview":
         return renderOverviewReport();
-      case 'users':
+      case "users":
         return renderUserStatsReport();
-      case 'blood':
+      case "blood":
         return renderBloodStatsReport();
-      case 'blogs':
+      case "blogs":
         return renderBlogStatsReport();
-      case 'system':
+      case "system":
         return renderSystemStatsReport();
       default:
         return renderOverviewReport();
@@ -315,103 +333,69 @@ const Reports = () => {
 
   if (loading) {
     return (
-      <div className="admin-layout">
-        <AdminSidebar />
-        <div className="admin-content">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Đang tải dữ liệu báo cáo...</p>
-          </div>
+      <AdminLayout>
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Đang tải dữ liệu báo cáo...</p>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
-      <div className="admin-content">
-        <div className="reports">
-          <div className="page-header">
-            <div className="header-content">
-              <h1>Báo cáo & Thống kê</h1>
-              <p>Phân tích dữ liệu và xu hướng hệ thống</p>
-            </div>
-            <div className="header-actions">
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="period-select"
-              >
-                <option value="week">7 ngày qua</option>
-                <option value="month">30 ngày qua</option>
-                <option value="quarter">3 tháng qua</option>
-                <option value="year">12 tháng qua</option>
-              </select>
-              
-              <div className="export-buttons">
-                <button 
-                  className="btn-outline"
-                  onClick={() => handleExportReport('pdf')}
-                >
-                  <i className="fas fa-file-pdf"></i>
-                  Xuất PDF
-                </button>
-                <button 
-                  className="btn-outline"
-                  onClick={() => handleExportReport('excel')}
-                >
-                  <i className="fas fa-file-excel"></i>
-                  Xuất Excel
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="reports-nav">
-            <button 
-              className={`nav-btn ${selectedReport === 'overview' ? 'active' : ''}`}
-              onClick={() => setSelectedReport('overview')}
-            >
-              <i className="fas fa-chart-pie"></i>
-              Tổng quan
-            </button>
-            <button 
-              className={`nav-btn ${selectedReport === 'users' ? 'active' : ''}`}
-              onClick={() => setSelectedReport('users')}
-            >
-              <i className="fas fa-users"></i>
-              Người dùng
-            </button>
-            <button 
-              className={`nav-btn ${selectedReport === 'blood' ? 'active' : ''}`}
-              onClick={() => setSelectedReport('blood')}
-            >
-              <i className="fas fa-tint"></i>
-              Hiến máu
-            </button>
-            <button 
-              className={`nav-btn ${selectedReport === 'blogs' ? 'active' : ''}`}
-              onClick={() => setSelectedReport('blogs')}
-            >
-              <i className="fas fa-blog"></i>
-              Blog
-            </button>
-            <button 
-              className={`nav-btn ${selectedReport === 'system' ? 'active' : ''}`}
-              onClick={() => setSelectedReport('system')}
-            >
-              <i className="fas fa-server"></i>
-              Hệ thống
-            </button>
-          </div>
-
-          <div className="reports-content">
-            {renderReportContent()}
-          </div>
+    <AdminLayout>
+      <AdminPageHeader
+        title="Báo cáo & Thống kê"
+        icon={<BarChartOutlined />}
+        subtitle="Xem các báo cáo tổng hợp và thống kê hoạt động hệ thống"
+      />
+      <div
+        className="reports"
+        style={{ width: "100%", maxWidth: 1200, margin: "0 auto" }}
+      >
+        <div className="reports-nav">
+          <button
+            className={`nav-btn ${
+              selectedReport === "overview" ? "active" : ""
+            }`}
+            onClick={() => setSelectedReport("overview")}
+          >
+            <i className="fas fa-chart-pie"></i>
+            Tổng quan
+          </button>
+          <button
+            className={`nav-btn ${selectedReport === "users" ? "active" : ""}`}
+            onClick={() => setSelectedReport("users")}
+          >
+            <i className="fas fa-users"></i>
+            Người dùng
+          </button>
+          <button
+            className={`nav-btn ${selectedReport === "blood" ? "active" : ""}`}
+            onClick={() => setSelectedReport("blood")}
+          >
+            <i className="fas fa-tint"></i>
+            Hiến máu
+          </button>
+          <button
+            className={`nav-btn ${selectedReport === "blogs" ? "active" : ""}`}
+            onClick={() => setSelectedReport("blogs")}
+          >
+            <i className="fas fa-blog"></i>
+            Blog
+          </button>
+          <button
+            className={`nav-btn ${selectedReport === "system" ? "active" : ""}`}
+            onClick={() => setSelectedReport("system")}
+          >
+            <i className="fas fa-server"></i>
+            Hệ thống
+          </button>
         </div>
+
+        <div className="reports-content">{renderReportContent()}</div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
