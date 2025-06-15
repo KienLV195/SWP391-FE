@@ -4,6 +4,7 @@ import axios from "axios";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import authService from "../../services/authService";
 import "../../styles/pages/MemberInfoPage.scss";
+import vietnamProvinces from "../../data/vietnam-provinces.json";
 
 const documentTypes = [
   { value: "cccd", label: "Căn cước công dân" },
@@ -15,6 +16,18 @@ const genders = [
   { value: "male", label: "Nam" },
   { value: "female", label: "Nữ" },
   { value: "other", label: "Khác" },
+];
+
+const bloodTypes = [
+  { value: "A", label: "A" },
+  { value: "B", label: "B" },
+  { value: "AB", label: "AB" },
+  { value: "O", label: "O" },
+];
+
+const rhTypes = [
+  { value: "Rh+", label: "Rh+" },
+  { value: "Rh-", label: "Rh-" },
 ];
 
 const MemberInfoPage = () => {
@@ -43,7 +56,8 @@ const MemberInfoPage = () => {
     address: userProfile.address || storedInfo.address || "",
     email: userProfile.email || storedInfo.email || "",
     phone: userProfile.phone || storedInfo.phone || "",
-    bloodType: userProfile.bloodType || storedInfo.bloodType || "",
+    bloodType: userProfile.bloodGroup || storedInfo.bloodType || "",
+    rhType: userProfile.rhType || storedInfo.rhType || "Rh+",
   });
   const [errors, setErrors] = useState({});
   const [cityList, setCityList] = useState([]);
@@ -57,11 +71,7 @@ const MemberInfoPage = () => {
 
   // Load city/district/ward data
   useEffect(() => {
-    axios
-      .get(
-        "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-      )
-      .then((res) => setCityList(res.data));
+    setCityList(vietnamProvinces);
   }, []);
   useEffect(() => {
     if (form.province) {
@@ -179,49 +189,105 @@ const MemberInfoPage = () => {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      // Tạo địa chỉ đầy đủ từ các thành phần
-      const fullAddress = [
-        form.address,
-        form.wardName,
-        form.districtName,
-        form.provinceName,
-      ]
-        .filter(Boolean)
-        .join(", ");
+      try {
+        // Tạo địa chỉ đầy đủ từ các thành phần
+        const fullAddress = [
+          form.address,
+          form.wardName,
+          form.districtName,
+          form.provinceName,
+        ]
+          .filter(Boolean)
+          .join(", ");
 
-      const dataToSave = {
-        ...form,
-        fullAddress: fullAddress,
-        dateOfBirth: form.dob,
-      };
+        // Format data to match API requirements
+        const dataToSave = {
+          userID: currentUser.id,
+          email: form.email || "",
+          phone: form.phone || "",
+          idCardType: form.documentType || "",
+          idCard: form.documentNumber || "",
+          name: form.fullName || "",
+          dateOfBirth: form.dob || null,
+          age: form.dob ? calculateAge(form.dob) : null,
+          gender: form.gender || "",
+          city: form.province || "",
+          district: form.district || "",
+          ward: form.ward || "",
+          address: fullAddress || "",
+          bloodGroup: form.bloodType || "",
+          rhType: form.rhType || "Rh+",
+          status: 1,
+          roleID: currentUser.roleID || 1,
+          department: currentUser.department || "",
+          createdAt: new Date().toISOString(),
+        };
 
-      // Lưu vào localStorage
-      localStorage.setItem("memberInfo", JSON.stringify(dataToSave));
+        console.log("Data being sent:", dataToSave);
 
-      // Cập nhật profile của user hiện tại
-      if (currentUser) {
-        authService.updateProfile(dataToSave);
+        // Lưu vào localStorage
+        localStorage.setItem("memberInfo", JSON.stringify(dataToSave));
 
-        // Nếu là first-time setup, đánh dấu không còn là first login
-        if (isFirstTime) {
-          const updatedUser = { ...currentUser, isFirstLogin: false };
-          authService.setCurrentUser(updatedUser);
+        // Gửi thông tin xuống database
+        const response = await axios.put(
+          `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${currentUser.id}`,
+          dataToSave,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${currentUser.token}`
+            }
+          }
+        );
+
+        if (response.status === 200) {
+          // Cập nhật profile của user hiện tại
+          if (currentUser) {
+            authService.updateProfile(dataToSave);
+
+            // Nếu là first-time setup, đánh dấu không còn là first login
+            if (isFirstTime) {
+              const updatedUser = { ...currentUser, isFirstLogin: false };
+              authService.setCurrentUser(updatedUser);
+            }
+          }
+
+          alert("Lưu thông tin thành công!");
+          console.log("Thông tin đã lưu:", dataToSave);
+
+          // Redirect based on context
+          if (isFirstTime) {
+            navigate("/member", {
+              state: { message: "Chào mừng bạn đến với hệ thống hiến máu!" },
+            });
+          }
         }
-      }
-
-      alert("Lưu thông tin thành công!");
-      console.log("Thông tin đã lưu:", dataToSave);
-
-      // Redirect based on context
-      if (isFirstTime) {
-        navigate("/member", {
-          state: { message: "Chào mừng bạn đến với hệ thống hiến máu!" },
-        });
+      } catch (error) {
+        console.error("Lỗi khi lưu thông tin:", error);
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+        }
+        alert("Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.");
       }
     }
+  };
+
+  // Helper function to calculate age from date of birth
+  const calculateAge = (dateOfBirth) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
   };
 
   return (
@@ -466,6 +532,39 @@ const MemberInfoPage = () => {
                 {errors.phone && (
                   <div className="invalid-feedback">{errors.phone}</div>
                 )}{" "}
+              </div>
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>Nhóm máu</label>
+                <select
+                  className="form-select form-select-lg"
+                  name="bloodType"
+                  value={form.bloodType}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
+                  <option value="">Chọn nhóm máu</option>
+                  {bloodTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>Rh</label>
+                <select
+                  className="form-select form-select-lg"
+                  name="rhType"
+                  value={form.rhType}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
+                  {rhTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </form>
