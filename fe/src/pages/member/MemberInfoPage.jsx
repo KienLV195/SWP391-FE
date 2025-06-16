@@ -65,9 +65,53 @@ const MemberInfoPage = () => {
   const [wardList, setWardList] = useState([]);
   const [isValid, setIsValid] = useState(false);
 
-  // Xác định trường nào đã được đăng ký (email hoặc phone) - bỏ logic cũ
-  // const registeredEmail = storedInfo.email || "";
-  // const registeredPhone = storedInfo.phone || "";
+  // Thêm hàm fetchUserInfo để lấy thông tin người dùng từ API
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(
+        `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${currentUser.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        const userData = response.data;
+
+        // Format date from "2003-02-16T00:00:00" to "2003-02-16"
+        const formattedDate = userData.dateOfBirth
+          ? new Date(userData.dateOfBirth).toISOString().split('T')[0]
+          : "";
+
+        // Cập nhật form với dữ liệu mới
+        setForm({
+          documentType: userData.idCardType || "cccd",
+          documentNumber: userData.idCard || "",
+          fullName: userData.name || "",
+          dob: formattedDate,
+          gender: userData.gender || "male",
+          province: userData.city || "",
+          district: userData.district || "",
+          ward: userData.ward || "",
+          provinceName: userData.provinceName || "",
+          districtName: userData.districtName || "",
+          wardName: userData.wardName || "",
+          address: userData.address || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          bloodType: userData.bloodGroup || "",
+          rhType: userData.rhType || "Rh+",
+        });
+
+        // Cập nhật localStorage
+        localStorage.setItem("memberInfo", JSON.stringify(userData));
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+    }
+  };
 
   // Load city/district/ward data
   useEffect(() => {
@@ -256,6 +300,9 @@ const MemberInfoPage = () => {
             }
           }
 
+          // Lấy thông tin mới nhất từ database sau khi lưu thành công
+          await fetchUserInfo();
+
           alert("Lưu thông tin thành công!");
           console.log("Thông tin đã lưu:", dataToSave);
 
@@ -275,6 +322,13 @@ const MemberInfoPage = () => {
       }
     }
   };
+
+  // Thêm useEffect để fetch thông tin người dùng khi component mount
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchUserInfo();
+    }
+  }, [currentUser?.id]);
 
   // Helper function to calculate age from date of birth
   const calculateAge = (dateOfBirth) => {
