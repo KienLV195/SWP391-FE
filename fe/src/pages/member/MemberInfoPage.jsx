@@ -467,6 +467,39 @@ const MemberInfoPage = () => {
                   ))}
                 </select>
               </div>
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>Nhóm máu</label>
+                <select
+                  className="form-select form-select-lg"
+                  name="bloodType"
+                  value={form.bloodType}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
+                  <option value="">Chọn nhóm máu</option>
+                  {bloodTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group input-box">
+                <label style={{ fontSize: "1.1rem" }}>Rh</label>
+                <select
+                  className="form-select form-select-lg"
+                  name="rhType"
+                  value={form.rhType}
+                  onChange={handleChange}
+                  style={{ fontSize: "1.1rem" }}
+                >
+                  {rhTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="form-col">
               <div className="form-group input-box">
@@ -587,39 +620,7 @@ const MemberInfoPage = () => {
                   <div className="invalid-feedback">{errors.phone}</div>
                 )}{" "}
               </div>
-              <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Nhóm máu</label>
-                <select
-                  className="form-select form-select-lg"
-                  name="bloodType"
-                  value={form.bloodType}
-                  onChange={handleChange}
-                  style={{ fontSize: "1.1rem" }}
-                >
-                  <option value="">Chọn nhóm máu</option>
-                  {bloodTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group input-box">
-                <label style={{ fontSize: "1.1rem" }}>Rh</label>
-                <select
-                  className="form-select form-select-lg"
-                  name="rhType"
-                  value={form.rhType}
-                  onChange={handleChange}
-                  style={{ fontSize: "1.1rem" }}
-                >
-                  {rhTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+
             </div>
           </form>
           <div className="member-info-actions">

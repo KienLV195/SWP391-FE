@@ -50,10 +50,6 @@ const MemberHomePage = () => {
                 {user?.profile?.bloodType || "Chưa xác định"}
               </span>
             </div>
-            <div className="info-item">
-              <span className="label">Số điện thoại:</span>
-              <span>{user?.profile?.phone}</span>
-            </div>
           </div>
         </div>
         <div className="hero-image">

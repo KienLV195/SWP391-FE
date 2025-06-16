@@ -129,6 +129,32 @@
     }
 }
 
+.login-form__password-input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+
+    .login-form__input {
+        padding-right: 40px;
+        margin-bottom: 0;
+    }
+
+    .password-toggle-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: vars.$text-secondary;
+        font-size: 18px;
+        transition: color 0.2s;
+
+        &:hover {
+            color: vars.$primary-color;
+        }
+    }
+}
+
 .login-form__submit {
     width: 50%;
     padding: 12px 0;
@@ -170,6 +196,14 @@
     font-size: 0.875rem;
     margin-top: 0.25rem;
     margin-bottom: 0.5rem;
+}
+
+.login-form__password-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: -5px;
+    margin-bottom: 8px;
+    text-align: left;
 }
 
 // Responsive

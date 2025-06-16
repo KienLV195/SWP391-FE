@@ -60,7 +60,7 @@ const BloodRecipientDashboard = () => {
           <div className="quick-request-card">
             <h2>Yêu cầu máu khẩn cấp</h2>
             <p>Tạo yêu cầu máu mới cho trường hợp khẩn cấp hoặc điều trị</p>
-            <button 
+            <button
               className="btn btn-danger"
               onClick={handleNewRequest}
             >
@@ -91,7 +91,7 @@ const BloodRecipientDashboard = () => {
                 <span>{user.profile.address}</span>
               </div>
             </div>
-            <button 
+            <button
               className="btn btn-outline"
               onClick={() => navigate('/member/profile')}
             >
@@ -141,7 +141,7 @@ const BloodRecipientDashboard = () => {
                         </div>
                       </div>
                       <div className="request-actions">
-                        <button 
+                        <button
                           className="btn btn-sm btn-outline"
                           onClick={() => handleViewRequest(request.id)}
                         >
@@ -155,7 +155,7 @@ const BloodRecipientDashboard = () => {
             ) : (
               <div className="no-requests">
                 <p>Chưa có yêu cầu máu nào</p>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={handleNewRequest}
                 >
@@ -169,7 +169,7 @@ const BloodRecipientDashboard = () => {
           <div className="compatibility-tool">
             <h2>Tra cứu nhóm máu tương thích</h2>
             <p>Tìm hiểu về các nhóm máu có thể tương thích với nhóm máu của bạn</p>
-            <button 
+            <button
               className="btn btn-info"
               onClick={() => navigate('/member/blood-compatibility')}
             >
@@ -181,21 +181,21 @@ const BloodRecipientDashboard = () => {
           <div className="quick-actions">
             <h2>Thao tác nhanh</h2>
             <div className="action-buttons">
-              <button 
+              <button
                 className="action-btn"
                 onClick={() => navigate('/member/blood-info')}
               >
                 <i className="icon-info"></i>
                 Tài liệu về máu
               </button>
-              <button 
+              <button
                 className="action-btn"
                 onClick={() => navigate('/member/blog')}
               >
                 <i className="icon-blog"></i>
                 Tin tức
               </button>
-              <button 
+              <button
                 className="action-btn"
                 onClick={() => navigate('/member/notifications')}
               >
