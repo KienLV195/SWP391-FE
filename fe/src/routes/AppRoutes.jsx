@@ -282,6 +282,10 @@ const router = createBrowserRouter([
     path: "/articles/:id",
     element: <ArticleDetailPage />,
   },
+  {
+    path: "/blood-info/:id",
+    element: <ArticleDetailPage />,
+  },
 
   // === ADMIN ROUTES ===
   {

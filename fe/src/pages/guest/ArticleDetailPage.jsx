@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchBloodArticleDetail } from "../../services/bloodArticleService";
-import { Card, Spin, Tag } from "antd";
+import { Card, Spin, Tag, Typography, Button, Divider, Space } from "antd";
+import {
+  ArrowLeftOutlined,
+  ClockCircleOutlined,
+  UserOutlined,
+  BookOutlined,
+  TagOutlined,
+} from "@ant-design/icons";
+import "../../styles/pages/BloodInfoPage.scss";
+
+const { Title, Paragraph, Text } = Typography;
 
 const ArticleDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,60 +23,117 @@ const ArticleDetailPage = () => {
     setLoading(true);
     fetchBloodArticleDetail(id)
       .then((data) => setArticle(data))
+      .catch((error) => {
+        console.error("Error fetching article:", error);
+        setArticle(null);
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading)
+  if (loading) {
     return (
-      <Spin
-        tip="Đang tải bài viết..."
-        style={{ width: "100%", marginTop: 40 }}
-      />
+      <div className="article-detail-page">
+        <div className="loading-container">
+          <Spin size="large" tip="Đang tải bài viết..." />
+        </div>
+      </div>
     );
-  if (!article) return <div>Bài viết không tồn tại hoặc đã bị xóa.</div>;
+  }
+
+  if (!article) {
+    return (
+      <div className="article-detail-page">
+        <div className="error-container">
+          <Title level={3}>
+            <BookOutlined className="title-icon" /> Không tìm thấy bài viết
+          </Title>
+          <Paragraph>Bài viết không tồn tại hoặc đã bị xóa.</Paragraph>
+          <Button
+            type="primary"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/blood-info")}
+          >
+            Quay lại danh sách
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Format content with proper line breaks
+  const formatContent = (content) => {
+    if (!content) return "";
+    return content.split("\n").map((paragraph, index) => (
+      <Paragraph key={index} className="content-paragraph">
+        {paragraph}
+      </Paragraph>
+    ));
+  };
 
   return (
-    <div style={{ maxWidth: 800, margin: "32px auto" }}>
-      <Card
-        title={
-          <span style={{ fontSize: 24, fontWeight: 600 }}>{article.title}</span>
-        }
-        cover={
-          article.imgUrl && (
-            <img
-              alt={article.title}
-              src={article.imgUrl}
-              style={{ maxHeight: 320, objectFit: "cover" }}
-            />
-          )
-        }
-      >
-        <div style={{ marginBottom: 12 }}>
-          <b>Người viết:</b>{" "}
-          {article.userName || article.authorName || article.author || "-"}
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <b>Tags:</b>{" "}
-          {article.tags && Array.isArray(article.tags)
-            ? article.tags.map((tag, idx) => <Tag key={idx}>{tag}</Tag>)
-            : "-"}
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <b>Nội dung:</b>
-          <div
-            style={{
-              background: "#fafafa",
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 4,
-            }}
-          >
-            {article.content || (
-              <span style={{ color: "#aaa" }}>Không có nội dung</span>
+    <div className="article-detail-page">
+      <div className="article-container">
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate("/blood-info")}
+          className="back-button"
+        >
+          Quay lại danh sách
+        </Button>
+
+        <Card className="article-card">
+          <div className="article-header">
+            <Title level={2} className="article-title">
+              {article.title}
+            </Title>
+
+            {Array.isArray(article.tags) && article.tags.length > 0 && (
+              <div className="article-tags">
+                <TagOutlined className="tag-icon" />
+                {article.tags.map((tag) => (
+                  <Tag key={tag} color="blue">
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
             )}
           </div>
-        </div>
-      </Card>
+
+          <div className="article-meta">
+            <Space split={<Divider type="vertical" />}>
+              <Space>
+                <UserOutlined />
+                <Text>{article.userName || "Hệ thống"}</Text>
+              </Space>
+              <Space>
+                <ClockCircleOutlined />
+                <Text>
+                  {new Date(article.createdAt).toLocaleDateString("vi-VN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </Text>
+              </Space>
+            </Space>
+          </div>
+
+          {article.imgUrl && (
+            <div className="article-image-wrapper">
+              <img
+                src={article.imgUrl}
+                alt={article.title}
+                className="article-image"
+              />
+            </div>
+          )}
+
+          <div className="article-content">
+            {formatContent(article.content)}
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

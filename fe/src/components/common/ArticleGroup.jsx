@@ -1,47 +1,88 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { Typography, Card, Tag, Pagination } from "antd";
 import { Link } from "react-router-dom";
 
-const ArticleGroup = ({ title, articles }) => {
-  if (!articles || articles.length === 0) return null;
+const { Title, Paragraph } = Typography;
+
+const ArticleGroup = ({ title, articles = [], gradient }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const pageSize = 3; // Chỉ hiển thị 3 card mỗi trang
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentArticles = articles.slice(startIndex, endIndex);
+
+  if (articles.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="article-group">
-      <h2 className="article-group-title">{title}</h2>
-      <div className="article-group-list">
-        {articles.map((article) => (
-          <div className="article-card" key={article.id}>
-            <img
-              src={article.imgUrl}
-              alt={article.title}
-              className="article-card-img"
-            />
-            <div className="article-card-content">
-              <h3 className="article-card-title">{article.title}</h3>
-              <p className="article-card-desc">{article.shortContent}</p>
-              <Link
-                to={`/articles/${article.id}`}
-                className="article-card-detail-btn"
-              >
-                Xem chi tiết
+    <div className="article-group" style={{ "--header-gradient": gradient }}>
+      <div className="group-header">
+        <div className="group-header-content">
+          <Title level={3} className="group-title">
+            {title}
+          </Title>
+        </div>
+      </div>
+
+      <div className="article-grid">
+        <div className="article-list">
+          {currentArticles.map((article) => (
+            <Card
+              key={article.id}
+              className="article-card"
+              hoverable
+              cover={
+                <div className="article-image-container">
+                  <img
+                    alt={article.title}
+                    src={
+                      article.imageUrl ||
+                      article.imgUrl ||
+                      "https://via.placeholder.com/400x200?text=Blood+Donation"
+                    }
+                  />
+                </div>
+              }
+            >
+              <Link to={`/blood-info/${article.id}`}>
+                <div className="article-content">
+                  <Title level={4} className="article-title">
+                    {article.title}
+                  </Title>
+                  <Paragraph className="article-description">
+                    {article.description || article.shortContent}
+                  </Paragraph>
+                  {article.tags && (
+                    <div className="article-tags">
+                      {article.tags.map((tag) => (
+                        <Tag key={tag} color="blue">
+                          {tag}
+                        </Tag>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </Link>
-            </div>
+            </Card>
+          ))}
+        </div>
+
+        {articles.length > pageSize && (
+          <div className="pagination-container">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={articles.length}
+              onChange={setCurrentPage}
+              showSizeChanger={false}
+              className="article-pagination"
+            />
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
-};
-
-ArticleGroup.propTypes = {
-  title: PropTypes.string.isRequired,
-  articles: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      title: PropTypes.string.isRequired,
-      imgUrl: PropTypes.string,
-      shortContent: PropTypes.string,
-    })
-  ),
 };
 
 export default ArticleGroup;

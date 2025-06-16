@@ -1,493 +1,175 @@
 @use '../base/variables' as vars;
 @use '../base/mixin' as mix;
 
-.guest-home-page {
-  @include mix.reset();
-  @include mix.body-base();
-  width: 100%;
-  overflow-x: hidden;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+// =============================
+// Blog/Article List (Overview)
+// =============================
+
+.article-group {
+  margin-bottom: 48px;
+}
+
+.article-group-title {
+  color: #1890ff;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.ant-divider {
+  background: #e6f7ff;
+}
+
+.ant-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.article-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(24, 144, 255, 0.08);
+  transition: box-shadow 0.3s, transform 0.3s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(24, 144, 255, 0.18);
+    transform: scale(1.025);
+  }
+
+  .ant-card-cover img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    transition: transform 0.4s;
+  }
+
+  .ant-card-meta-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1890ff;
+    margin-bottom: 8px;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .ant-card-meta-description {
+    color: #595959;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  }
+}
+
+// Responsive
+@media (max-width: 900px) {
+  .article-card {
+    min-height: 280px;
+    .ant-card-cover img {
+      height: 140px;
+    }
+  }
+}
+
+// =============================
+// Article Detail Page
+// =============================
+
+.article-detail-page {
+  background: #e6f7ff;
   min-height: 100vh;
+  padding: 32px 0;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 
-  .content-section {
-    max-width: 1400px;
+  .ant-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(24, 144, 255, 0.10);
+    padding: 0 0 24px 0;
+    max-width: 800px;
     margin: 0 auto;
-    padding: vars.$spacing-xl vars.$spacing-base;
+  }
 
-    // Page Header
-    .page-header {
-      text-align: center;
-      margin-bottom: vars.$spacing-xl;
-      padding: vars.$spacing-xl 0;
-      background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
-      border-radius: 20px;
-      color: white;
-      position: relative;
-      overflow: hidden;
+  .ant-card-head-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1890ff;
+    text-align: center;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  }
 
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="90" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        opacity: 0.3;
-      }
+  .ant-card-cover img {
+    display: block;
+    margin: 0 auto;
+    max-height: 340px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 2px 12px rgba(24, 144, 255, 0.10);
+  }
 
-      .page-title {
-        @include mix.heading(3rem, white);
-        margin-bottom: vars.$spacing-md;
-        font-weight: 800;
-        letter-spacing: 2px;
-        position: relative;
-        z-index: 2;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        font-family: "Merriweather", serif;
-      }
+  .ant-card-body {
+    padding: 32px 24px 16px 24px;
+  }
 
-      .page-description {
-        @include mix.text(1.2rem, rgba(255,255,255,0.9));
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.8;
-        position: relative;
-        z-index: 2;
-        font-family: "Merriweather", serif;
-      }
-    }
+  .article-content {
+    color: #222;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  }
 
-    // Carousel Section
-    .carousel-section {
-      margin-bottom: vars.$spacing-xl;
-
-      .carousel-item {
-        height: 400px;
-
-        .carousel-card {
-          height: 100%;
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-          &:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-
-            .ant-card-cover img {
-              transform: scale(1.05);
-            }
-          }
-
-          .ant-card-cover {
-            height: 60%;
-            overflow: hidden;
-
-            img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              transition: transform 0.5s ease;
-            }
-          }
-
-          .ant-card-body {
-            padding: vars.$spacing-md;
-            height: 40%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-
-            .ant-card-meta-title {
-              @include mix.heading(1.5rem, #1e293b);
-              margin-bottom: vars.$spacing-sm;
-              font-weight: 700;
-              line-height: 1.4;
-            }
-
-            .ant-card-meta-description {
-              @include mix.text(1rem, #64748b);
-              line-height: 1.6;
-              flex-grow: 1;
-              display: -webkit-box;
-              -webkit-line-clamp: 3;
-              line-clamp: 3;
-              overflow: hidden;
-            }
-          }
-
-          .carousel-meta {
-            margin-top: vars.$spacing-sm;
-
-            .views-badge {
-              background: rgba(255,255,255,0.9);
-              color: #1e293b;
-              padding: 6px 12px;
-              border-radius: 20px;
-              font-weight: 600;
-              display: flex;
-              align-items: center;
-              gap: 6px;
-              font-size: 0.9rem;
-              backdrop-filter: blur(10px);
-            }
-          }
-        }
-      }
-    }
-
-    // Controls Section
-    .controls-section {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      margin-bottom: vars.$spacing-lg;
-      gap: vars.$spacing-md;
-      flex-wrap: wrap;
-
-      @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .search-controls {
-        flex: 0 0 400px;
-        max-width: 400px;
-
-        .search-input {
-          .ant-input-affix-wrapper {
-            border-radius: 50px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-            &:hover,
-            &.ant-input-affix-wrapper-focused {
-              border-color: #2b6cb0;
-              box-shadow: 0 8px 30px rgba(43, 108, 176, 0.15);
-              transform: translateY(-2px);
-            }
-
-            .ant-input {
-              @include mix.reset();
-              font-size: vars.$font-size-base;
-              padding: vars.$spacing-sm vars.$spacing-md;
-              background: transparent;
-            }
-
-            .ant-input-prefix {
-              .search-icon {
-                color: #94a3b8;
-                font-size: 1.1rem;
-                transition: color 0.3s ease;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Category Section
-    .category-section {
-      margin-bottom: vars.$spacing-xl;
-      padding: vars.$spacing-lg;
-      border-radius: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      background: #ffffff; // Màu nền cố định cho section
-
-      .document-grid {
-        .ant-col {
-          margin-bottom: vars.$spacing-md;
-        }
-
-        .document-card {
-          border: none;
-          border-radius: 20px;
-          overflow: hidden;
-          height: 100%;
-          background: white;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          cursor: pointer;
-
-          &:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-
-            .card-cover img {
-              transform: scale(1.05);
-            }
-
-            .card-overlay {
-              opacity: 1;
-            }
-          }
-
-          .card-cover {
-            position: relative;
-            height: 150px;
-            overflow: hidden;
-
-            img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              transition: transform 0.5s ease;
-            }
-
-            .card-overlay {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background: linear-gradient(135deg, rgba(43, 108, 176, 0.8), rgba(66, 153, 225, 0.8));
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              opacity: 0;
-              transition: all 0.3s ease;
-
-              .views-badge {
-                background: rgba(255,255,255,0.9);
-                color: #1e293b;
-                padding: 6px 12px;
-                border-radius: 20px;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                font-size: 0.8rem;
-                backdrop-filter: blur(10px);
-              }
-            }
-          }
-
-          .ant-card-body {
-            padding: 0;
-          }
-
-          .card-content {
-            padding: vars.$spacing-md;
-            display: flex;
-            flex-direction: column;
-            height: 220px;
-
-            .card-meta {
-              display: flex;
-              justify-content: flex-end;
-              align-items: center;
-              margin-bottom: vars.$spacing-sm;
-
-              .date-tag {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                color: #2b6cb0;
-                font-weight: 600;
-                font-size: 0.8rem;
-              }
-            }
-
-            .document-title {
-              @include mix.heading(1.1rem, #1e293b);
-              margin-bottom: vars.$spacing-sm;
-              font-weight: 700;
-              line-height: 1.4;
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              line-clamp: 2;
-              overflow: hidden;
-            }
-
-            .document-summary {
-              @include mix.text(0.9rem, #64748b);
-              line-height: 1.6;
-              flex-grow: 1;
-              margin-bottom: vars.$spacing-sm;
-              display: -webkit-box;
-              -webkit-line-clamp: 3;
-              line-clamp: 3;
-              overflow: hidden;
-            }
-
-            .read-more-btn {
-              background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
-              border: none;
-              border-radius: 12px;
-              padding: 8px 16px;
-              font-weight: 600;
-              font-size: 0.9rem;
-              height: auto;
-              transition: all 0.3s ease;
-
-              &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(43, 108, 176, 0.3);
-                background: linear-gradient(135deg, #22548f 0%, #3182ce 100%);
-              }
-            }
-
-            .highlight-text {
-              background: linear-gradient(90deg, #fbbf24, #f59e0b);
-              color: white;
-              padding: 2px 6px;
-              border-radius: 4px;
-              font-weight: 600;
-            }
-          }
-        }
-      }
-    }
-
-    // Pagination
-    .pagination-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: vars.$spacing-lg;
-
-      .ant-pagination {
-        .ant-pagination-item {
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          background: white;
-          transition: all 0.3s ease;
-
-          &:hover {
-            border-color: #2b6cb0;
-            background: #f8fafc;
-          }
-
-          a {
-            color: #1e293b;
-            font-weight: 500;
-          }
-        }
-
-        .ant-pagination-item-active {
-          border-color: #2b6cb0;
-          background: linear-gradient(135deg, #2b6cb0, #4299e1);
-
-          a {
-            color: white;
-          }
-
-          &:hover {
-            border-color: #2b6cb0;
-          }
-        }
-
-        .ant-pagination-prev,
-        .ant-pagination-next {
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          background: white;
-          transition: all 0.3s ease;
-
-          &:hover {
-            border-color: #2b6cb0;
-            background: #f8fafc;
-          }
-
-          .ant-pagination-item-link {
-            color: #1e293b;
-          }
-        }
-
-        .ant-pagination-disabled {
-          .ant-pagination-item-link {
-            color: #94a3b8;
-          }
-        }
-      }
-    }
-
-    // No Results
-    .no-results {
-      text-align: center;
-      padding: vars.$spacing-xl * 2;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-
-      .no-results-icon {
-        font-size: 4rem;
-        margin-bottom: vars.$spacing-lg;
-        opacity: 0.6;
-      }
-
-      h3 {
-        @include mix.heading(1.5rem, #1e293b);
-        margin-bottom: vars.$spacing-sm;
-        font-weight: 600;
-      }
-
-      p {
-        @include mix.text(1rem, #64748b);
-        margin: 0;
-      }
+  .article-tags {
+    margin-top: 16px;
+    .ant-tag {
+      background: #e6f7ff;
+      color: #1890ff;
+      border: none;
+      font-weight: 500;
+      font-size: 1rem;
+      margin-right: 8px;
+      margin-bottom: 4px;
+      border-radius: 8px;
+      padding: 4px 14px;
     }
   }
 
-  // Responsive Design
-  @media (max-width: 768px) {
-    .content-section {
-      padding: vars.$spacing-lg vars.$spacing-sm;
-
-      .page-header {
-        padding: vars.$spacing-lg vars.$spacing-md;
-
-        .page-title {
-          font-size: 2rem;
-        }
-
-        .page-description {
-          font-size: 1rem;
-        }
-      }
-
-      .carousel-item .carousel-card {
-        height: auto;
-
-        .ant-card-cover {
-          height: 200px;
-        }
-
-        .ant-card-body {
-          height: auto;
-        }
-      }
-
-      .document-card .card-content {
-        height: auto;
-        min-height: 220px;
-      }
-    }
+  .article-author {
+    color: #595959;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    font-style: italic;
+    text-align: right;
   }
+}
 
-  // Animation keyframes
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+// Button style
+.ant-btn-primary, .read-more-btn {
+  background: #1890ff;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.10);
 
-  .document-card {
-    animation: fadeInUp 0.6s ease-out forwards;
-  }
-
-  // Stagger animation for cards
-  @for $i from 1 through 12 {
-    .document-card:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.1}s;
-    }
+  &:hover, &:focus {
+    background: #1765ad;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(24, 144, 255, 0.18);
   }
 }
