@@ -19,6 +19,13 @@ import Highlighter from "react-highlight-words";
 import { fetchAllNews } from "../../services/newsService";
 import "../../styles/pages/BlogPage.scss";
 
+// Custom highlight style for BlogPage
+const highlightStyle = {
+  backgroundColor: "#ffe58f",
+  fontWeight: "normal", // Không in đậm chữ
+  padding: 0,
+};
+
 const { Meta } = Card;
 const { Title, Paragraph } = Typography;
 
@@ -47,7 +54,6 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
     loadNews();
   }, []);
 
-  // Lọc và sắp xếp theo thời gian (mới nhất lên đầu)
   const filteredNews = useMemo(() => {
     const lowerKeyword = searchTerm.toLowerCase();
     return news
@@ -63,9 +69,7 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
       );
   }, [news, searchTerm]);
 
-  // 3 bài mới nhất cho carousel
   const carouselPosts = filteredNews.slice(0, Math.min(3, filteredNews.length));
-  // List: toàn bộ bài, mỗi trang 4 bài (có thể trùng với carousel)
   const paginatedPosts = filteredNews.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -77,6 +81,24 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
     }
   };
 
+  function getHighlightedSnippet(content, keyword) {
+    if (!content) return "";
+    if (!keyword?.trim())
+      return content.length > 120 ? content.slice(0, 120) + "..." : content;
+    const lowerContent = content.toLowerCase();
+    const lowerKeyword = keyword.toLowerCase();
+    const idx = lowerContent.indexOf(lowerKeyword);
+    if (idx === -1)
+      return content.length > 120 ? content.slice(0, 120) + "..." : content;
+    const start = Math.max(0, idx - 40);
+    const end = Math.min(content.length, idx + lowerKeyword.length + 40);
+    let snippet =
+      (start > 0 ? "..." : "") +
+      content.slice(start, end) +
+      (end < content.length ? "..." : "");
+    return snippet;
+  }
+
   if (loading) {
     return (
       <div className="guest-home-page">
@@ -86,6 +108,7 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="guest-home-page">
@@ -132,6 +155,7 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                             searchWords={[searchTerm]}
                             autoEscape={true}
                             textToHighlight={post.title}
+                            highlightStyle={highlightStyle}
                           />
                         }
                         description={
@@ -210,6 +234,7 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                               searchWords={[searchTerm]}
                               autoEscape={true}
                               textToHighlight={post.title}
+                              highlightStyle={highlightStyle}
                             />
                           </h3>
 
@@ -218,7 +243,11 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                               highlightClassName="highlight-text"
                               searchWords={[searchTerm]}
                               autoEscape={true}
-                              textToHighlight={post.summary}
+                              textToHighlight={getHighlightedSnippet(
+                                post.content || post.summary || "",
+                                searchTerm
+                              )}
+                              highlightStyle={highlightStyle}
                             />
                           </p>
 
@@ -266,7 +295,21 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
               </div>
             </>
           ) : (
-            <div className="no-news">Không có tin tức phù hợp.</div>
+            <div className="no-news">
+              <div
+                className="no-results-icon"
+                style={{ fontSize: 64, marginBottom: 12 }}
+              ></div>
+              <div className="no-results">
+                <div className="no-results-icon">📚</div>
+                <Title level={3}>
+                  Không tìm thấy kết quả phù hợp với từ khóa: '{searchTerm}'
+                </Title>
+                <Paragraph>
+                  Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
+                </Paragraph>
+              </div>
+            </div>
           )}
         </section>
         <Footer />
