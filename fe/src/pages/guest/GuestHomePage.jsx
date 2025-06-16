@@ -18,6 +18,7 @@ import "../../styles/pages/GuestHomePage.scss";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ScrollToTop from "../../components/common/ScrollToTop";
+import { fetchAllNews } from "../../services/newsService";
 
 const { Panel } = Collapse;
 
@@ -25,6 +26,7 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
   const [emergencyRequests, setEmergencyRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const questionsPerPage = 5;
+  const [newsData, setNewsData] = useState([]);
 
   const faqData = [
     {
@@ -203,50 +205,39 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
     setEmergencyRequests(fakeData);
   }, []);
 
-  const newsData = [
-    {
-      id: 1,
-      date: "30 MARCH, 2024",
-      title: "Chiến dịch hiến máu nhân đạo thu hút hàng ngàn người tham gia",
-      image: "placeholder1.jpg",
-      link: "/blog/1",
-    },
-    {
-      id: 2,
-      date: "28 MARCH, 2024",
-      title: "Bệnh viện Ánh Dương triển khai công nghệ lưu trữ máu mới",
-      image: "placeholder2.jpg",
-      link: "/blog/2",
-    },
-    {
-      id: 3,
-      date: "25 MARCH, 2024",
-      title: "Hội thảo nâng cao nhận thức về tầm quan trọng của hiến máu",
-      image: "placeholder3.jpg",
-      link: "/blog/3",
-    },
-    {
-      id: 4,
-      date: "20 MARCH, 2024",
-      title: "Câu chuyện cảm động về người hiến máu cứu sống bệnh nhân",
-      image: "placeholder4.jpg",
-      link: "/blog/4",
-    },
-    {
-      id: 5,
-      date: "15 MARCH, 2024",
-      title: "Bệnh viện Ánh Dương tổ chức ngày hội hiến máu cộng đồng",
-      image: "placeholder5.jpg",
-      link: "/blog/5",
-    },
-    {
-      id: 6,
-      date: "10 MARCH, 2024",
-      title: "Cập nhật tiến bộ y học trong điều trị bệnh lý máu",
-      image: "placeholder6.jpg",
-      link: "/blog/6",
-    },
-  ];
+  useEffect(() => {
+    // Lấy tin tức từ API
+    fetchAllNews().then((data) => {
+      if (Array.isArray(data)) {
+        setNewsData(
+          data
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt || b.date) -
+                new Date(a.createdAt || a.date)
+            )
+            .slice(0, 6)
+            .map((item) => ({
+              postId: item.postId,
+              date: new Date(item.createdAt || item.date)
+                .toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+                .toUpperCase(),
+              title: item.title,
+              image: item.image || item.imgUrl || "placeholder.jpg",
+              link: `/blog/${item.postId}`,
+            }))
+        );
+      }
+    });
+  }, []);
+
+  const newsDataSorted = newsData
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 6);
 
   const achievementData = [
     {

@@ -1,10 +1,6 @@
 @use '../base/variables' as vars;
 @use '../base/mixin' as mix;
 
-// =============================
-// Blog/Article List (Overview)
-// =============================
-
 .article-group {
   margin-bottom: 48px;
 }
@@ -66,9 +62,9 @@
     margin-bottom: 12px;
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
+    max-height: 2.8em; // 2 dòng
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   }
 }
@@ -172,4 +168,173 @@
     color: #fff;
     box-shadow: 0 4px 16px rgba(24, 144, 255, 0.18);
   }
+}
+
+// =============================
+// Page Header
+// =============================
+
+.page-header {
+  position: relative;
+  height: 240px;
+  background: linear-gradient(
+      135deg,
+      rgba(66, 153, 225, 0.1) 0%,
+      transparent 50%
+    ),
+    linear-gradient(225deg, rgba(44, 96, 192, 0.15) 0%, transparent 50%),
+    linear-gradient(45deg, rgba(26, 54, 93, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #0f1e3d 0%, #2c64b4 100%);
+  background-size: 300% 300%, 250% 250%, 200% 200%, cover;
+  background-position: -50% -50%, 0% 0%, 50% 50%, center center;
+  background-repeat: no-repeat;
+  margin-bottom: 48px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    padding: 0 24px;
+    text-align: center;
+    justify-content: center;
+
+    h1 {
+      font-family: "Roboto", sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: linear-gradient(to right, #ffffff, #e2e8f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    p {
+      font-family: "Roboto", sans-serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 600px;
+      margin: 0 auto;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.carousel-section {
+  width: 100vw;
+  max-width: none;
+  margin: 0 0 40px 0;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  .carousel-card {
+    min-height: 320px;
+
+    .ant-card-cover img {
+      width: 100vw;
+      height: 260px;
+      object-fit: cover;
+    }
+  }
+}
+
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 32px 0 0 0;
+  gap: 24px;
+  width: 100%;
+
+  .pagination-total {
+    flex: 1;
+    color: #888;
+    font-size: 1rem;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    text-align: left;
+  }
+
+  .ant-pagination {
+    flex-shrink: 0;
+
+    .ant-pagination-item {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      transition: all 0.3s ease;
+      margin: 0 4px;
+
+      a {
+        color: #1e293b;
+        font-weight: 500;
+        font-family: 'Roboto', sans-serif;
+      }
+
+      &:hover {
+        border-color: #2b6cb0;
+        background: #f8fafc;
+      }
+    }
+
+    .ant-pagination-item-active {
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2b6cb0, #4299e1);
+      border-color: #4299e1;
+
+      a {
+        color: white;
+      }
+
+      &:hover {
+        border-color: #4299e1;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      transition: all 0.3s ease;
+
+      .ant-pagination-item-link {
+        color: #1e293b;
+        border-radius: 8px;
+      }
+
+      &:hover {
+        border-color: #2b6cb0;
+        background: #f8fafc;
+      }
+    }
+
+    .ant-pagination-disabled {
+      .ant-pagination-item-link {
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+.no-news {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin: 32px 0;
 }

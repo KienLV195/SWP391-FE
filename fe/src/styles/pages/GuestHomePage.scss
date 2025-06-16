@@ -653,11 +653,9 @@ li {
               line-height: 1.6;
               min-height: 48px;
               display: -webkit-box;
-              -webkit-line-clamp: 2;
-              line-clamp: 2; /* Standard property for compatibility */
               -webkit-box-orient: vertical;
-              box-orient: vertical; /* Standard property, though less supported */
               overflow: hidden;
+              max-height: 2.8em; // 2 dòng
               font-weight: 500;
             }
 

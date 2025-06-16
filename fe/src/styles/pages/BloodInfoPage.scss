@@ -75,6 +75,7 @@ $transition-duration: 0.3s;
           text-transform: uppercase;
           background: linear-gradient(to right, #ffffff, #e2e8f0);
           -webkit-background-clip: text;
+          background-clip: text;
           -webkit-text-fill-color: transparent;
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -312,9 +313,9 @@ $transition-duration: 0.3s;
               flex-grow: 1;
               margin-bottom: vars.$spacing-sm;
               display: -webkit-box;
-              -webkit-line-clamp: 3;
-              line-clamp: 3;
+              -webkit-box-orient: vertical;
               overflow: hidden;
+              max-height: 4.8em; // 3 dòng
             }
 
             .read-more-btn {
@@ -335,11 +336,12 @@ $transition-duration: 0.3s;
             }
 
             .highlight-text {
-              background: linear-gradient(90deg, #fbbf24, #f59e0b);
-              color: white;
-              padding: 2px 6px;
-              border-radius: 4px;
-              font-weight: 600;
+              background: none;
+              // color: #ff4d4f !important;
+              font-weight: bold;
+              padding: 0 2px;
+              border-radius: 2px;
+              transition: background 0.2s;
             }
           }
         }
@@ -357,28 +359,31 @@ $transition-duration: 0.3s;
             border: 1px solid #e2e8f0;
             background: white;
             transition: all 0.3s ease;
+            margin: 0 4px;
+
+            a {
+              color: #1e293b;
+              font-weight: 500;
+              font-family: "Roboto", sans-serif;
+            }
 
             &:hover {
               border-color: #2b6cb0;
               background: #f8fafc;
             }
-
-            a {
-              color: #1e293b;
-              font-weight: 500;
-            }
           }
 
           .ant-pagination-item-active {
-            border-color: #2b6cb0;
+            border-radius: 8px;
             background: linear-gradient(135deg, #2b6cb0, #4299e1);
+            border-color: #4299e1;
 
             a {
               color: white;
             }
 
             &:hover {
-              border-color: #2b6cb0;
+              border-color: #4299e1;
             }
           }
 
@@ -389,13 +394,14 @@ $transition-duration: 0.3s;
             background: white;
             transition: all 0.3s ease;
 
+            .ant-pagination-item-link {
+              color: #1e293b;
+              border-radius: 8px;
+            }
+
             &:hover {
               border-color: #2b6cb0;
               background: #f8fafc;
-            }
-
-            .ant-pagination-item-link {
-              color: #1e293b;
             }
           }
 
@@ -563,8 +569,8 @@ $transition-duration: 0.3s;
           margin-top: 16px;
 
           .ant-tag {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+            background: #e6f7ff !important; // màu xanh nhạt, ưu tiên cao nhất
+            color: #1890ff;
             border: none;
             font-weight: 500;
             font-size: 0.95rem;
@@ -750,7 +756,7 @@ $transition-duration: 0.3s;
   .article-detail-page .ant-card-cover img {
     max-height: 180px;
   }
-  .article-detail-page .ant-card-body {
+  .article-detail_page .ant-card-body {
     padding: 18px 8px 8px 8px;
   }
 }
@@ -785,6 +791,10 @@ $transition-duration: 0.3s;
     .group-header-content {
       position: relative;
       z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
 
       .group-title {
         margin: 0;
@@ -792,6 +802,16 @@ $transition-duration: 0.3s;
         font-weight: 600;
         letter-spacing: 0.5px;
         color: white;
+      }
+
+      .group-count {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
       }
     }
   }
@@ -804,6 +824,14 @@ $transition-duration: 0.3s;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       margin-bottom: 24px;
+
+      @media (max-width: 1200px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
     }
   }
 
@@ -847,9 +875,9 @@ $transition-duration: 0.3s;
         margin-bottom: 12px;
         line-height: 1.4;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        max-height: 2.8em; // 2 dòng
       }
 
       .article-description {
@@ -858,9 +886,9 @@ $transition-duration: 0.3s;
         line-height: 1.6;
         margin-bottom: 16px;
         display: -webkit-box;
-        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        max-height: 4.8em; // 3 dòng
       }
 
       .article-tags {
@@ -869,13 +897,14 @@ $transition-duration: 0.3s;
         gap: 8px;
 
         .ant-tag {
-          background: #ebf8ff;
-          color: $accent-color;
+          background: #e6f7ff; // màu xanh nhạt
+          color: #1890ff;
           border: none;
           font-weight: 500;
-          font-size: 0.85rem;
+          font-size: 0.95rem;
           padding: 4px 12px;
           border-radius: 6px;
+          backdrop-filter: blur(4px);
           transition: all $transition-duration ease;
 
           &:hover {
@@ -890,6 +919,8 @@ $transition-duration: 0.3s;
     display: flex;
     justify-content: center;
     margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
 
     .article-pagination {
       .ant-pagination-item {
@@ -911,6 +942,11 @@ $transition-duration: 0.3s;
         .ant-pagination-item-link {
           border-radius: 6px;
         }
+      }
+
+      .ant-pagination-total-text {
+        margin-right: 16px;
+        color: #64748b;
       }
     }
   }
@@ -1017,7 +1053,7 @@ $transition-duration: 0.3s;
       padding: 0 16px;
 
       .article-card {
-        .article-header {
+        .article_header {
           padding: 24px 16px;
 
           .article-title {
@@ -1053,4 +1089,107 @@ $transition-duration: 0.3s;
     color: #1890ff;
     margin-right: 8px;
   }
+}
+
+// Fade-in animation for article card
+.article-card.fade-in {
+  animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 32px 0 0 0;
+  gap: 24px;
+  width: 100%;
+
+  .pagination-total {
+    flex: 1;
+    color: #888;
+    font-size: 1rem;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    text-align: left;
+  }
+
+  .ant-pagination {
+    flex-shrink: 0;
+    .ant-pagination-item {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      transition: all 0.3s ease;
+      margin: 0 4px;
+
+      a {
+        color: #1e293b;
+        font-weight: 500;
+        font-family: "Roboto", sans-serif;
+      }
+
+      &:hover {
+        border-color: #2b6cb0;
+        background: #f8fafc;
+      }
+    }
+
+    .ant-pagination-item-active {
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2b6cb0, #4299e1);
+      border-color: #4299e1;
+
+      a {
+        color: white;
+      }
+
+      &:hover {
+        border-color: #4299e1;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      transition: all 0.3s ease;
+
+      .ant-pagination-item-link {
+        color: #1e293b;
+        border-radius: 8px;
+      }
+
+      &:hover {
+        border-color: #2b6cb0;
+        background: #f8fafc;
+      }
+    }
+
+    .ant-pagination-disabled {
+      .ant-pagination-item-link {
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+.guest-home-page .ant-pagination-item a {
+  color: #1e293b;
+  font-weight: 500;
+  font-family: "Roboto", sans-serif;
+}
+
+.guest-home-page .ant-pagination-item-active a {
+  color: white;
 }

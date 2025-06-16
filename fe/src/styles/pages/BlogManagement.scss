@@ -234,18 +234,18 @@
           margin-bottom: vars.$spacing-3;
           line-height: vars.$line-height-tight;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          max-height: 2.8em; // 2 dòng
         }
 
         .blog-excerpt {
           @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
           line-height: vars.$line-height-relaxed;
           display: -webkit-box;
-          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          max-height: 4.8em; // 3 dòng
           margin: 0;
         }
       }

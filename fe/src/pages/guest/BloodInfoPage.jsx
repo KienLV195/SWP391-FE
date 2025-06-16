@@ -2,23 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 import ScrollToTop from "../../components/common/ScrollToTop";
-import {
-  Input,
-  Select,
-  Space,
-  Divider,
-  Typography,
-  Tag,
-  Spin,
-  Alert,
-} from "antd";
+import { Input, Select, Space, Typography, Spin, Alert } from "antd";
 import { FaSearch, FaFilter } from "react-icons/fa";
-import {
-  BookOutlined,
-  ExperimentOutlined,
-  HeartOutlined,
-  ReadOutlined,
-} from "@ant-design/icons";
 import { fetchBloodArticles } from "../../services/bloodArticleService";
 import ArticleGroup from "../../components/common/ArticleGroup";
 import "../../styles/pages/BloodInfoPage.scss";
@@ -30,23 +15,14 @@ const TAG_GROUPS = [
   {
     key: "Nhóm Máu",
     label: "Nhóm Máu",
-    color: "#1890ff",
-    icon: <ExperimentOutlined />,
-    gradient: "linear-gradient(135deg, #1890ff 0%, #096dd9 100%)",
   },
   {
     key: "Hiến Máu",
     label: "Hiến Máu",
-    color: "#52c41a",
-    icon: <HeartOutlined />,
-    gradient: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
   },
   {
     key: "Truyền máu",
     label: "Truyền máu",
-    color: "#722ed1",
-    icon: <ReadOutlined />,
-    gradient: "linear-gradient(135deg, #722ed1 0%, #531dab 100%)",
   },
 ];
 
@@ -77,18 +53,25 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
 
   // Filter articles based on search term and selected tag
   const filteredArticles = useMemo(() => {
-    return articles.filter((article) => {
-      const matchesSearch =
-        article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.content?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      if (selectedTag === "all") return matchesSearch;
-
-      return (
-        matchesSearch &&
-        Array.isArray(article.tags) &&
-        article.tags.includes(selectedTag)
+    if (!searchTerm.trim()) {
+      return articles.filter((article) =>
+        selectedTag === "all"
+          ? true
+          : Array.isArray(article.tags) && article.tags.includes(selectedTag)
       );
+    }
+    const lowerKeyword = searchTerm.toLowerCase();
+    return articles.filter((article) => {
+      const inTitle = article.title?.toLowerCase().includes(lowerKeyword);
+      const inSummary = article.summary?.toLowerCase().includes(lowerKeyword);
+      const inContent = article.content?.toLowerCase().includes(lowerKeyword);
+      const inTags = Array.isArray(article.tags)
+        ? article.tags.some((tag) => tag.toLowerCase().includes(lowerKeyword))
+        : false;
+      const matches = inTitle || inSummary || inContent || inTags;
+      if (!matches) return false;
+      if (selectedTag === "all") return true;
+      return Array.isArray(article.tags) && article.tags.includes(selectedTag);
     });
   }, [articles, searchTerm, selectedTag]);
 
@@ -104,10 +87,23 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     return result;
   }, [filteredArticles]);
 
-  // Get short content for article preview
+  // Get short content for article preview, highlight keyword, only show snippet around keyword
   const getShortContent = (content) => {
     if (!content) return "";
-    return content.length > 120 ? content.slice(0, 120) + "..." : content;
+    if (!searchTerm.trim())
+      return content.length > 120 ? content.slice(0, 120) + "..." : content;
+    const lowerContent = content.toLowerCase();
+    const lowerKeyword = searchTerm.toLowerCase();
+    const idx = lowerContent.indexOf(lowerKeyword);
+    if (idx === -1)
+      return content.length > 120 ? content.slice(0, 120) + "..." : content;
+    const start = Math.max(0, idx - 40);
+    const end = Math.min(content.length, idx + lowerKeyword.length + 40);
+    let snippet =
+      (start > 0 ? "..." : "") +
+      content.slice(start, end) +
+      (end < content.length ? "..." : "");
+    return snippet;
   };
 
   // Format article data for ArticleGroup component
@@ -115,6 +111,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     groupedArticles[groupKey]?.map((article) => ({
       id: article.articleId,
       title: article.title,
+      summary: article.summary,
       imgUrl: article.imgUrl || article.image,
       shortContent: getShortContent(article.content),
       tags: article.tags,
@@ -198,6 +195,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
                 tagColor={group.color}
                 gradient={group.gradient}
                 icon={group.icon}
+                keyword={searchTerm}
               />
             ))
           ) : (
@@ -207,6 +205,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
               tagColor={TAG_GROUPS.find((g) => g.key === selectedTag)?.color}
               gradient={TAG_GROUPS.find((g) => g.key === selectedTag)?.gradient}
               icon={TAG_GROUPS.find((g) => g.key === selectedTag)?.icon}
+              keyword={searchTerm}
             />
           )}
 
@@ -214,7 +213,9 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
           {TAG_GROUPS.every((g) => getGroupData(g.key).length === 0) && (
             <div className="no-results">
               <div className="no-results-icon">📚</div>
-              <Title level={3}>Không tìm thấy tài liệu nào</Title>
+              <Title level={3}>
+                Không tìm thấy kết quả phù hợp với từ khóa: '{searchTerm}'
+              </Title>
               <Paragraph>
                 Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
               </Paragraph>

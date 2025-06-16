@@ -60,6 +60,7 @@ import ProtectedRoute, {
   AdminRoute,
 } from "../components/common/ProtectedRoute";
 import ArticleDetailPage from "../pages/guest/ArticleDetailPage";
+import BlogDetailPage from "../pages/guest/BlogDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -285,6 +286,10 @@ const router = createBrowserRouter([
   {
     path: "/blood-info/:id",
     element: <ArticleDetailPage />,
+  },
+  {
+    path: "/blog/:postId",
+    element: <BlogDetailPage />,
   },
 
   // === ADMIN ROUTES ===

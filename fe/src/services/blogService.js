@@ -1,24 +1,5 @@
 import { MOCK_BLOGS } from './mockData';
 
-/**
- * Blog Service - Handles all blog-related API calls
- *
- * NEW WORKFLOW:
- * - Doctor: Auto-publish all posts (Tài liệu, Tin tức, Thông báo)
- * - Manager: Auto-publish News and Announcements only (NOT Documents)
- * - Admin: Can only DELETE posts (no approval workflow)
- *
- * API Endpoints:
- * - GET /api/blogs - Get all public blogs (for Guest/Member pages)
- * - GET /api/blogs/author/{id} - Get blogs by author (for Doctor/Manager)
- * - POST /api/blogs - Create new blog (auto-publish)
- * - PUT /api/blogs/{id} - Update blog
- * - DELETE /api/blogs/{id} - Delete blog
- *
- * Admin Endpoints:
- * - GET /api/admin/blogs - Get all published blogs for monitoring
- * - DELETE /api/admin/blogs/{id} - Delete blog (only action allowed)
- */
 
 class BlogService {
   constructor() {
