@@ -69,9 +69,8 @@ const DoctorSidebar = () => {
             <li key={item.path} className="doctor-sidebar__menu-item">
               <Link
                 to={item.path}
-                className={`doctor-sidebar__link ${
-                  isActive(item.path, item.exact) ? "active" : ""
-                }`}
+                className={`doctor-sidebar__link ${isActive(item.path, item.exact) ? "active" : ""
+                  }`}
               >
                 {item.label}
               </Link>

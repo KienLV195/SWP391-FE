@@ -6,7 +6,7 @@
 // ===== USER ROLES =====
 export const USER_ROLES = {
   GUEST: 'Guest',
-  MEMBER: 'Member', 
+  MEMBER: 'Member',
   STAFF_DOCTOR: 'Staff-Doctor',
   STAFF_BLOOD_MANAGER: 'Staff-BloodManager',
   ADMIN: 'Admin'
@@ -29,7 +29,7 @@ export const DOCTOR_TYPES = {
 // ===== BLOOD INFORMATION =====
 export const BLOOD_GROUPS = {
   A: 'A',
-  B: 'B', 
+  B: 'B',
   AB: 'AB',
   O: 'O'
 };
@@ -45,7 +45,7 @@ export const BLOOD_TYPES = [
 
 export const COMPONENT_TYPES = {
   WHOLE: 'Whole',
-  RED_CELLS: 'RedCells', 
+  RED_CELLS: 'RedCells',
   PLASMA: 'Plasma',
   PLATELETS: 'Platelets'
 };
@@ -54,7 +54,7 @@ export const COMPONENT_TYPES = {
 export const DONATION_STATUS = {
   // Member submits donation form
   REGISTERED: 'registered', // Đăng ký thành công
-  
+
   // Doctor Blood Department manages these statuses
   HEALTH_CHECKED: 'health_checked', // Đã khám sàng lọc
   NOT_ELIGIBLE_HEALTH: 'not_eligible_health', // Không đủ điều kiện (sau khám)
@@ -62,7 +62,7 @@ export const DONATION_STATUS = {
   BLOOD_TESTED: 'blood_tested', // Xét nghiệm
   NOT_ELIGIBLE_TEST: 'not_eligible_test', // Không đủ điều kiện (sau xét nghiệm)
   COMPLETED: 'completed', // Hoàn thành (Doctor xác nhận)
-  
+
   // Manager manages storage
   STORED: 'stored' // Đã nhập kho
 };
@@ -71,11 +71,11 @@ export const DONATION_STATUS = {
 export const REQUEST_STATUS = {
   // Member/Doctor submits request
   PENDING: 'pending', // Đang chờ xử lý
-  
+
   // Doctor Blood Department processes
   APPROVED: 'approved', // Đã duyệt
   REJECTED: 'rejected', // Từ chối
-  
+
   // Manager processes fulfillment
   FULFILLED: 'fulfilled', // Đã xuất kho
   COMPLETED: 'completed' // Hoàn thành
@@ -84,7 +84,7 @@ export const REQUEST_STATUS = {
 // ===== URGENCY LEVELS =====
 export const URGENCY_LEVELS = {
   NORMAL: 0,
-  URGENT: 1, 
+  URGENT: 1,
   CRITICAL: 2
 };
 
@@ -135,16 +135,16 @@ export const NOTIFICATION_TYPES = {
   DONATION_REMINDER: 'donation_reminder',
   DONATION_ELIGIBLE: 'donation_eligible',
   DONATION_STATUS_UPDATE: 'donation_status_update',
-  
+
   // Blood Request
   NEW_BLOOD_REQUEST: 'new_blood_request',
   REQUEST_STATUS_UPDATE: 'request_status_update',
   URGENT_BLOOD_NEEDED: 'urgent_blood_needed',
-  
+
   // System
   SYSTEM_MAINTENANCE: 'system_maintenance',
   ACCOUNT_UPDATE: 'account_update',
-  
+
   // Blog
   NEW_BLOG_POST: 'new_blog_post'
 };
@@ -185,7 +185,7 @@ export const WORKFLOW_PERMISSIONS = {
       allowedStatuses: []
     }
   },
-  
+
   // Request workflow
   REQUEST: {
     [USER_ROLES.MEMBER]: {
@@ -220,7 +220,7 @@ export const WORKFLOW_PERMISSIONS = {
       allowedStatuses: []
     }
   },
-  
+
   // Blog workflow
   BLOG: {
     [USER_ROLES.STAFF_DOCTOR]: {
@@ -259,7 +259,7 @@ export const STATUS_TRANSITIONS = {
     [DONATION_STATUS.BLOOD_TESTED]: [DONATION_STATUS.COMPLETED, DONATION_STATUS.NOT_ELIGIBLE_TEST],
     [DONATION_STATUS.COMPLETED]: [DONATION_STATUS.STORED]
   },
-  
+
   REQUEST: {
     [REQUEST_STATUS.PENDING]: [REQUEST_STATUS.APPROVED, REQUEST_STATUS.REJECTED],
     [REQUEST_STATUS.APPROVED]: [REQUEST_STATUS.FULFILLED],
@@ -291,14 +291,14 @@ export const API_ENDPOINTS = {
     LOGOUT: '/api/auth/logout',
     REFRESH: '/api/auth/refresh'
   },
-  
+
   // Users
   USERS: {
     PROFILE: '/api/users/profile',
     UPDATE_PROFILE: '/api/users/profile',
     ACTIVITY_HISTORY: '/api/users/activity-history'
   },
-  
+
   // Blood Donations
   DONATIONS: {
     CREATE: '/api/donations',
@@ -306,7 +306,7 @@ export const API_ENDPOINTS = {
     UPDATE_STATUS: '/api/donations/:id/status',
     DETAILS: '/api/donations/:id'
   },
-  
+
   // Blood Requests
   REQUESTS: {
     CREATE: '/api/blood-requests',
@@ -314,7 +314,7 @@ export const API_ENDPOINTS = {
     UPDATE_STATUS: '/api/blood-requests/:id/status',
     DETAILS: '/api/blood-requests/:id'
   },
-  
+
   // Blogs
   BLOGS: {
     CREATE: '/api/blogs',
@@ -323,7 +323,7 @@ export const API_ENDPOINTS = {
     DELETE: '/api/blogs/:id',
     PUBLIC: '/api/blogs/public'
   },
-  
+
   // Admin
   ADMIN: {
     DASHBOARD: '/api/admin/dashboard',
