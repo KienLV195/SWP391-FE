@@ -35,6 +35,7 @@ import {
 const { Option } = Select;
 
 const ROLE_MAP = {
+  1: { value: "member", label: "Thành viên" },
   2: { value: "doctor", label: "Bác sĩ" },
   3: { value: "manager", label: "Quản lý" },
   4: { value: "admin", label: "Quản trị viên" },
@@ -63,7 +64,7 @@ const UserManagement = () => {
     fetchUsersFromApi()
       .then((data) => {
         const mapped = (Array.isArray(data) ? data : []).map((u) => {
-          const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[2];
+          const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
           let role = roleObj.value;
           let roleLabel = roleObj.label;
           // Nếu là bác sĩ, phân biệt theo department
@@ -88,6 +89,7 @@ const UserManagement = () => {
             role,
             roleLabel,
             status: u.status === 1 ? "active" : "inactive",
+            bloodType: u.bloodGroup || u.bloodType || "",
             department: u.department || "",
             createdAt: u.createdAt || "",
           };
@@ -139,6 +141,7 @@ const UserManagement = () => {
       key: "role",
       render: (_, record) => <Badge color="blue" text={record.roleLabel} />,
       filters: [
+        { text: "Thành viên", value: "member" },
         { text: "Bác sĩ - Khoa máu", value: "doctor_blood" },
         { text: "Bác sĩ - Khoa khác", value: "doctor_other" },
         { text: "Quản lý", value: "manager" },
@@ -167,6 +170,7 @@ const UserManagement = () => {
       key: "extra",
       render: (_, record) => (
         <div>
+          {record.bloodType && <div>Nhóm máu: {record.bloodType}</div>}
           {record.department && <div>Khoa: {record.department}</div>}
         </div>
       ),
@@ -220,15 +224,15 @@ const UserManagement = () => {
 
   const handleDeleteUser = async () => {
     if (!deleteUserId) return;
+    setDeleteModalVisible(false);
+    setDeleteUserId(null);
     try {
       setLoading(true);
       await deleteUserFromApi(deleteUserId);
-      message.success("Đã xóa người dùng!");
-
-      // Force reload danh sách user
+      // Force reload danh sách user, tránh cache
       const data = await fetchUsersFromApiForce();
       const mapped = (Array.isArray(data) ? data : []).map((u) => {
-        const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[2];
+        const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
         let role = roleObj.value;
         let roleLabel = roleObj.label;
         if (role === "doctor") {
@@ -252,18 +256,17 @@ const UserManagement = () => {
           role,
           roleLabel,
           status: u.status === 1 ? "active" : "inactive",
+          bloodType: u.bloodGroup || u.bloodType || "",
           department: u.department || "",
           createdAt: u.createdAt || "",
         };
       });
       setUsers(mapped);
-      console.log('Users after delete:', mapped);
+      message.success("Đã xóa người dùng!");
     } catch {
       message.error("Lỗi khi xóa người dùng!");
     } finally {
       setLoading(false);
-      setDeleteModalVisible(false);
-      setDeleteUserId(null);
     }
   };
 
@@ -281,63 +284,45 @@ const UserManagement = () => {
               phone: values.phone,
               roleID: Number(values.roleID),
               status: values.status === "active" ? 1 : 0,
+              bloodGroup: values.bloodType || editingUser.bloodType || "",
               department: values.department || editingUser.department || "",
               // Các trường bắt buộc bổ sung, lấy từ editingUser hoặc giá trị mặc định
-              password: editingUser.password || "Ab1234@",
+              password: editingUser.password || "Ab1234@", // Nếu không có password cũ, dùng mặc định
               city: editingUser.city || "",
               ward: editingUser.ward || "",
               gender: editingUser.gender || "Male",
+              idCard: editingUser.idCard || "",
               rhType: editingUser.rhType || "Rh+",
               address: editingUser.address || "",
               district: editingUser.district || "",
-              dateOfBirth: null,
-              age: null,
-              bloodGroup: "",
-              createdAt: new Date().toISOString()
+              idCardType: editingUser.idCardType || "",
             };
             await updateUserToApi(editingUser.id, userData);
+            setShowModal(false); // Đóng modal ngay sau khi cập nhật thành công
+            form.resetFields(); // Reset form để tránh giữ lại dữ liệu cũ
             message.success("Cập nhật thành công!");
-
-            // Reload lại danh sách từ API
-            const data = await fetchUsersFromApiForce();
-            const mapped = (Array.isArray(data) ? data : []).map((u) => {
-              const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[2];
-              let role = roleObj.value;
-              let roleLabel = roleObj.label;
-              if (role === "doctor") {
-                if (u.department && u.department.toLowerCase().includes("máu")) {
-                  role = "doctor_blood";
-                  roleLabel = "Bác sĩ - Khoa máu";
-                } else if (u.department) {
-                  role = `doctor_other_${u.department}`;
-                  roleLabel = `Bác sĩ - ${u.department}`;
-                } else {
-                  role = "doctor_other";
-                  roleLabel = "Bác sĩ";
-                }
-              }
-              return {
-                id: u.userID,
-                userID: u.userID,
-                name: u.fullName || u.name || "",
-                email: u.email || "",
-                phone: u.phoneNumber || u.phone || "",
-                role,
-                roleLabel,
-                status: u.status === 1 ? "active" : "inactive",
-                department: u.department || "",
-                createdAt: u.createdAt || "",
-              };
-            });
-            setUsers(mapped);
-            console.log('Users after update:', mapped);
+            setUsers((prev) =>
+              prev.map((u) =>
+                u.id === editingUser.id
+                  ? {
+                      ...u,
+                      ...values,
+                      name: values.name, // hoặc fullName nếu backend trả về
+                      email: values.email,
+                      phone: values.phone,
+                      roleID: Number(values.roleID),
+                      status: values.status,
+                      bloodType: values.bloodType || u.bloodType,
+                      department: values.department || u.department,
+                    }
+                  : u
+              )
+            );
+            setShowModal(false);
           } catch {
             message.error("Lỗi khi cập nhật người dùng!");
           } finally {
             setLoading(false);
-            setShowModal(false);
-            form.resetFields();
-            setEditingUser(null);
           }
         } else {
           try {
@@ -349,6 +334,7 @@ const UserManagement = () => {
               phone: values.phone,
               roleID: Number(values.roleID),
               status: values.status === "active" ? 1 : 0,
+              bloodGroup: values.bloodType || "",
               department: values.department || "",
               password: "Ab1234@",
               // Các trường bắt buộc bổ sung
@@ -359,22 +345,21 @@ const UserManagement = () => {
               rhType: "Rh+",
               address: "",
               district: "",
-              dateOfBirth: null,
-              age: null,
-              bloodGroup: "",
-              createdAt: new Date().toISOString()
+              idCardType: "",
             };
             await postUserToApi(userData);
             message.success("Thêm mới thành công!");
-
             // Reload lại danh sách từ API
-            const data = await fetchUsersFromApiForce();
+            const data = await fetchUsersFromApi();
             const mapped = (Array.isArray(data) ? data : []).map((u) => {
-              const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[2];
+              const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
               let role = roleObj.value;
               let roleLabel = roleObj.label;
               if (role === "doctor") {
-                if (u.department && u.department.toLowerCase().includes("máu")) {
+                if (
+                  u.department &&
+                  u.department.toLowerCase().includes("máu")
+                ) {
                   role = "doctor_blood";
                   roleLabel = "Bác sĩ - Khoa máu";
                 } else if (u.department) {
@@ -386,30 +371,29 @@ const UserManagement = () => {
                 }
               }
               return {
-                id: u.userID,
-                userID: u.userID,
+                id: u.userID, // luôn lấy userID từ backend
+                userID: u.userID, // có thể dùng cho cột riêng nếu cần
                 name: u.fullName || u.name || "",
                 email: u.email || "",
                 phone: u.phoneNumber || u.phone || "",
                 role,
                 roleLabel,
                 status: u.status === 1 ? "active" : "inactive",
+                bloodType: u.bloodGroup || u.bloodType || "",
                 department: u.department || "",
                 createdAt: u.createdAt || "",
               };
             });
             setUsers(mapped);
-            console.log('Users after create:', mapped);
+            setShowModal(false);
           } catch {
             message.error("Lỗi khi thêm người dùng!");
           } finally {
             setLoading(false);
-            setShowModal(false);
-            form.resetFields();
           }
         }
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   return (
@@ -449,6 +433,7 @@ const UserManagement = () => {
               style={{ width: "100%" }}
             >
               <Option value="all">Tất cả vai trò</Option>
+              <Option value="member">Thành viên</Option>
               <Option value="doctor_blood">Bác sĩ - Khoa máu</Option>
               <Option value="doctor_other">Bác sĩ - Khoa khác</Option>
               <Option value="manager">Quản lý</Option>
@@ -482,14 +467,10 @@ const UserManagement = () => {
         title={editingUser ? "Chỉnh sửa người dùng" : "Thêm người dùng"}
         open={showModal}
         onOk={handleModalOk}
-        onCancel={() => {
-          setShowModal(false);
-          form.resetFields();
-          setEditingUser(null);
-        }}
+        onCancel={() => setShowModal(false)}
         okText={editingUser ? "Cập nhật" : "Thêm mới"}
         cancelText="Hủy"
-        destroyOnHidden
+        destroyOnClose
       >
         <Form
           form={form}
@@ -497,10 +478,9 @@ const UserManagement = () => {
           initialValues={
             editingUser || {
               status: "active",
-              role: "doctor",
+              role: "member",
             }
           }
-          preserve={false}
         >
           <Form.Item
             name="name"
@@ -531,6 +511,7 @@ const UserManagement = () => {
             rules={[{ required: true, message: "Chọn vai trò" }]}
           >
             <Select>
+              <Option value={1}>Thành viên</Option>
               <Option value={2}>Bác sĩ</Option>
               <Option value={3}>Quản lý</Option>
               <Option value={4}>Quản trị viên</Option>
@@ -548,6 +529,9 @@ const UserManagement = () => {
                 </Option>
               ))}
             </Select>
+          </Form.Item>
+          <Form.Item name="bloodType" label="Nhóm máu">
+            <Input />
           </Form.Item>
           <Form.Item name="department" label="Khoa (nếu là bác sĩ)">
             <Input />

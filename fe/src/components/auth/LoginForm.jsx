@@ -3,17 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../../utils/validation";
 import "../../styles/components/LoginForm.scss";
 import authService from "../../services/authService";
-import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [formError, setFormError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -22,28 +19,21 @@ export default function LoginForm() {
       ...prev,
       [name]: value,
     }));
-    setFormError("");
-    setPasswordError("");
+    setError("");
   };
+
+  // Removed Google login functionality
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setFormError("");
-    setPasswordError("");
-
     if (!formData.email || !formData.password) {
-      setFormError("Vui lòng nhập đầy đủ email và mật khẩu");
+      setError("Vui lòng nhập đầy đủ email và mật khẩu");
       return;
     }
 
-    if (!validateEmail(formData.email)) {
-      setFormError("Email không hợp lệ");
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setPasswordError("Mật khẩu phải có ít nhất 6 ký tự trong đó có ký tự viết hoa, ký tự viết thường, ký tự số và ký tự đặc biệt.");
+    if (!validateEmail(formData.email) || formData.password.length < 6) {
+      setError("Mật khẩu hoặc email nhập chưa đúng");
       return;
     }
 
@@ -55,15 +45,11 @@ export default function LoginForm() {
         const redirectPath = authService.getRedirectPath();
         navigate(redirectPath);
       } else {
-        if (result.error === "Email hoặc mật khẩu không đúng.") {
-          setPasswordError(result.error);
-        } else {
-          setFormError(result.error);
-        }
+        setError(result.error);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setFormError("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau");
+      setError("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau");
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +60,7 @@ export default function LoginForm() {
       <div className="login-form__box">
         <div className="login-form__logo">LOGO</div>
         <div className="login-form__welcome">CHÀO MỪNG BẠN ĐÃ TRỞ LẠI</div>
+        {/* Removed Google login - using email/password only */}
         <form className="login-form__form" onSubmit={handleSubmit}>
           <label className="login-form__label">EMAIL</label>
           <input
@@ -85,33 +72,20 @@ export default function LoginForm() {
             placeholder="Nhập địa chỉ email"
             required
           />
-          {formError && !passwordError && (
-            <div className="login-form__error">{formError}</div>
-          )}
 
           <label className="login-form__label">MẬT KHẨU</label>
-          <div className="login-form__password-input-wrapper">
-            <input
-              className="login-form__input"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Nhập mật khẩu"
-              required
-            />
-            <span
-              className="password-toggle-icon"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-            </span>
-          </div>
-          {passwordError && (
-            <div className="login-form__password-error">{passwordError}</div>
-          )}
+          <input
+            className="login-form__input"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Nhập mật khẩu"
+            required
+          />
 
-          <button
+          {error && <div className="login-form__error">{error}</div>}
+          <button onClick={() => navigate("/member/blood-info")}
             className="login-form__submit"
             type="submit"
             disabled={isLoading}

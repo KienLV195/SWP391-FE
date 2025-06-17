@@ -124,6 +124,16 @@ class AuthService {
             return ROLES.GUEST;
           }
 
+          // Function to determine doctor type based on department
+          function determineDoctorType(department) {
+            if (!department) return null;
+            console.log("Determining doctor type for department:", department); // Debug log
+            const isBloodDept = department.toLowerCase().includes('máu') ||
+              department.toLowerCase().includes('huyết học');
+            console.log("Is blood department:", isBloodDept); // Debug log
+            return isBloodDept ? 'blood_department' : 'other_department';
+          }
+
           // Extract user information from token payload
           const user = {
             id: payload[
@@ -158,24 +168,71 @@ class AuthService {
                 payload[
                   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
                 ].split("@")[0],
-              phone: "",
-              address: "",
-              bloodType: "",
-              dateOfBirth: "",
-              gender: "",
-              department: "",
+              phone: payload["phone"] || "",
+              address: payload["address"] || "",
+              bloodType: payload["bloodType"] || "",
+              dateOfBirth: payload["dateOfBirth"] || "",
+              gender: payload["gender"] || "",
+              department: payload["department"] || "",
             },
             isFirstLogin: true,
           };
 
-          console.log("Mapped user object:", user); // Debug log
+          // Save token
+          localStorage.setItem("authToken", token);
+
+          // If user is a doctor, fetch additional details
+          if (user.role === ROLES.STAFF_DOCTOR) {
+            try {
+              console.log("Fetching doctor details for ID:", user.id);
+              const infoResponse = await axios.get(
+                `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              console.log("Information API response:", infoResponse.data);
+
+              if (infoResponse.data) {
+                // Find the doctor's information
+                const doctorInfo = infoResponse.data.find(doc => doc.userID === parseInt(user.id));
+                console.log("Found doctor info:", doctorInfo);
+
+                if (doctorInfo) {
+                  // Update user profile with doctor details
+                  user.profile = {
+                    ...user.profile,
+                    ...doctorInfo,
+                  };
+                  // Determine doctor type based on department
+                  const department = doctorInfo.department?.toLowerCase() || '';
+                  console.log("Doctor department:", department);
+                  const isBloodDept = department.includes('máu') ||
+                    department.includes('huyết học') ||
+                    department.includes('blood') ||
+                    department.includes('hematology');
+                  console.log("Is blood department:", isBloodDept);
+                  user.doctorType = isBloodDept ? 'blood_department' : 'other_department';
+                  console.log("Doctor type determined:", user.doctorType);
+                }
+              }
+            } catch (error) {
+              console.error("Error fetching doctor details:", error.response?.data || error.message);
+              console.error("Error status:", error.response?.status);
+              console.error("Error headers:", error.response?.headers);
+              // Set default type if API call fails
+              user.doctorType = 'other_department';
+            }
+          }
+
+          console.log("Final user object:", user); // Debug log
 
           // Save authentication data
           this.currentUser = user;
           this.isAuthenticated = true;
-
-          // Save token
-          localStorage.setItem("authToken", token);
 
           // Save user to localStorage
           this.saveUserToStorage(user);

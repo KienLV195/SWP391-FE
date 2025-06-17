@@ -103,6 +103,7 @@ const MemberInfoPage = () => {
           phone: userData.phone || "",
           bloodType: userData.bloodGroup || "",
           rhType: userData.rhType || "Rh+",
+          password: userData.password || "",
         });
 
         // Cập nhật localStorage
