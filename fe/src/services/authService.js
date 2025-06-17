@@ -12,7 +12,6 @@ class AuthService {
 
   // Setup axios interceptors to automatically add auth token
   setupAxiosInterceptors() {
-    // Request interceptor to add token
     axios.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem("authToken");
@@ -26,7 +25,6 @@ class AuthService {
       }
     );
 
-    // Response interceptor to handle auth errors
     axios.interceptors.response.use(
       (response) => {
         return response;
@@ -36,7 +34,6 @@ class AuthService {
           error.response?.status === 401 &&
           !error.config.url.includes("/auth/logout")
         ) {
-          // Token expired or invalid, logout user (but not if it's the logout call itself)
           console.log("401 error detected, logging out user");
           this.logout();
           window.location.href = "/login";
@@ -52,7 +49,12 @@ class AuthService {
       const userData = localStorage.getItem("currentUser");
       if (userData) {
         this.currentUser = JSON.parse(userData);
-        this.isAuthenticated = true;
+        if (this.currentUser.status === 2) {
+          console.log("Banned user detected in storage, logging out");
+          this.logout();
+        } else {
+          this.isAuthenticated = true;
+        }
       }
     } catch (error) {
       console.error("Error loading user from storage:", error);
@@ -87,7 +89,7 @@ class AuthService {
 
       if (response.status === 200 && response.data) {
         const token = response.data;
-        console.log("Login response (token):", token); // Debug log
+        console.log("Login response (token):", token);
 
         if (!token) {
           console.error("No token received");
@@ -109,7 +111,7 @@ class AuthService {
 
         try {
           const payload = JSON.parse(atob(tokenParts[1]));
-          console.log("Decoded token payload:", payload); // Debug log
+          console.log("Decoded token payload:", payload);
 
           // Map role string/number from token to standardized role code
           function mapRole(rawRole) {
@@ -122,6 +124,15 @@ class AuthService {
             if (rawRole === "Staff_Blood_Manager" || rawRole === 3 || rawRole === "3")
               return ROLES.STAFF_BLOOD_MANAGER;
             return ROLES.GUEST;
+          }
+
+          // Extract status (assuming API doesn't provide it in token; default to 1)
+          const status = response.data.status || payload.status || 1;
+          if (status === 2) {
+            return {
+              success: false,
+              error: "Account is banned",
+            };
           }
 
           // Extract user information from token payload
@@ -145,7 +156,7 @@ class AuthService {
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
               ]
             ),
-            status: 1,
+            status: status,
             profile: {
               email:
                 payload[
@@ -168,7 +179,7 @@ class AuthService {
             isFirstLogin: true,
           };
 
-          console.log("Mapped user object:", user); // Debug log
+          console.log("Mapped user object:", user);
 
           // Save authentication data
           this.currentUser = user;
@@ -202,11 +213,11 @@ class AuthService {
       console.error("Login error:", error);
 
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        let errorMessage;
         const status = error.response.status;
-        if (status === 500) {
+        let errorMessage;
+        if (status === 403 && error.response.data?.message === "Account is banned") {
+          errorMessage = "Account is banned";
+        } else if (status === 500) {
           errorMessage = "Máy chủ đang gặp sự cố. Vui lòng thử lại sau.";
         } else if (status === 401) {
           errorMessage = "Email hoặc mật khẩu không đúng.";
@@ -220,13 +231,11 @@ class AuthService {
         }
         return { success: false, error: errorMessage };
       } else if (error.request) {
-        // The request was made but no response was received
         return {
           success: false,
           error: "Không thể kết nối đến máy chủ. Vui lòng thử lại sau.",
         };
       } else {
-        // Something happened in setting up the request that triggered an Error
         return {
           success: false,
           error: "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
@@ -242,7 +251,7 @@ class AuthService {
         "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/Register",
         {
           ...userData,
-          roleId: 2, // Set roleId to 2 for Member role
+          roleId: 1, // Align with UserManagement.jsx (1: Member)
           status: 1, // Active status
         },
         {
@@ -290,12 +299,11 @@ class AuthService {
   // Logout
   async logout() {
     try {
-      // Call API to invalidate token if token exists
       const token = localStorage.getItem("authToken");
       if (token) {
         try {
           await axios.post(
-            "/api/Auth/logout",
+            "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/logout",
             {},
             {
               headers: {
@@ -309,14 +317,11 @@ class AuthService {
             "Logout API call failed, but continuing with local logout:",
             apiError.message
           );
-          // Don't throw error, just log it and continue with local logout
         }
       }
     } catch (error) {
       console.error("Logout error:", error);
-      // Continue with local logout even if API call fails
     } finally {
-      // Always clear local data
       this.currentUser = null;
       this.isAuthenticated = false;
       localStorage.removeItem("currentUser");
@@ -334,7 +339,7 @@ class AuthService {
 
   // Check if user is authenticated
   isUserAuthenticated() {
-    return this.isAuthenticated && this.currentUser !== null;
+    return this.isAuthenticated && this.currentUser !== null && this.currentUser.status !== 2;
   }
 
   // Get user role
@@ -353,18 +358,21 @@ class AuthService {
         };
       }
 
-      const response = await axios.put("/api/users/profile", profileData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.put(
+        "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/users/profile",
+        profileData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
-        // Update local user data
-        const updatedUser = { ...this.currentUser, ...profileData };
+        const updatedUser = { ...this.currentUser, profile: { ...this.currentUser.profile, ...profileData } };
         this.currentUser = updatedUser;
-        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+        this.saveUserToStorage(updatedUser);
 
         return {
           success: true,
@@ -406,11 +414,10 @@ class AuthService {
 
   // Get redirect path based on user role and status
   getRedirectPath() {
-    if (!this.isAuthenticated) {
-      return "/";
+    if (!this.isAuthenticated || this.currentUser?.status === 2) {
+      return "/login";
     }
 
-    // Check if it's first login for member
     if (
       this.currentUser?.role === ROLES.MEMBER &&
       this.currentUser?.isFirstLogin
@@ -423,16 +430,12 @@ class AuthService {
     switch (role) {
       case ROLES.MEMBER:
         return "/member";
-
       case ROLES.STAFF_DOCTOR:
         return "/doctor";
-
       case ROLES.STAFF_BLOOD_MANAGER:
         return "/manager";
-
       case ROLES.ADMIN:
         return "/admin/dashboard";
-
       default:
         return "/";
     }
@@ -445,15 +448,24 @@ class AuthService {
         ...this.currentUser.profile,
         ...profileData,
       };
-      localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+      this.saveUserToStorage(this.currentUser);
     }
   }
 
   // Update user status
   updateStatus(newStatus) {
     if (this.currentUser) {
+      if (![0, 1, 2].includes(newStatus)) {
+        console.error("Invalid status value:", newStatus);
+        return false;
+      }
       this.currentUser.status = newStatus;
       this.saveUserToStorage(this.currentUser);
+      if (newStatus === 2) {
+        console.log("User status set to banned, logging out");
+        this.logout();
+        window.location.href = "/login";
+      }
       return true;
     }
     return false;
@@ -465,19 +477,3 @@ const authService = new AuthService();
 
 export default authService;
 
-// Export for use in components
-export { authService };
-
-// Helper functions for route protection
-export const requireAuth = () => {
-  return authService.isUserAuthenticated();
-};
-
-export const requireRole = (allowedRoles) => {
-  if (!authService.isUserAuthenticated()) {
-    return false;
-  }
-  return allowedRoles.includes(authService.getUserRole());
-};
-
-// Removed requireMemberType - no longer needed
