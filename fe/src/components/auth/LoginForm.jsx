@@ -22,8 +22,6 @@ export default function LoginForm() {
     setError("");
   };
 
-  // Removed Google login functionality
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,11 +43,34 @@ export default function LoginForm() {
         const redirectPath = authService.getRedirectPath();
         navigate(redirectPath);
       } else {
-        setError(result.error);
+        // Check for banned user error
+        if (result.error === "Account is banned") {
+          setError(
+            "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên."
+          );
+        } else {
+          setError(
+            result.error ||
+              "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu."
+          );
+        }
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setError("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau");
+      // Handle HTTP status codes or specific error messages
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.message === "Account is banned"
+      ) {
+        setError(
+          "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ quản trị viên."
+        );
+      } else {
+        setError(
+          error.response?.data?.message ||
+            "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +81,6 @@ export default function LoginForm() {
       <div className="login-form__box">
         <div className="login-form__logo">LOGO</div>
         <div className="login-form__welcome">CHÀO MỪNG BẠN ĐÃ TRỞ LẠI</div>
-        {/* Removed Google login - using email/password only */}
         <form className="login-form__form" onSubmit={handleSubmit}>
           <label className="login-form__label">EMAIL</label>
           <input
@@ -85,7 +105,7 @@ export default function LoginForm() {
           />
 
           {error && <div className="login-form__error">{error}</div>}
-          <button onClick={() => navigate("/member/blood-info")}
+          <button
             className="login-form__submit"
             type="submit"
             disabled={isLoading}

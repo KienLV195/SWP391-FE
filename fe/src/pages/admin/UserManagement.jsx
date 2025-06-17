@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   message,
+  Tooltip,
 } from "antd";
 import {
   PlusOutlined,
@@ -42,10 +43,9 @@ const ROLE_MAP = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "active", label: "Hoạt động" },
-  { value: "inactive", label: "Không hoạt động" },
-  { value: "suspended", label: "Tạm khóa" },
-  { value: "banned", label: "Cấm" },
+  { value: "active", label: "Hoạt động", apiValue: 1 },
+  { value: "inactive", label: "Không hoạt động", apiValue: 0 },
+  { value: "banned", label: "Cấm", apiValue: 2 },
 ];
 
 const UserManagement = () => {
@@ -53,6 +53,7 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form] = Form.useForm();
@@ -67,7 +68,6 @@ const UserManagement = () => {
           const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
           let role = roleObj.value;
           let roleLabel = roleObj.label;
-          // Nếu là bác sĩ, phân biệt theo department
           if (role === "doctor") {
             if (u.department && u.department.toLowerCase().includes("máu")) {
               role = "doctor_blood";
@@ -80,15 +80,19 @@ const UserManagement = () => {
               roleLabel = "Bác sĩ";
             }
           }
+          const statusObj =
+            STATUS_OPTIONS.find((s) => s.apiValue === u.status) ||
+            STATUS_OPTIONS[1];
           return {
-            id: u.userID, // luôn lấy userID từ backend
-            userID: u.userID, // có thể dùng cho cột riêng nếu cần
+            id: u.userID,
+            userID: u.userID,
             name: u.fullName || u.name || "",
             email: u.email || "",
             phone: u.phoneNumber || u.phone || "",
             role,
             roleLabel,
-            status: u.status === 1 ? "active" : "inactive",
+            status: statusObj.value,
+            statusLabel: statusObj.label,
             bloodType: u.bloodGroup || u.bloodType || "",
             department: u.department || "",
             createdAt: u.createdAt || "",
@@ -108,7 +112,9 @@ const UserManagement = () => {
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    return matchesSearch && matchesRole;
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   // Table columns
@@ -154,16 +160,23 @@ const UserManagement = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        const found = STATUS_OPTIONS.find((s) => s.value === status);
-        let color = "default";
-        if (status === "active") color = "green";
-        if (status === "suspended") color = "orange";
-        if (status === "banned") color = "red";
-        if (status === "inactive") color = "gray";
-        return <Badge color={color} text={found ? found.label : status} />;
+        const statusObj =
+          STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[1];
+        let color =
+          status === "active" ? "green" : status === "banned" ? "red" : "gray";
+        return (
+          <Tooltip
+            title={status === "banned" ? "Tài khoản bị cấm đăng nhập" : ""}
+          >
+            <Badge color={color} text={statusObj.label} />
+          </Tooltip>
+        );
       },
-      filters: STATUS_OPTIONS.map((s) => ({ text: s.label, value: s.value })),
-      onFilter: (value, record) => record.status === value,
+      filters: [
+        { text: "Tất cả", value: "all" },
+        ...STATUS_OPTIONS.map((s) => ({ text: s.label, value: s.value })),
+      ],
+      onFilter: (value, record) => value === "all" || record.status === value,
     },
     {
       title: "Thông tin bổ sung",
@@ -213,7 +226,10 @@ const UserManagement = () => {
   const handleEditUser = (user) => {
     setEditingUser(user);
     setShowModal(true);
-    form.setFieldsValue(user);
+    form.setFieldsValue({
+      ...user,
+      status: user.status,
+    });
   };
 
   const handleCreateUser = () => {
@@ -229,7 +245,6 @@ const UserManagement = () => {
     try {
       setLoading(true);
       await deleteUserFromApi(deleteUserId);
-      // Force reload danh sách user, tránh cache
       const data = await fetchUsersFromApiForce();
       const mapped = (Array.isArray(data) ? data : []).map((u) => {
         const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
@@ -247,6 +262,9 @@ const UserManagement = () => {
             roleLabel = "Bác sĩ";
           }
         }
+        const statusObj =
+          STATUS_OPTIONS.find((s) => s.apiValue === u.status) ||
+          STATUS_OPTIONS[1];
         return {
           id: u.userID,
           userID: u.userID,
@@ -255,7 +273,8 @@ const UserManagement = () => {
           phone: u.phoneNumber || u.phone || "",
           role,
           roleLabel,
-          status: u.status === 1 ? "active" : "inactive",
+          status: statusObj.value,
+          statusLabel: statusObj.label,
           bloodType: u.bloodGroup || u.bloodType || "",
           department: u.department || "",
           createdAt: u.createdAt || "",
@@ -277,17 +296,18 @@ const UserManagement = () => {
         if (editingUser) {
           try {
             setLoading(true);
-            // Build userData đầy đủ từ editingUser và values
+            const statusObj =
+              STATUS_OPTIONS.find((s) => s.value === values.status) ||
+              STATUS_OPTIONS[1];
             const userData = {
               name: values.name,
               email: values.email,
               phone: values.phone,
               roleID: Number(values.roleID),
-              status: values.status === "active" ? 1 : 0,
+              status: statusObj.apiValue,
               bloodGroup: values.bloodType || editingUser.bloodType || "",
               department: values.department || editingUser.department || "",
-              // Các trường bắt buộc bổ sung, lấy từ editingUser hoặc giá trị mặc định
-              password: editingUser.password || "Ab1234@", // Nếu không có password cũ, dùng mặc định
+              password: editingUser.password || "Ab1234@",
               city: editingUser.city || "",
               ward: editingUser.ward || "",
               gender: editingUser.gender || "Male",
@@ -298,8 +318,8 @@ const UserManagement = () => {
               idCardType: editingUser.idCardType || "",
             };
             await updateUserToApi(editingUser.id, userData);
-            setShowModal(false); // Đóng modal ngay sau khi cập nhật thành công
-            form.resetFields(); // Reset form để tránh giữ lại dữ liệu cũ
+            setShowModal(false);
+            form.resetFields();
             message.success("Cập nhật thành công!");
             setUsers((prev) =>
               prev.map((u) =>
@@ -307,18 +327,18 @@ const UserManagement = () => {
                   ? {
                       ...u,
                       ...values,
-                      name: values.name, // hoặc fullName nếu backend trả về
+                      name: values.name,
                       email: values.email,
                       phone: values.phone,
                       roleID: Number(values.roleID),
                       status: values.status,
+                      statusLabel: statusObj.label,
                       bloodType: values.bloodType || u.bloodType,
                       department: values.department || u.department,
                     }
                   : u
               )
             );
-            setShowModal(false);
           } catch {
             message.error("Lỗi khi cập nhật người dùng!");
           } finally {
@@ -327,17 +347,18 @@ const UserManagement = () => {
         } else {
           try {
             setLoading(true);
-            // Build userData đúng định dạng API
+            const statusObj =
+              STATUS_OPTIONS.find((s) => s.value === values.status) ||
+              STATUS_OPTIONS[1];
             const userData = {
               name: values.name,
               email: values.email,
               phone: values.phone,
               roleID: Number(values.roleID),
-              status: values.status === "active" ? 1 : 0,
+              status: statusObj.apiValue,
               bloodGroup: values.bloodType || "",
               department: values.department || "",
               password: "Ab1234@",
-              // Các trường bắt buộc bổ sung
               city: "",
               ward: "",
               gender: "Male",
@@ -349,7 +370,6 @@ const UserManagement = () => {
             };
             await postUserToApi(userData);
             message.success("Thêm mới thành công!");
-            // Reload lại danh sách từ API
             const data = await fetchUsersFromApi();
             const mapped = (Array.isArray(data) ? data : []).map((u) => {
               const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
@@ -370,15 +390,19 @@ const UserManagement = () => {
                   roleLabel = "Bác sĩ";
                 }
               }
+              const statusObj =
+                STATUS_OPTIONS.find((s) => s.apiValue === u.status) ||
+                STATUS_OPTIONS[1];
               return {
-                id: u.userID, // luôn lấy userID từ backend
-                userID: u.userID, // có thể dùng cho cột riêng nếu cần
+                id: u.userID,
+                userID: u.userID,
                 name: u.fullName || u.name || "",
                 email: u.email || "",
                 phone: u.phoneNumber || u.phone || "",
                 role,
                 roleLabel,
-                status: u.status === 1 ? "active" : "inactive",
+                status: statusObj.value,
+                statusLabel: statusObj.label,
                 bloodType: u.bloodGroup || u.bloodType || "",
                 department: u.department || "",
                 createdAt: u.createdAt || "",
@@ -405,7 +429,7 @@ const UserManagement = () => {
       />
       <Card
         style={{
-          width: "100",
+          width: "100%",
           maxWidth: 1200,
           margin: "0 auto",
           boxShadow: "0 2px 8px #f0f1f2",
@@ -438,6 +462,20 @@ const UserManagement = () => {
               <Option value="doctor_other">Bác sĩ - Khoa khác</Option>
               <Option value="manager">Quản lý</Option>
               <Option value="admin">Quản trị viên</Option>
+            </Select>
+          </Col>
+          <Col xs={12} sm={6} md={4}>
+            <Select
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: "100%" }}
+            >
+              <Option value="all">Tất cả trạng thái</Option>
+              {STATUS_OPTIONS.map((s) => (
+                <Option key={s.value} value={s.value}>
+                  {s.label}
+                </Option>
+              ))}
             </Select>
           </Col>
           <Col flex="auto" style={{ textAlign: "right" }}>
@@ -478,7 +516,7 @@ const UserManagement = () => {
           initialValues={
             editingUser || {
               status: "active",
-              role: "member",
+              roleID: 1,
             }
           }
         >
@@ -521,6 +559,11 @@ const UserManagement = () => {
             name="status"
             label="Trạng thái"
             rules={[{ required: true, message: "Chọn trạng thái" }]}
+            extra={
+              <span style={{ color: "#888", fontSize: 12 }}>
+                Trạng thái "Cấm" sẽ ngăn người dùng đăng nhập.
+              </span>
+            }
           >
             <Select>
               {STATUS_OPTIONS.map((s) => (
