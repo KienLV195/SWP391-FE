@@ -49,10 +49,6 @@ import SystemSettings from "../pages/admin/SystemSettings";
 import DoctorBlogManagement from "../pages/doctor/BlogManagement";
 import DoctorBlogEditor from "../pages/doctor/BlogEditor";
 
-// Manager Blog Management
-import ManagerBlogManagement from "../pages/manager/BlogManagement";
-import ManagerBlogEditor from "../pages/manager/BlogEditor";
-
 import ProtectedRoute, {
   MemberRoute,
   DoctorRoute,
@@ -357,32 +353,6 @@ const router = createBrowserRouter([
       <DoctorRoute>
         <DoctorBlogEditor />
       </DoctorRoute>
-    ),
-  },
-
-  // === MANAGER BLOG ROUTES ===
-  {
-    path: "/manager/blog",
-    element: (
-      <ManagerRoute>
-        <ManagerBlogManagement />
-      </ManagerRoute>
-    ),
-  },
-  {
-    path: "/manager/blog/create",
-    element: (
-      <ManagerRoute>
-        <ManagerBlogEditor />
-      </ManagerRoute>
-    ),
-  },
-  {
-    path: "/manager/blog/edit/:id",
-    element: (
-      <ManagerRoute>
-        <ManagerBlogEditor />
-      </ManagerRoute>
     ),
   },
 

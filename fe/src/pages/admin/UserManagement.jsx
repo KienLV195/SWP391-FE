@@ -69,11 +69,11 @@ const UserManagement = () => {
           let role = roleObj.value;
           let roleLabel = roleObj.label;
           if (role === "doctor") {
-            if (u.department && u.department.toLowerCase().includes("máu")) {
+            if (u.department && u.department.trim() === "Khoa huyết học") {
               role = "doctor_blood";
-              roleLabel = "Bác sĩ - Khoa máu";
+              roleLabel = "Bác sĩ - Khoa huyết học";
             } else if (u.department) {
-              role = `doctor_other_${u.department}`;
+              role = "doctor_other";
               roleLabel = `Bác sĩ - ${u.department}`;
             } else {
               role = "doctor_other";
@@ -179,16 +179,6 @@ const UserManagement = () => {
       onFilter: (value, record) => value === "all" || record.status === value,
     },
     {
-      title: "Thông tin bổ sung",
-      key: "extra",
-      render: (_, record) => (
-        <div>
-          {record.bloodType && <div>Nhóm máu: {record.bloodType}</div>}
-          {record.department && <div>Khoa: {record.department}</div>}
-        </div>
-      ),
-    },
-    {
       title: "Ngày tạo tài khoản",
       dataIndex: "createdAt",
       key: "createdAt",
@@ -251,11 +241,11 @@ const UserManagement = () => {
         let role = roleObj.value;
         let roleLabel = roleObj.label;
         if (role === "doctor") {
-          if (u.department && u.department.toLowerCase().includes("máu")) {
+          if (u.department && u.department.trim() === "Khoa huyết học") {
             role = "doctor_blood";
-            roleLabel = "Bác sĩ - Khoa máu";
+            roleLabel = "Bác sĩ - Khoa huyết học";
           } else if (u.department) {
-            role = `doctor_other_${u.department}`;
+            role = "doctor_other";
             roleLabel = `Bác sĩ - ${u.department}`;
           } else {
             role = "doctor_other";
@@ -516,7 +506,7 @@ const UserManagement = () => {
           initialValues={
             editingUser || {
               status: "active",
-              roleID: 1,
+              // roleID: 1, // Bỏ mặc định vai trò
             }
           }
         >
@@ -548,8 +538,12 @@ const UserManagement = () => {
             label="Vai trò"
             rules={[{ required: true, message: "Chọn vai trò" }]}
           >
-            <Select>
-              <Option value={1}>Thành viên</Option>
+            <Select
+              onChange={(value) => {
+                // Khi chọn vai trò, trigger lại validate cho trường department
+                setTimeout(() => form.validateFields(["department"]), 0);
+              }}
+            >
               <Option value={2}>Bác sĩ</Option>
               <Option value={3}>Quản lý</Option>
               <Option value={4}>Quản trị viên</Option>
@@ -573,10 +567,22 @@ const UserManagement = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="bloodType" label="Nhóm máu">
-            <Input />
-          </Form.Item>
-          <Form.Item name="department" label="Khoa (nếu là bác sĩ)">
+          <Form.Item
+            name="department"
+            label="Khoa (nếu là bác sĩ)"
+            rules={[
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (getFieldValue("roleID") === 2 && !value) {
+                    return Promise.reject(
+                      new Error("Vui lòng nhập khoa cho bác sĩ")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
             <Input />
           </Form.Item>
         </Form>

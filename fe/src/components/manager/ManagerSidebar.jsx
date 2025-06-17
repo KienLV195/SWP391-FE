@@ -57,12 +57,6 @@ const ManagerSidebar = ({ collapsed, onCollapse }) => {
       path: "/manager/blood-inventory",
     },
     {
-      key: "/manager/blog",
-      label: "Quản lý Blog",
-      icon: <EditOutlined />,
-      path: "/manager/blog",
-    },
-    {
       key: "/manager/reports",
       label: "Báo cáo & Thống kê",
       icon: <BarChartOutlined />,
