@@ -7,6 +7,7 @@ import authService from "../../services/authService";
 import NotificationService from "../../services/notificationService";
 import GeolibService from "../../services/geolibService";
 import { DONATION_STATUS, BLOOD_TYPES } from "../../constants/systemConstants";
+import { getUserName } from "../../utils/userUtils";
 import "../../styles/pages/BloodDonationFormPage.scss";
 
 const BloodDonationFormPage = () => {
@@ -24,9 +25,12 @@ const BloodDonationFormPage = () => {
     address: {
       houseNumber: "",
       street: "",
-      ward: "",
+      province: "",
       district: "",
-      city: "",
+      ward: "",
+      provinceName: "",
+      districtName: "",
+      wardName: "",
       fullAddress: "",
       coordinates: { lat: null, lng: null },
       distance: null,
@@ -351,45 +355,110 @@ const BloodDonationFormPage = () => {
 
   useEffect(() => {
     // Load user profile information from localStorage or API
-    const loadUserProfile = () => {
-      // Mock user profile data (replace with actual API call)
-      const mockProfile = {
-        fullName: "Nguyễn Văn A",
-        email: "member1@test.com",
-        phone: "0123456789",
-        dateOfBirth: "1990-01-01",
-        gender: "male",
-        address: "123 Đường ABC",
-        city: "TP. Hồ Chí Minh",
-        district: "Quận 1",
-        ward: "Phường Bến Nghé",
-        location: {
-          lat: 10.7751237,
-          lng: 106.6862143,
-          address: "123 Đường ABC, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
-        },
-      };
+    const loadUserProfile = async () => {
+      try {
+        // Lấy thông tin từ localStorage trước
+        const storedMemberInfo = JSON.parse(localStorage.getItem("memberInfo") || "{}");
 
-      // First try to get from currentUser
-      if (currentUser?.profile) {
+        // Lấy thông tin từ currentUser
+        const userProfile = currentUser?.profile || {};
+
+        // Tạo địa chỉ đầy đủ từ các thành phần
+        const fullAddress = [
+          storedMemberInfo.address || userProfile.address,
+          storedMemberInfo.wardName || userProfile.wardName,
+          storedMemberInfo.districtName || userProfile.districtName,
+          storedMemberInfo.provinceName || userProfile.provinceName,
+        ].filter(Boolean).join(", ");
+
+        // Cập nhật personalInfo với thông tin thực từ hồ sơ
         setPersonalInfo((prev) => ({
           ...prev,
-          fullName: currentUser.profile.fullName || mockProfile.fullName,
-          email:
-            currentUser.profile.email || currentUser.email || mockProfile.email,
-          phone:
-            currentUser.profile.phone || currentUser.phone || mockProfile.phone,
-          dateOfBirth:
-            currentUser.profile.dateOfBirth || mockProfile.dateOfBirth,
-          gender: currentUser.profile.gender || mockProfile.gender,
-          address: currentUser.profile.address || mockProfile.address,
-          city: currentUser.profile.city || mockProfile.city,
-          district: currentUser.profile.district || mockProfile.district,
-          ward: currentUser.profile.ward || mockProfile.ward,
-          location: currentUser.profile.location || mockProfile.location,
+          fullName: getUserName(),
+          email: storedMemberInfo.email || userProfile.email || currentUser?.email || "",
+          phone: storedMemberInfo.phone || userProfile.phone || currentUser?.phone || "",
+          dateOfBirth: storedMemberInfo.dateOfBirth
+            ? new Date(storedMemberInfo.dateOfBirth).toISOString().split('T')[0]
+            : userProfile.dateOfBirth || "",
+          gender: storedMemberInfo.gender || userProfile.gender || "",
+          address: {
+            houseNumber: storedMemberInfo.houseNumber || "",
+            street: storedMemberInfo.street || "",
+            province: storedMemberInfo.province || "",
+            district: storedMemberInfo.district || "",
+            ward: storedMemberInfo.ward || "",
+            provinceName: storedMemberInfo.provinceName || "",
+            districtName: storedMemberInfo.districtName || "",
+            wardName: storedMemberInfo.wardName || "",
+            fullAddress: fullAddress,
+            coordinates: { lat: null, lng: null },
+            distance: null,
+            travelTime: null,
+            formattedAddress: fullAddress,
+          },
+          // Thêm thông tin nhóm máu nếu có
+          bloodType: storedMemberInfo.bloodGroup || userProfile.bloodType || "",
         }));
-      } else {
-        // Use mock data as fallback
+
+        // Nếu có địa chỉ đầy đủ, thực hiện geocoding
+        if (fullAddress && fullAddress.length > 10) {
+          try {
+            // Import NominatimService để geocoding
+            const NominatimService = (await import("../../services/nominatimService")).default;
+            const geocodeResult = await NominatimService.geocodeAddress(fullAddress);
+
+            if (geocodeResult) {
+              setPersonalInfo((prev) => ({
+                ...prev,
+                address: {
+                  ...prev.address,
+                  coordinates: {
+                    lat: geocodeResult.lat,
+                    lng: geocodeResult.lng,
+                  },
+                  formattedAddress: geocodeResult.address || fullAddress,
+                },
+              }));
+
+              // Tính khoảng cách
+              const distance = GeolibService.getDistanceToHospital({
+                lat: geocodeResult.lat,
+                lng: geocodeResult.lng,
+              });
+
+              setDistanceInfo({
+                distance,
+                formattedDistance: GeolibService.formatDistance(distance),
+                travelTime: "",
+                priority: GeolibService.getDistancePriority(distance),
+              });
+            }
+          } catch (geocodeError) {
+            // console.warn("Không thể geocoding địa chỉ:", geocodeError);
+          }
+        }
+
+      } catch (error) {
+        console.error("Lỗi khi load thông tin hồ sơ:", error);
+
+        // Fallback với mock data nếu có lỗi
+        const mockProfile = {
+          fullName: "Nguyễn Văn A",
+          email: "member1@test.com",
+          phone: "0123456789",
+          dateOfBirth: "1990-01-01",
+          gender: "male",
+          address: "123 Đường ABC",
+          city: "TP. Hồ Chí Minh",
+          district: "Quận 1",
+          ward: "Phường Bến Nghé",
+          location: {
+            lat: 10.7751237,
+            lng: 106.6862143,
+            address: "123 Đường ABC, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+          },
+        };
+
         setPersonalInfo((prev) => ({
           ...prev,
           ...mockProfile,
@@ -413,6 +482,16 @@ const BloodDonationFormPage = () => {
       });
     }
   }, [personalInfo.location]);
+
+  // Auto-fill blood type from personal info
+  useEffect(() => {
+    if (personalInfo.bloodType && !healthSurvey.bloodType) {
+      setHealthSurvey(prev => ({
+        ...prev,
+        bloodType: personalInfo.bloodType
+      }));
+    }
+  }, [personalInfo.bloodType, healthSurvey.bloodType]);
 
   const handlePersonalInfoChange = (field, value) => {
     setPersonalInfo((prev) => ({
@@ -596,10 +675,10 @@ const BloodDonationFormPage = () => {
               <div className="profile-info-notice">
                 <div className="notice-icon">ℹ️</div>
                 <div className="notice-content">
-                  <strong>Thông tin đã được điền sẵn</strong>
+                  <strong>Thông tin đã được điền sẵn từ hồ sơ cá nhân</strong>
                   <p>
                     Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn.
-                    Bạn có thể chỉnh sửa nếu cần thiết.
+                    Bạn có thể chỉnh sửa nếu cần thiết. Thông tin này sẽ được sử dụng để đăng ký hiến máu.
                   </p>
                 </div>
               </div>
@@ -717,6 +796,17 @@ const BloodDonationFormPage = () => {
                 {/* Basic Health Info */}
                 <div className="form-section">
                   <h3>Thông tin cơ bản</h3>
+
+                  {personalInfo.bloodType && (
+                    <div className="profile-info-notice" style={{ marginBottom: '1rem' }}>
+                      <div className="notice-icon">🩸</div>
+                      <div className="notice-content">
+                        <strong>Nhóm máu đã được điền sẵn từ hồ sơ cá nhân</strong>
+                        <p>Nhóm máu: <strong>{personalInfo.bloodType}</strong></p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="form-row">
                     <div className="form-group">
                       <label>

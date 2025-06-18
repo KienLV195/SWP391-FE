@@ -30,6 +30,7 @@ import StatisticsCards from "../../components/manager/dashboard/StatisticsCards"
 import ChartsSection from "../../components/manager/dashboard/ChartsSection";
 import NotificationsPanel from "../../components/manager/dashboard/NotificationsPanel";
 import authService from "../../services/authService";
+import { getUserName } from "../../utils/userUtils";
 import {
   mockBloodRequests,
   mockUsers,
@@ -113,11 +114,13 @@ const ManagerDashboard = () => {
     return <div>Loading...</div>;
   }
 
+  const managerName = getUserName();
+
   return (
     <ManagerLayout>
       <div className="dashboard-content">
         {/* Welcome Banner */}
-        <WelcomeBanner managerName={user.profile.fullName} />
+        <WelcomeBanner managerName={managerName} />
 
         {/* Statistics Cards */}
         <StatisticsCards

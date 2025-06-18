@@ -32,7 +32,7 @@ const NotificationDropdown = () => {
 
   const loadNotifications = async () => {
     if (!currentUser) return;
-    
+
     setLoading(true);
     try {
       const data = await NotificationService.getNotifications(currentUser.id);
@@ -46,7 +46,7 @@ const NotificationDropdown = () => {
 
   const loadUnreadCount = async () => {
     if (!currentUser) return;
-    
+
     try {
       const count = await NotificationService.getUnreadCount(currentUser.id);
       setUnreadCount(count);
@@ -65,7 +65,7 @@ const NotificationDropdown = () => {
   const handleMarkAsRead = async (notificationId) => {
     try {
       await NotificationService.markAsRead(notificationId);
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -98,8 +98,8 @@ const NotificationDropdown = () => {
     switch (notification.type) {
       case 'urgent_request':
         return (
-          <Link 
-            to="/member/blood-requests" 
+          <Link
+            to="/member/blood-requests"
             className="notification-action"
             onClick={() => setIsOpen(false)}
           >
@@ -108,8 +108,8 @@ const NotificationDropdown = () => {
         );
       case 'appointment_reminder':
         return (
-          <Link 
-            to="/member/appointments" 
+          <Link
+            to="/member/appointments"
             className="notification-action"
             onClick={() => setIsOpen(false)}
           >
@@ -118,8 +118,8 @@ const NotificationDropdown = () => {
         );
       case 'donation_reminder':
         return (
-          <Link 
-            to="/member/donation-registration" 
+          <Link
+            to="/member/donation-registration"
             className="notification-action"
             onClick={() => setIsOpen(false)}
           >
@@ -135,7 +135,7 @@ const NotificationDropdown = () => {
 
   return (
     <div className="notification-dropdown" ref={dropdownRef}>
-      <button 
+      <button
         className="notification-trigger"
         onClick={handleToggleDropdown}
         aria-label="Thông báo"
@@ -151,7 +151,7 @@ const NotificationDropdown = () => {
           <div className="notification-header">
             <h3>Thông báo</h3>
             {unreadCount > 0 && (
-              <button 
+              <button
                 className="mark-all-read-btn"
                 onClick={handleMarkAllAsRead}
               >
@@ -173,13 +173,13 @@ const NotificationDropdown = () => {
               </div>
             ) : (
               notifications.map(notification => (
-                <div 
+                <div
                   key={notification.id}
                   className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
                 >
                   <div className="notification-content">
                     <div className="notification-icon-wrapper">
-                      <span 
+                      <span
                         className="notification-type-icon"
                         style={{ color: NotificationService.getNotificationColor(notification.type) }}
                       >
@@ -194,7 +194,7 @@ const NotificationDropdown = () => {
                       <div className="notification-time">
                         {NotificationService.formatNotificationTime(notification.createdAt)}
                       </div>
-                      
+
                       {getNotificationAction(notification)}
                     </div>
 
@@ -223,8 +223,8 @@ const NotificationDropdown = () => {
           </div>
 
           <div className="notification-footer">
-            <Link 
-              to="/member/notifications" 
+            <Link
+              to="/member/notifications"
               className="view-all-link"
               onClick={() => setIsOpen(false)}
             >

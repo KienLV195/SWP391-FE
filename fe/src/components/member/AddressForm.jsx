@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NominatimService from "../../services/nominatimService";
 import GeolibService from "../../services/geolibService";
+import vietnamProvincesData from "../../data/vietnam-provinces.json";
 import "../../styles/components/AddressForm.scss";
 
 const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
@@ -27,17 +28,14 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
   const [districtList, setDistrictList] = useState([]);
   const [wardList, setWardList] = useState([]);
 
-  // Load city/district/ward data
+  // Load city/district/ward data from local file
   useEffect(() => {
-    axios
-      .get(
-        "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-      )
-      .then((res) => setCityList(res.data))
-      .catch((error) => {
-        console.error("Failed to load city data:", error);
-        setError("Không thể tải dữ liệu địa giới hành chính");
-      });
+    try {
+      setCityList(vietnamProvincesData);
+    } catch (error) {
+      console.error("Failed to load city data:", error);
+      setError("Không thể tải dữ liệu địa giới hành chính");
+    }
   }, []);
 
   useEffect(() => {
@@ -120,7 +118,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
         geocodeResult = await NominatimService.geocodeAddress(fullAddress);
         console.log("Nominatim success:", geocodeResult);
       } catch (nominatimError) {
-        console.warn("Nominatim failed:", nominatimError);
+        // console.warn("Nominatim failed:", nominatimError);
 
         // Fallback: try alternative geocoding
         console.log("Trying alternative geocoding...");
@@ -480,14 +478,14 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
             )}
           </div>
 
-          {addressData.fullAddress && addressData.fullAddress.length > 10 && (
+          {/* {addressData.fullAddress && addressData.fullAddress.length > 10 && (
             <div className="address-help">
               <small>
                 💡 Hệ thống sẽ tự động tính khoảng cách khi bạn điền đầy đủ
                 thông tin địa chỉ
               </small>
             </div>
-          )}
+          )} */}
         </div>
 
         {error && (
@@ -506,9 +504,9 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
       {/* Distance Information */}
       {distance && (
         <div className="distance-info-section">
-          <h4>📏 Thông tin khoảng cách</h4>
+          {/* <h4>📏 Thông tin khoảng cách</h4> */}
 
-          <div className="distance-details">
+          {/* <div className="distance-details">
             <div className="distance-item">
               <span className="distance-label">Khoảng cách đến bệnh viện:</span>
               <span
@@ -518,7 +516,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                 {GeolibService.formatDistance(distance)} ({getDistanceText()})
               </span>
             </div>
-          </div>
+          </div> */}
 
           <div className="hospital-info">
             <h5>🏥 Địa điểm hiến máu</h5>

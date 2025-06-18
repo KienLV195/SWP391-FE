@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Layout, Menu, Button, Avatar, Typography, Divider } from "antd";
 import {
@@ -15,6 +15,7 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import authService from "../../services/authService";
+import { getUserName } from "../../utils/userUtils";
 import "../../styles/base/manager-design-system.scss";
 
 const { Sider } = Layout;
@@ -70,11 +71,6 @@ const ManagerSidebar = ({ collapsed, onCollapse }) => {
     },
   ];
 
-  const userInfo = {
-    name: "Nguyễn Văn F",
-    avatar: null,
-  };
-
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -107,6 +103,8 @@ const ManagerSidebar = ({ collapsed, onCollapse }) => {
       </Link>
     ),
   }));
+
+  const managerName = getUserName();
 
   return (
     <Sider
@@ -219,7 +217,7 @@ const ManagerSidebar = ({ collapsed, onCollapse }) => {
                   fontFamily: "Inter, sans-serif",
                 }}
               >
-                {userInfo.name}
+                {managerName}
               </Text>
             </div>
           )}

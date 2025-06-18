@@ -290,9 +290,16 @@ const MemberInfoPage = () => {
         );
 
         if (response.status === 200) {
-          // Cập nhật profile của user hiện tại
+          // Cập nhật profile của user hiện tại với thông tin từ database
           if (currentUser) {
-            authService.updateProfile(dataToSave);
+            // Cập nhật profile với thông tin mới, đảm bảo có trường name
+            const updatedProfile = {
+              ...currentUser.profile,
+              ...dataToSave,
+              name: dataToSave.name, // Đảm bảo trường name được cập nhật
+            };
+
+            authService.updateProfile(updatedProfile);
 
             // Nếu là first-time setup, đánh dấu không còn là first login
             if (isFirstTime) {

@@ -12,6 +12,7 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../contexts/AuthContext";
+import { getUserName } from "../../utils/userUtils";
 import "../../styles/base/manager-design-system.scss";
 
 const { Sider } = Layout;
@@ -87,6 +88,8 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
       </Link>
     ),
   }));
+
+  const adminName = getUserName();
 
   return (
     <Sider
@@ -200,7 +203,7 @@ const AdminSidebar = ({ collapsed, onCollapse }) => {
                   fontFamily: "Inter, sans-serif",
                 }}
               >
-                {user?.name || "Admin"}
+                {adminName}
               </Text>
             </div>
           )}

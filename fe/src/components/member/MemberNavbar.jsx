@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
+import { getUserName } from "../../utils/userUtils";
 import "../../styles/components/MemberNavbar.scss";
 
 const navItems = [
@@ -15,7 +16,7 @@ const MemberNavbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
 
-  const user = authService.getCurrentUser();
+  const userName = getUserName();
 
   const handleLogout = async () => {
     try {
@@ -46,13 +47,13 @@ const MemberNavbar = () => {
       <div className="navbar-actions">
         <div className="user-info">
           <span className="user-name">
-            {user?.profile?.fullName || "Member"}
+            {userName}
           </span>
           <div
             className="member-avatar-wrapper"
             onClick={() => setShowMenu((prev) => !prev)}
           >
-            {user?.profile?.fullName?.charAt(0).toUpperCase() || "M"}
+            {userName.charAt(0).toUpperCase()}
           </div>
         </div>
         {showMenu && (

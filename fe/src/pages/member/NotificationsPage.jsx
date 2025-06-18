@@ -199,9 +199,8 @@ const NotificationsPage = () => {
               {filteredNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`notification-card ${
-                    !notification.isRead ? "unread" : ""
-                  }`}
+                  className={`notification-card ${!notification.isRead ? "unread" : ""
+                    }`}
                 >
                   <div className="notification-header">
                     <div className="notification-icon-title">

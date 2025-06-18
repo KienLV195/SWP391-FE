@@ -181,33 +181,36 @@ class AuthService {
           // Save token
           localStorage.setItem("authToken", token);
 
-          // If user is a doctor, fetch additional details
-          if (user.role === ROLES.STAFF_DOCTOR) {
-            try {
-              console.log("Fetching doctor details for ID:", user.id);
-              const infoResponse = await axios.get(
-                `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+          // Fetch additional user details from API for both doctors and members
+          try {
+            console.log("Fetching user details for ID:", user.id);
+            const infoResponse = await axios.get(
+              `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
 
-              if (infoResponse.data) {
-                // Find the doctor's information
-                const doctorInfo = infoResponse.data.find(doc => doc.userID === parseInt(user.id));
-                console.log("Found doctor info:", doctorInfo);
+            if (infoResponse.data) {
+              // Find the user's information
+              const userInfo = infoResponse.data.find(info => info.userID === parseInt(user.id));
+              console.log("Found user info:", userInfo);
 
-                if (doctorInfo) {
-                  // Update user profile with doctor details
-                  user.profile = {
-                    ...user.profile,
-                    ...doctorInfo,
-                  };
-                  // Determine doctor type based on department
-                  const department = doctorInfo.department?.toLowerCase() || '';
+              if (userInfo) {
+                // Update user profile with details from database
+                user.profile = {
+                  ...user.profile,
+                  ...userInfo,
+                  // Đảm bảo có trường name từ database
+                  name: userInfo.name || user.profile.fullName,
+                };
+
+                // For doctors, determine doctor type based on department
+                if (user.role === ROLES.STAFF_DOCTOR) {
+                  const department = userInfo.department?.toLowerCase() || '';
                   console.log("Doctor department:", department);
                   const isBloodDept = department.includes('máu') ||
                     department.includes('huyết học') ||
@@ -217,12 +220,16 @@ class AuthService {
                   user.doctorType = isBloodDept ? 'blood_department' : 'other_department';
                   console.log("Doctor type determined:", user.doctorType);
                 }
+
+                // Save user info to localStorage for easy access
+                localStorage.setItem("memberInfo", JSON.stringify(userInfo));
               }
-            } catch (error) {
-              console.error("Error fetching doctor details:", error.response?.data || error.message);
-              console.error("Error status:", error.response?.status);
-              console.error("Error headers:", error.response?.headers);
-              // Set default type if API call fails
+            }
+          } catch (error) {
+            console.error("Error fetching user details:", error.response?.data || error.message);
+            console.error("Error status:", error.response?.status);
+            // Continue with login even if API call fails
+            if (user.role === ROLES.STAFF_DOCTOR) {
               user.doctorType = 'other_department';
             }
           }

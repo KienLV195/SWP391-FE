@@ -15,6 +15,7 @@ import { Pie } from "@ant-design/charts";
 import AdminLayout from "../../components/admin/AdminLayout";
 import WelcomeBanner from "../../components/admin/dashboard/WelcomeBanner";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
+import { getUserName } from "../../utils/userUtils";
 import "../../styles/pages/AdminDashboard.scss";
 
 const { Title, Text } = Typography;
@@ -47,45 +48,55 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
+    totalPosts: 0,
+    totalRequests: 0,
+    totalVisits: 0,
     totalAdmins: 0,
     totalManagers: 0,
     totalDoctors: 0,
     totalMembers: 0,
-    totalPosts: 0,
-    totalRequests: 0,
-    totalVisits: 0,
     notifications: [],
   });
   // const cardRef = useRef(null);
 
   useEffect(() => {
-    // Mock data, replace with API call
+    // Simulate loading dashboard data
     setTimeout(() => {
       setDashboardData({
-        totalUsers: 2350,
-        totalAdmins: 5,
-        totalManagers: 12,
-        totalDoctors: 30,
-        totalMembers: 2303,
-        totalPosts: 128,
-        totalRequests: 450,
-        totalVisits: 12000,
+        totalUsers: 1250,
+        totalPosts: 45,
+        totalRequests: 89,
+        totalVisits: 5670,
+        totalAdmins: 3,
+        totalManagers: 5,
+        totalDoctors: 12,
+        totalMembers: 1230,
         notifications: [
           {
+            id: 1,
             type: "success",
-            title: "Thêm admin mới",
-            message: "Tài khoản admin2 đã được tạo thành công.",
+            title: "Hệ thống hoạt động bình thường",
+            message: "Tất cả dịch vụ đang hoạt động ổn định.",
+            time: "2 phút trước",
+          },
+          {
+            id: 2,
+            type: "warning",
+            title: "Cần bổ sung máu nhóm O-",
+            message: "Kho máu nhóm O- đang ở mức thấp.",
+            time: "15 phút trước",
+          },
+          {
+            id: 3,
+            type: "info",
+            title: "Cập nhật hệ thống",
+            message: "Hệ thống đã được cập nhật phiên bản mới.",
             time: "1 giờ trước",
           },
           {
-            type: "info",
-            title: "Yêu cầu mới",
-            message: "Có 8 yêu cầu mới cần xử lý.",
-            time: "2 giờ trước",
-          },
-          {
-            type: "warning",
-            title: "Cảnh báo đăng nhập",
+            id: 4,
+            type: "error",
+            title: "Đăng nhập bất thường",
             message: "Có đăng nhập bất thường từ IP lạ.",
             time: "4 giờ trước",
           },
@@ -125,9 +136,11 @@ const AdminDashboard = () => {
     );
   }
 
+  const adminName = getUserName();
+
   return (
     <AdminLayout>
-      <WelcomeBanner adminName="Quản trị viên" />
+      <WelcomeBanner adminName={adminName} />
       <div style={containerStyle}>
         <AdminPageHeader
           title="Tổng quan hệ thống"
@@ -209,9 +222,9 @@ const AdminDashboard = () => {
                           <Badge
                             color={
                               pieConfig.color[
-                                userTypePieData.findIndex(
-                                  (i) => i.type === item.type
-                                )
+                              userTypePieData.findIndex(
+                                (i) => i.type === item.type
+                              )
                               ]
                             }
                             text={item.type}
@@ -224,9 +237,9 @@ const AdminDashboard = () => {
                           fontWeight: 600,
                           color:
                             pieConfig.color[
-                              userTypePieData.findIndex(
-                                (i) => i.type === item.type
-                              )
+                            userTypePieData.findIndex(
+                              (i) => i.type === item.type
+                            )
                             ],
                         }}
                       >

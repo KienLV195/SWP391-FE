@@ -3,11 +3,36 @@ import { Link } from "react-router-dom";
 import GuestHomePage from "../guest/GuestHomePage";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import authService from "../../services/authService";
+import { getUserName } from "../../utils/userUtils";
 import blood1 from "../../assets/images/blood1.jpg";
 import "../../styles/pages/MemberHomePage.scss";
 
 const MemberHomePage = () => {
   const user = authService.getCurrentUser();
+  const userName = getUserName();
+
+  // Lấy thông tin nhóm máu từ hồ sơ cá nhân
+  const getBloodTypeInfo = () => {
+    // Thử lấy từ localStorage trước
+    const storedInfo = JSON.parse(localStorage.getItem("memberInfo") || "{}");
+
+    // Lấy từ user profile hoặc storedInfo
+    const bloodGroup = user?.profile?.bloodGroup || storedInfo.bloodGroup || "";
+    const rhType = user?.profile?.rhType || storedInfo.rhType || "";
+
+    // Nếu có cả bloodGroup và rhType thì kết hợp lại
+    if (bloodGroup && rhType) {
+      return `${bloodGroup}-${rhType}`;
+    }
+    // Nếu chỉ có bloodGroup
+    else if (bloodGroup) {
+      return bloodGroup;
+    }
+    // Nếu không có thông tin
+    else {
+      return "Chưa xác định";
+    }
+  };
 
   // Custom hero section for members
   const MemberHeroSection = () => (
@@ -24,7 +49,7 @@ const MemberHomePage = () => {
       <div className="hero-container">
         <div className="hero-content">
           <h1 className="merriweather-title">
-            CHÀO MỪNG, {user?.profile?.fullName?.toUpperCase()}
+            CHÀO MỪNG, {userName.toUpperCase()}
             <br />
             CÙNG CHIA SẺ YÊU THƯƠNG
           </h1>
@@ -47,13 +72,10 @@ const MemberHomePage = () => {
             <div className="info-item">
               <span className="label">Nhóm máu:</span>
               <span className="blood-type-badge">
-                {user?.profile?.bloodType || "Chưa xác định"}
+                {getBloodTypeInfo()}
               </span>
             </div>
-            <div className="info-item">
-              <span className="label">Số điện thoại:</span>
-              <span>{user?.profile?.phone}</span>
-            </div>
+
           </div>
         </div>
         <div className="hero-image">

@@ -6,7 +6,7 @@
 class NominatimService {
   // Nominatim API endpoint
   static BASE_URL = 'https://nominatim.openstreetmap.org';
-  
+
   // Hospital coordinates (Bệnh viện Đa khoa Ánh Dương)
   static HOSPITAL_COORDINATES = {
     lat: 10.7751237,
@@ -37,7 +37,7 @@ class NominatimService {
       });
 
       const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
-      
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
@@ -55,7 +55,7 @@ class NominatimService {
       }
 
       const result = data[0];
-      
+
       // Log for debugging
       console.log('Nominatim geocoding result:', {
         input: address,
@@ -74,7 +74,7 @@ class NominatimService {
         addressDetails: result.address
       };
     } catch (error) {
-      console.error('Nominatim geocoding error:', error);
+      // console.error('Nominatim geocoding error:', error);
       throw error;
     }
   }
@@ -96,7 +96,7 @@ class NominatimService {
       });
 
       const url = `${this.BASE_URL}/reverse?${searchParams.toString()}`;
-      
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
@@ -146,7 +146,7 @@ class NominatimService {
       });
 
       const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
-      
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
@@ -190,7 +190,7 @@ class NominatimService {
       });
 
       const url = `${this.BASE_URL}/details?${searchParams.toString()}`;
-      
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
@@ -253,23 +253,23 @@ class NominatimService {
     if (!addressDetails) return '';
 
     const parts = [];
-    
+
     // House number and street
     if (addressDetails.house_number) parts.push(addressDetails.house_number);
     if (addressDetails.road) parts.push(addressDetails.road);
-    
+
     // Ward/Suburb
     if (addressDetails.suburb) parts.push(addressDetails.suburb);
     else if (addressDetails.quarter) parts.push(addressDetails.quarter);
-    
+
     // District
     if (addressDetails.city_district) parts.push(addressDetails.city_district);
     else if (addressDetails.county) parts.push(addressDetails.county);
-    
+
     // City
     if (addressDetails.city) parts.push(addressDetails.city);
     else if (addressDetails.town) parts.push(addressDetails.town);
-    
+
     // Country
     if (addressDetails.country) parts.push(addressDetails.country);
 

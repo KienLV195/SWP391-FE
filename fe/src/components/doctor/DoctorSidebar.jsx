@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import LogoutButton from "../common/LogoutButton";
 import authService from "../../services/authService";
+import { getUserName } from "../../utils/userUtils";
 import { DOCTOR_TYPES } from "../../services/mockData";
 import "../../styles/components/DoctorSidebar.scss";
 
@@ -50,6 +51,8 @@ const DoctorSidebar = () => {
     return location.pathname.startsWith(path);
   };
 
+  const doctorName = getUserName();
+
   return (
     <div className="doctor-sidebar">
       <div className="doctor-sidebar__header">
@@ -81,7 +84,7 @@ const DoctorSidebar = () => {
 
       <div className="doctor-sidebar__footer">
         <div className="user-info">
-          <div className="user-name">{currentUser?.name}</div>
+          <div className="user-name">{doctorName}</div>
           <div className="user-department">{currentUser?.department}</div>
         </div>
         <LogoutButton variant="sidebar" />

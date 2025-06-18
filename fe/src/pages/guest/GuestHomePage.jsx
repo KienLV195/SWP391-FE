@@ -392,11 +392,11 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
                     ĐĂNG KÝ NHẬN MÁU
                   </Link>
                 </div>
-                <div className="demo-link">
+                {/* <div className="demo-link">
                   <Link to="/test-accounts" className="demo-button">
                     🧪 Xem tài khoản demo
-                  </Link>
-                </div>
+                  </Link>';l
+                </div> */}
               </div>
               <div className="hero-image">
                 <img src={blood1} alt="Truyền máu" className="hero-img" />
