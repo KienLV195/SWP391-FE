@@ -69,9 +69,9 @@ const UserManagement = () => {
           let role = roleObj.value;
           let roleLabel = roleObj.label;
           if (role === "doctor") {
-            if (u.department && u.department.trim() === "Khoa huyết học") {
+            if (u.department && u.department.trim() === "Khoa Huyết học") {
               role = "doctor_blood";
-              roleLabel = "Bác sĩ - Khoa huyết học";
+              roleLabel = "Bác sĩ - Khoa Huyết học";
             } else if (u.department) {
               role = "doctor_other";
               roleLabel = `Bác sĩ - ${u.department}`;
@@ -148,7 +148,7 @@ const UserManagement = () => {
       render: (_, record) => <Badge color="blue" text={record.roleLabel} />,
       filters: [
         { text: "Thành viên", value: "member" },
-        { text: "Bác sĩ - Khoa máu", value: "doctor_blood" },
+        { text: "Bác sĩ - Khoa Huyết học", value: "doctor_blood" },
         { text: "Bác sĩ - Khoa khác", value: "doctor_other" },
         { text: "Quản lý", value: "manager" },
         { text: "Quản trị viên", value: "admin" },
@@ -241,9 +241,9 @@ const UserManagement = () => {
         let role = roleObj.value;
         let roleLabel = roleObj.label;
         if (role === "doctor") {
-          if (u.department && u.department.trim() === "Khoa huyết học") {
+          if (u.department && u.department.trim() === "Khoa Huyết học") {
             role = "doctor_blood";
-            roleLabel = "Bác sĩ - Khoa huyết học";
+            roleLabel = "Bác sĩ - Khoa Huyết học";
           } else if (u.department) {
             role = "doctor_other";
             roleLabel = `Bác sĩ - ${u.department}`;
@@ -371,7 +371,7 @@ const UserManagement = () => {
                   u.department.toLowerCase().includes("máu")
                 ) {
                   role = "doctor_blood";
-                  roleLabel = "Bác sĩ - Khoa máu";
+                  roleLabel = "Bác sĩ - Khoa Huyết học";
                 } else if (u.department) {
                   role = `doctor_other_${u.department}`;
                   roleLabel = `Bác sĩ - ${u.department}`;
@@ -448,7 +448,7 @@ const UserManagement = () => {
             >
               <Option value="all">Tất cả vai trò</Option>
               <Option value="member">Thành viên</Option>
-              <Option value="doctor_blood">Bác sĩ - Khoa máu</Option>
+              <Option value="doctor_blood">Bác sĩ - Khoa Huyết học</Option>
               <Option value="doctor_other">Bác sĩ - Khoa khác</Option>
               <Option value="manager">Quản lý</Option>
               <Option value="admin">Quản trị viên</Option>

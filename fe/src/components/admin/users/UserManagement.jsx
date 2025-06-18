@@ -23,6 +23,15 @@ import styles from "../../../styles/pages/admin/UserManagement.module.scss";
 
 const { Option } = Select;
 
+const DEPARTMENTS = [
+  "Khoa Nhi",
+  "Khoa Cấp Cứu",
+  "Khoa Giải phẫu",
+  "Khoa Tim mạch",
+  "Khoa Ngoại",
+  "Khoa Huyết học",
+];
+
 const UserManagement = () => {
   const { userType } = useParams();
   const [users, setUsers] = useState([]);
@@ -30,6 +39,7 @@ const UserManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingUser, setEditingUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
 
   // Map userType to role
   const roleMap = {
@@ -41,7 +51,7 @@ const UserManagement = () => {
 
   const roleLabels = {
     MEMBER: "Thành viên",
-    BLOOD_DOCTOR: "Bác sĩ khoa máu",
+    BLOOD_DOCTOR: "Bác sĩ khoa Huyết học",
     OTHER_DOCTOR: "Bác sĩ khoa khác",
     MANAGER: "Quản lý",
   };
@@ -67,12 +77,19 @@ const UserManagement = () => {
   const handleCreate = () => {
     setEditingUser(null);
     form.resetFields();
+    // Lấy role mặc định từ form sau khi reset
+    setTimeout(() => {
+      setSelectedRole(roleMap[userType] || "");
+    }, 0);
     setModalVisible(true);
   };
 
   const handleEdit = (record) => {
     setEditingUser(record);
     form.setFieldsValue(record);
+    setTimeout(() => {
+      setSelectedRole(record.role || "");
+    }, 0);
     setModalVisible(true);
   };
 
@@ -210,6 +227,20 @@ const UserManagement = () => {
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
+            name="role"
+            label="Vai trò"
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+            initialValue={roleMap[userType]}
+          >
+            <Select onChange={(value) => setSelectedRole(value)}>
+              <Option value="BLOOD_DOCTOR">Bác sĩ khoa Huyết học</Option>
+              <Option value="OTHER_DOCTOR">Bác sĩ khoa khác</Option>
+              <Option value="MEMBER">Thành viên</Option>
+              <Option value="MANAGER">Quản lý</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
             name="fullName"
             label="Họ và tên"
             rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
@@ -254,6 +285,24 @@ const UserManagement = () => {
               <Option value="SUSPENDED">Tạm khóa</Option>
             </Select>
           </Form.Item>
+
+          {/* Dropdown chọn Khoa nếu là bác sĩ */}
+          {(selectedRole === "BLOOD_DOCTOR" ||
+            selectedRole === "OTHER_DOCTOR") && (
+            <Form.Item
+              name="department"
+              label="Khoa"
+              rules={[{ required: true, message: "Vui lòng chọn khoa" }]}
+            >
+              <Select placeholder="Chọn khoa">
+                {DEPARTMENTS.map((dep) => (
+                  <Option key={dep} value={dep}>
+                    {dep}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          )}
 
           <Form.Item>
             <Space>

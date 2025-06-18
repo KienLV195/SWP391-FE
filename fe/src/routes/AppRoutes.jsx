@@ -36,7 +36,6 @@ import BloodDonationFormPage from "../pages/member/BloodDonationFormPage";
 import BloodRequestFormPage from "../pages/member/BloodRequestFormPage";
 import ActivityHistoryPage from "../pages/member/ActivityHistoryPage";
 import NotificationsPage from "../pages/member/NotificationsPage";
-import TestAccounts from "../pages/demo/TestAccounts";
 
 // Admin imports
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -72,10 +71,6 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
 
-  {
-    path: "/test-accounts",
-    element: <TestAccounts />,
-  },
   {
     path: "/register/verify-email",
     element: <EmailVerificationPage />,
