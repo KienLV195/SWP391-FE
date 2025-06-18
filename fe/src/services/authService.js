@@ -190,11 +190,10 @@ class AuthService {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                   },
                 }
               );
-
-              console.log("Information API response:", infoResponse.data);
 
               if (infoResponse.data) {
                 // Find the doctor's information
