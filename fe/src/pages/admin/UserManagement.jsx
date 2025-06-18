@@ -32,6 +32,7 @@ import {
   fetchUsersFromApiForce,
   updateUserToApi,
 } from "../../services/userApi";
+import { Exception } from "sass";
 
 const { Option } = Select;
 
@@ -59,6 +60,7 @@ const UserManagement = () => {
   const [form] = Form.useForm();
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  // const [updateUser, setUpdateUser] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -214,6 +216,7 @@ const UserManagement = () => {
 
   // CRUD handlers
   const handleEditUser = (user) => {
+    
     setEditingUser(user);
     setShowModal(true);
     form.setFieldsValue({
@@ -229,6 +232,7 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = async () => {
+    // debugger
     if (!deleteUserId) return;
     setDeleteModalVisible(false);
     setDeleteUserId(null);
@@ -272,14 +276,18 @@ const UserManagement = () => {
       });
       setUsers(mapped);
       message.success("Đã xóa người dùng!");
-    } catch {
+    } catch (error){
       message.error("Lỗi khi xóa người dùng!");
+      console.log("Exception" + error); 
+    
     } finally {
       setLoading(false);
     }
   };
 
+  
   const handleModalOk = () => {
+    
     form
       .validateFields()
       .then(async (values) => {
@@ -307,31 +315,35 @@ const UserManagement = () => {
               district: editingUser.district || "",
               idCardType: editingUser.idCardType || "",
             };
+            debugger;
             await updateUserToApi(editingUser.id, userData);
             setShowModal(false);
+            // setUpdateUser(true);
             form.resetFields();
             message.success("Cập nhật thành công!");
             setUsers((prev) =>
               prev.map((u) =>
                 u.id === editingUser.id
                   ? {
-                      ...u,
-                      ...values,
-                      name: values.name,
-                      email: values.email,
-                      phone: values.phone,
-                      roleID: Number(values.roleID),
-                      status: values.status,
-                      statusLabel: statusObj.label,
-                      bloodType: values.bloodType || u.bloodType,
-                      department: values.department || u.department,
-                    }
+                    ...u,
+                    ...values,
+                    name: values.name,
+                    email: values.email,
+                    phone: values.phone,
+                    roleID: Number(values.roleID),
+                    status: values.status,
+                    statusLabel: statusObj.label,
+                    bloodType: values.bloodType || u.bloodType,
+                    department: values.department || u.department,
+                  }
                   : u
               )
             );
-          } catch {
+          } catch (error) {
             message.error("Lỗi khi cập nhật người dùng!");
-          } finally {
+            console.log("Exception" + error);
+          } 
+          finally {
             setLoading(false);
           }
         } else {
@@ -407,7 +419,7 @@ const UserManagement = () => {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   return (
@@ -588,6 +600,7 @@ const UserManagement = () => {
         </Form>
       </Modal>
       <Modal
+      
         open={deleteModalVisible}
         title="Xác nhận xoá người dùng"
         onOk={handleDeleteUser}

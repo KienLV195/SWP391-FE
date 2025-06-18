@@ -235,6 +235,7 @@ const MemberInfoPage = () => {
     }
   };
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
     if (validate()) {
       try {

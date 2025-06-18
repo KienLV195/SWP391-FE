@@ -33,6 +33,7 @@ export async function postUserToApi(userData) {
 
 // API service for deleting a user by userID
 export async function deleteUserFromApi(userID) {
+  // debugger;
   const response = await fetch(
     `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${userID}`,
     {
@@ -40,11 +41,12 @@ export async function deleteUserFromApi(userID) {
     }
   );
   if (!response.ok) throw new Error('Lỗi khi xóa người dùng');
-  return response.json();
+  // return response.json();
 }
 
 // API service for updating (editing) a user by userID
 export async function updateUserToApi(userID, userData) {
+  
   const response = await fetch(
     `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${userID}`,
     {
@@ -56,5 +58,5 @@ export async function updateUserToApi(userID, userData) {
     }
   );
   if (!response.ok) throw new Error('Lỗi khi cập nhật người dùng');
-  return response.json();
+//   return response.json();
 }
