@@ -1,0 +1,101 @@
+// Common Design System - Shared variables, mixins, and base styles for Manager & Doctor
+@use 'variables' as *;
+
+// ===== TYPOGRAPHY SYSTEM =====
+$font-family-base: 'Inter', sans-serif;
+$font-size-base: 16px;
+$font-size-sm: 14px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-xxl: 24px;
+
+$text-color: #20374E;
+$text-color-secondary: #666666;
+$text-color-light: #999999;
+
+// ===== COLOR SYSTEM =====
+$primary-color: #D93E4C;
+$secondary-color: #20374E;
+$accent-color: #DECCAA;
+$danger-color: #D91022;
+
+$bg-color: #ffffff;
+$bg-secondary: #f8f9fa;
+$border-color: #e8e8e8;
+$shadow-color: rgba(0, 0, 0, 0.08);
+
+// ===== SPACING SYSTEM =====
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// ===== COMPONENT MIXINS =====
+@mixin card {
+  background: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px $shadow-color;
+  padding: $spacing-lg;
+}
+
+@mixin table-header {
+  font-weight: bold;
+  background: $bg-secondary;
+  color: $text-color;
+}
+
+@mixin button-primary {
+  background: $primary-color;
+  color: $bg-color;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.2s;
+  &:hover {
+    background: darken($primary-color, 8%);
+  }
+}
+
+@mixin button-danger {
+  background: $danger-color;
+  color: $bg-color;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.2s;
+  &:hover {
+    background: darken($danger-color, 8%);
+  }
+}
+
+// ===== MANAGER SYSTEM (for compatibility) =====
+$manager-font-family: $font-family-base;
+$manager-font-size-base: $font-size-base;
+$manager-font-size-sm: $font-size-sm;
+$manager-font-size-lg: $font-size-lg;
+$manager-font-size-xl: $font-size-xl;
+$manager-font-size-xxl: $font-size-xxl;
+
+$manager-text-color: $text-color;
+$manager-text-color-secondary: $text-color-secondary;
+$manager-text-color-light: $text-color-light;
+
+$manager-primary-color: $primary-color;
+$manager-secondary-color: $secondary-color;
+$manager-accent-color: $accent-color;
+$manager-danger-color: $danger-color;
+
+$manager-bg-color: $bg-color;
+$manager-bg-secondary: $bg-secondary;
+$manager-border-color: $border-color;
+$manager-shadow-color: $shadow-color;
+
+$manager-spacing-xs: $spacing-xs;
+$manager-spacing-sm: $spacing-sm;
+$manager-spacing-md: $spacing-md;
+$manager-spacing-lg: $spacing-lg;
+$manager-spacing-xl: $spacing-xl;
+$manager-spacing-xxl: $spacing-xxl;
+
+// ...add more shared mixins as needed...

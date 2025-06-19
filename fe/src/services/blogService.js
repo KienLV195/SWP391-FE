@@ -1,9 +1,10 @@
 import { MOCK_BLOGS } from './mockData';
+import config from '../config/environment';
 
 
 class BlogService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+    this.baseURL = config.api.baseUrl || 'http://localhost:8080/api';
     this.blogs = [...MOCK_BLOGS]; // Mock data for testing
   }
 

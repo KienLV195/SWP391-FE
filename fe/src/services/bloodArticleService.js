@@ -1,5 +1,6 @@
 // Service for BloodArticles API
-const API_URL = 'https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/BloodArticles';
+import config from '../config/environment';
+const API_URL = config.api.bloodArticles;
 
 export async function fetchBloodArticles() {
   const response = await fetch(API_URL);

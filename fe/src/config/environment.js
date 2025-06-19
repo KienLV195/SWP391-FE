@@ -10,9 +10,15 @@ const getEnvVar = (key, defaultValue = '') => {
 
 // Environment configuration
 const config = {
+  azureBaseURL: import.meta.env.VITE_AZURE_BASE_URL || 'https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net',
   // API configuration
   api: {
     baseUrl: getEnvVar('VITE_API_URL', 'http://localhost:8080/api'),
+    news: getEnvVar('VITE_NEWS_API', ''),
+    bloodArticles: getEnvVar('VITE_BLOOD_ARTICLES_API', ''),
+    auth: getEnvVar('VITE_AUTH_API', ''),
+    information: getEnvVar('VITE_INFORMATION_API', ''),
+    nominatim: getEnvVar('VITE_NOMINATIM_API', ''),
   },
 
   // Application environment

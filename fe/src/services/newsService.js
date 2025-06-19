@@ -1,6 +1,7 @@
 import axios from "axios";
+import config from '../config/environment';
 
-const API_BASE = "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/News";
+const API_BASE = config.api.news;
 
 export const fetchAllNews = async () => {
   const res = await axios.get(API_BASE);

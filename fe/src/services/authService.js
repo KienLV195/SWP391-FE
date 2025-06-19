@@ -1,5 +1,9 @@
 import { ROLES } from "./mockData";
 import axios from "axios";
+import config from '../config/environment';
+
+const AUTH_API = config.api.auth;
+const INFORMATION_API = config.api.information;
 
 // Authentication service for managing user sessions
 class AuthService {
@@ -73,7 +77,7 @@ class AuthService {
   async login(email, password) {
     try {
       const response = await axios.post(
-        "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/login",
+        `${AUTH_API}/login`,
         {
           email: email,
           password: password,
@@ -185,7 +189,7 @@ class AuthService {
           try {
             console.log("Fetching user details for ID:", user.id);
             const infoResponse = await axios.get(
-              `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/`,
+              `${INFORMATION_API}/`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -302,7 +306,7 @@ class AuthService {
   async register(userData) {
     try {
       const response = await axios.post(
-        "https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Auth/Register",
+        `${AUTH_API}/Register`,
         {
           ...userData,
           roleId: 2, // Set roleId to 2 for Member role
