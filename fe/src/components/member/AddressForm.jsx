@@ -374,7 +374,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
   return (
     <div className="address-form">
       <div className="address-fields">
-        <div className="field-row">
+        {/* <div className="field-row">
           <div className="form-group">
             <label>
               Số nhà <span className="required">*</span>
@@ -402,9 +402,9 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
               className="form-input"
             />
           </div>
-        </div>
+        </div> */}
 
-        <div className="field-row">
+        {/* <div className="field-row">
           <div className="form-group">
             <label>
               Tỉnh/Thành phố <span className="required">*</span>
@@ -463,7 +463,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
               ))}
             </select>
           </div>
-        </div>
+        </div> */}
 
         <div className="full-address-preview">
           <label>Địa chỉ đầy đủ:</label>

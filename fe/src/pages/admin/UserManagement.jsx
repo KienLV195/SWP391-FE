@@ -287,7 +287,7 @@ const UserManagement = () => {
 
   
   const handleModalOk = () => {
-    
+    // debugger;
     form
       .validateFields()
       .then(async (values) => {
@@ -370,6 +370,7 @@ const UserManagement = () => {
               district: "",
               idCardType: "",
             };
+            debugger;
             await postUserToApi(userData);
             message.success("Thêm mới thành công!");
             const data = await fetchUsersFromApi();
@@ -412,8 +413,9 @@ const UserManagement = () => {
             });
             setUsers(mapped);
             setShowModal(false);
-          } catch {
+          } catch (error) {
             message.error("Lỗi khi thêm người dùng!");
+            console.log("Exception" + error);
           } finally {
             setLoading(false);
           }

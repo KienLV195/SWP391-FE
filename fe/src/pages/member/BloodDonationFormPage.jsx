@@ -372,6 +372,14 @@ const BloodDonationFormPage = () => {
         ].filter(Boolean).join(", ");
 
         // Cập nhật personalInfo với thông tin thực từ hồ sơ
+        const bloodGroup = storedMemberInfo.bloodGroup || userProfile.bloodGroup || "";
+        const rhType = storedMemberInfo.rhType || userProfile.rhType || "";
+        let bloodType = "";
+        if (bloodGroup && rhType) {
+          // Chuẩn hóa ký hiệu Rh
+          const rhSymbol = rhType === "Rh+" || rhType === "+" ? "+" : (rhType === "Rh-" || rhType === "-" ? "-" : rhType);
+          bloodType = `${bloodGroup}${rhSymbol}`;
+        }
         setPersonalInfo((prev) => ({
           ...prev,
           fullName: getUserName(),
@@ -396,8 +404,12 @@ const BloodDonationFormPage = () => {
             travelTime: null,
             formattedAddress: fullAddress,
           },
-          // Thêm thông tin nhóm máu nếu có
-          bloodType: storedMemberInfo.bloodGroup || userProfile.bloodType || "",
+          bloodType: bloodType,
+        }));
+        // Set luôn cho healthSurvey
+        setHealthSurvey(prev => ({
+          ...prev,
+          bloodType: bloodType
         }));
 
         // Nếu có địa chỉ đầy đủ, thực hiện geocoding
@@ -678,7 +690,8 @@ const BloodDonationFormPage = () => {
                   <strong>Thông tin đã được điền sẵn từ hồ sơ cá nhân</strong>
                   <p>
                     Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn.
-                    Bạn có thể chỉnh sửa nếu cần thiết. Thông tin này sẽ được sử dụng để đăng ký hiến máu.
+                    <span style={{ color: 'red' }}> Bạn không thể chỉnh sửa các thông tin này tại đây.</span>
+                    Nếu cần thay đổi, vui lòng cập nhật tại trang hồ sơ cá nhân.
                   </p>
                 </div>
               </div>
@@ -695,9 +708,8 @@ const BloodDonationFormPage = () => {
                       <input
                         type="text"
                         value={personalInfo.fullName}
-                        onChange={(e) =>
-                          handlePersonalInfoChange("fullName", e.target.value)
-                        }
+                        readOnly
+                        disabled
                         placeholder="Nhập họ và tên"
                         required
                       />
@@ -707,9 +719,8 @@ const BloodDonationFormPage = () => {
                       <input
                         type="email"
                         value={personalInfo.email}
-                        onChange={(e) =>
-                          handlePersonalInfoChange("email", e.target.value)
-                        }
+                        readOnly
+                        disabled
                         placeholder="Nhập email"
                       />
                     </div>
@@ -723,9 +734,8 @@ const BloodDonationFormPage = () => {
                       <input
                         type="tel"
                         value={personalInfo.phone}
-                        onChange={(e) =>
-                          handlePersonalInfoChange("phone", e.target.value)
-                        }
+                        readOnly
+                        disabled
                         placeholder="Nhập số điện thoại"
                         required
                       />
@@ -737,12 +747,8 @@ const BloodDonationFormPage = () => {
                       <input
                         type="date"
                         value={personalInfo.dateOfBirth}
-                        onChange={(e) =>
-                          handlePersonalInfoChange(
-                            "dateOfBirth",
-                            e.target.value
-                          )
-                        }
+                        readOnly
+                        disabled
                         required
                       />
                     </div>
@@ -752,9 +758,7 @@ const BloodDonationFormPage = () => {
                     <label>Giới tính</label>
                     <select
                       value={personalInfo.gender}
-                      onChange={(e) =>
-                        handlePersonalInfoChange("gender", e.target.value)
-                      }
+                      disabled
                     >
                       <option value="">Chọn giới tính</option>
                       <option value="male">Nam</option>
@@ -767,9 +771,8 @@ const BloodDonationFormPage = () => {
                 {/* Address Form */}
                 <AddressForm
                   initialAddress={personalInfo.address}
-                  onAddressChange={(addressData) =>
-                    handlePersonalInfoChange("address", addressData)
-                  }
+                  onAddressChange={() => { }}
+                  readOnly={true}
                 />
 
                 <div className="form-actions">
@@ -801,7 +804,7 @@ const BloodDonationFormPage = () => {
                     <div className="profile-info-notice" style={{ marginBottom: '1rem' }}>
                       <div className="notice-icon">🩸</div>
                       <div className="notice-content">
-                        <strong>Nhóm máu đã được điền sẵn từ hồ sơ cá nhân</strong>
+                        <strong>Nhóm máu được lấy từ hồ sơ cá nhân.</strong>
                         <p>Nhóm máu: <strong>{personalInfo.bloodType}</strong></p>
                       </div>
                     </div>
@@ -838,28 +841,7 @@ const BloodDonationFormPage = () => {
                       />
                     </div>
                   </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>
-                        Nhóm máu <span className="required">*</span>
-                      </label>
-                      <select
-                        value={healthSurvey.bloodType}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("bloodType", e.target.value)
-                        }
-                        required
-                      >
-                        <option value="">Chọn nhóm máu</option>
-                        {Object.entries(BLOOD_TYPES).map(([key, value]) => (
-                          <option key={key} value={key}>
-                            {value}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
 
-                  </div>
                 </div>
 
                 {/* Question 1 */}
