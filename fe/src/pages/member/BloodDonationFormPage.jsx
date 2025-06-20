@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MemberNavbar from "../../components/member/MemberNavbar";
-import LocationPicker from "../../components/member/LocationPicker";
 import AddressForm from "../../components/member/AddressForm";
 import authService from "../../services/authService";
 import NotificationService from "../../services/notificationService";
@@ -48,9 +47,11 @@ const BloodDonationFormPage = () => {
 
     // Question 1: Previous Donation
     hasDonatedBefore: null, // true/false/null
+    lastDonationDate: "", // New field for last donation date
 
     // Question 2: Current Medical Conditions
     hasCurrentMedicalConditions: null, // true/false/null
+    currentMedicalConditionsDetail: "", // New field for current medical conditions detail
 
     // Question 3: Previous Serious Conditions
     hasPreviousSeriousConditions: null, // true/false/null
@@ -105,33 +106,10 @@ const BloodDonationFormPage = () => {
   const [registrationResult, setRegistrationResult] = useState(null);
   const [distanceInfo, setDistanceInfo] = useState(null);
 
-  // Health conditions that disqualify donors
-  const disqualifyingConditions = [
-    "HIV/AIDS",
-    "Hepatitis B",
-    "Hepatitis C",
-    "Syphilis",
-    "Malaria",
-    "Heart Disease",
-    "Cancer",
-    "Diabetes (Type 1)",
-    "Epilepsy",
-    "Severe Anemia",
-  ];
-
   const handleHealthSurveyChange = (field, value) => {
     setHealthSurvey((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  };
-
-  const handleChronicDiseaseChange = (disease, checked) => {
-    setHealthSurvey((prev) => ({
-      ...prev,
-      chronicDiseases: checked
-        ? [...prev.chronicDiseases, disease]
-        : prev.chronicDiseases.filter((d) => d !== disease),
     }));
   };
 
@@ -245,6 +223,156 @@ const BloodDonationFormPage = () => {
   };
 
   const handleHealthSurveySubmit = async () => {
+    // Validate required fields for health survey
+    const requiredFields = [
+      "weight",
+      "hasDonatedBefore",
+      "hasCurrentMedicalConditions",
+      "hasPreviousSeriousConditions",
+      // Câu 4
+      "hadMalariaSyphilisTuberculosis",
+      "hadBloodTransfusion",
+      "hadVaccination",
+      "last12MonthsNone",
+      // Câu 5
+      "hadTyphoidSepsis",
+      "unexplainedWeightLoss",
+      "persistentLymphNodes",
+      "invasiveMedicalProcedures",
+      "tattoosPiercings",
+      "drugUse",
+      "bloodExposure",
+      "livedWithHepatitisB",
+      "sexualContactWithInfected",
+      "sameSexContact",
+      "last6MonthsNone",
+      // Câu 6
+      "hadUrinaryInfection",
+      "visitedEpidemicArea",
+      "last1MonthNone",
+      // Câu 7
+      "hadFluSymptoms",
+      "last14DaysNone",
+      // Câu 8
+      "tookAntibiotics",
+      "last7DaysNone"
+    ];
+    // Nếu là nữ thì thêm câu 9
+    if (personalInfo.gender === "female") {
+      requiredFields.push("isPregnantOrNursing", "hadPregnancyTermination", "womenQuestionsNone");
+    }
+
+    // Kiểm tra cân nặng
+    if (!healthSurvey.weight) {
+      alert("Vui lòng nhập cân nặng!");
+      return;
+    }
+
+    // Kiểm tra các câu hỏi radio/checkbox
+    // Câu 1
+    if (healthSurvey.hasDonatedBefore === null || healthSurvey.hasDonatedBefore === undefined) {
+      alert("Vui lòng trả lời câu hỏi 1: Anh/chị từng hiến máu chưa?");
+      return;
+    }
+    // Nếu chọn Có thì phải chọn ngày
+    if (healthSurvey.hasDonatedBefore === true && !healthSurvey.lastDonationDate) {
+      alert("Vui lòng chọn ngày hiến máu gần nhất!");
+      return;
+    }
+    // Câu 2
+    if (healthSurvey.hasCurrentMedicalConditions === null || healthSurvey.hasCurrentMedicalConditions === undefined) {
+      alert("Vui lòng trả lời câu hỏi 2: Hiện tại, anh/chị có mắc bệnh lý nào không?");
+      return;
+    }
+    // Nếu chọn Có thì phải nhập chi tiết
+    if (healthSurvey.hasCurrentMedicalConditions === true && !healthSurvey.currentMedicalConditionsDetail) {
+      alert("Vui lòng ghi rõ bệnh lý hiện tại!");
+      return;
+    }
+    // Câu 3
+    if (healthSurvey.hasPreviousSeriousConditions === null || healthSurvey.hasPreviousSeriousConditions === undefined) {
+      alert("Vui lòng trả lời câu hỏi 3: Tiền sử bệnh nghiêm trọng?");
+      return;
+    }
+    if (healthSurvey.hasPreviousSeriousConditions === "other" && !healthSurvey.otherPreviousConditions) {
+      alert("Vui lòng mô tả bệnh nghiêm trọng khác!");
+      return;
+    }
+    // Câu 4-8: Ít nhất phải chọn 1 checkbox mỗi nhóm
+    // Câu 4
+    if (!(
+      healthSurvey.hadMalariaSyphilisTuberculosis ||
+      healthSurvey.hadBloodTransfusion ||
+      healthSurvey.hadVaccination ||
+      healthSurvey.last12MonthsNone
+    )) {
+      alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 4!");
+      return;
+    }
+    // Câu 5
+    if (!(
+      healthSurvey.hadTyphoidSepsis ||
+      healthSurvey.unexplainedWeightLoss ||
+      healthSurvey.persistentLymphNodes ||
+      healthSurvey.invasiveMedicalProcedures ||
+      healthSurvey.tattoosPiercings ||
+      healthSurvey.drugUse ||
+      healthSurvey.bloodExposure ||
+      healthSurvey.livedWithHepatitisB ||
+      healthSurvey.sexualContactWithInfected ||
+      healthSurvey.sameSexContact ||
+      healthSurvey.last6MonthsNone
+    )) {
+      alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 5!");
+      return;
+    }
+    // Câu 6
+    if (!(
+      healthSurvey.hadUrinaryInfection ||
+      healthSurvey.visitedEpidemicArea ||
+      healthSurvey.last1MonthNone
+    )) {
+      alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 6!");
+      return;
+    }
+    // Câu 7
+    if (!(
+      healthSurvey.hadFluSymptoms ||
+      healthSurvey.last14DaysNone ||
+      (typeof healthSurvey.otherSymptoms === "string" && healthSurvey.otherSymptoms)
+    )) {
+      alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 7!");
+      return;
+    }
+    // Nếu chọn Khác (cụ thể) thì phải nhập text
+    if (!!healthSurvey.otherSymptoms && typeof healthSurvey.otherSymptoms === "string" && healthSurvey.otherSymptoms.trim() === "") {
+      alert("Vui lòng mô tả triệu chứng ở câu hỏi 7!");
+      return;
+    }
+    // Câu 8
+    if (!(
+      healthSurvey.tookAntibiotics ||
+      healthSurvey.last7DaysNone ||
+      (typeof healthSurvey.otherMedications === "string" && healthSurvey.otherMedications)
+    )) {
+      alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 8!");
+      return;
+    }
+    if (!!healthSurvey.otherMedications && typeof healthSurvey.otherMedications === "string" && healthSurvey.otherMedications.trim() === "") {
+      alert("Vui lòng mô tả thuốc ở câu hỏi 8!");
+      return;
+    }
+    // Câu 9 (nữ)
+    if (personalInfo.gender === "female") {
+      if (!(
+        healthSurvey.isPregnantOrNursing ||
+        healthSurvey.hadPregnancyTermination ||
+        healthSurvey.womenQuestionsNone
+      )) {
+        alert("Vui lòng chọn ít nhất 1 đáp án cho câu hỏi 9!");
+        return;
+      }
+    }
     setLoading(true);
 
     try {
@@ -282,6 +410,18 @@ const BloodDonationFormPage = () => {
 
   const handleAppointmentSubmit = async () => {
     setLoading(true);
+
+    // Validate required fields for appointment
+    if (!appointmentData.preferredDate) {
+      setLoading(false);
+      alert("Vui lòng chọn ngày đặt lịch!");
+      return;
+    }
+    if (!appointmentData.timeSlot) {
+      setLoading(false);
+      alert("Vui lòng chọn khung giờ đặt lịch!");
+      return;
+    }
 
     try {
       // TODO_API_REPLACE: Replace with actual API call
@@ -557,7 +697,7 @@ const BloodDonationFormPage = () => {
 
                 {registrationResult.status === "scheduled" && (
                   <div className="appointment-summary">
-                    <h3>📅 Thông tin lịch hẹn</h3>
+                    <h3>Thông tin lịch hẹn</h3>
                     <div className="appointment-details">
                       <div className="detail-item">
                         <strong>Ngày:</strong>{" "}
@@ -873,6 +1013,28 @@ const BloodDonationFormPage = () => {
                       <span>Không</span>
                     </label>
                   </div>
+                  {healthSurvey.hasDonatedBefore === true && (
+                    <div className="form-group">
+                      <label>
+                        Ngày hiến máu gần nhất <span className="required">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={healthSurvey.lastDonationDate || ""}
+                        onChange={e => {
+                          const today = new Date().toISOString().split("T")[0];
+                          if (e.target.value > today) {
+                            alert("Không được chọn ngày trong tương lai!");
+                            handleHealthSurveyChange("lastDonationDate", "");
+                          } else {
+                            handleHealthSurveyChange("lastDonationDate", e.target.value);
+                          }
+                        }}
+                        max={new Date().toISOString().split("T")[0]}
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Question 2 */}
@@ -904,6 +1066,17 @@ const BloodDonationFormPage = () => {
                       <span>Không</span>
                     </label>
                   </div>
+                  {healthSurvey.hasCurrentMedicalConditions === true && (
+                    <div className="form-group">
+                      <label>Một số bệnh lý hiện tại</label>
+                      <input
+                        type="text"
+                        value={healthSurvey.currentMedicalConditionsDetail || ""}
+                        onChange={e => handleHealthSurveyChange("currentMedicalConditionsDetail", e.target.value)}
+                        placeholder="Vui lòng ghi rõ bệnh lý nếu có"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Question 3 */}
@@ -1189,15 +1362,19 @@ const BloodDonationFormPage = () => {
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.otherSymptoms}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("otherSymptoms", e.target.checked)
-                        }
+                        checked={!!healthSurvey.otherSymptoms}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleHealthSurveyChange("otherSymptoms", "");
+                          } else {
+                            handleHealthSurveyChange("otherSymptoms", "");
+                          }
+                        }}
                       />
                       <span>Khác (cụ thể)</span>
                     </label>
                   </div>
-                  {healthSurvey.otherSymptoms && (
+                  {typeof healthSurvey.otherSymptoms === "string" && healthSurvey.otherSymptoms !== undefined && (
                     <div className="form-group">
                       <input
                         type="text"
@@ -1238,15 +1415,19 @@ const BloodDonationFormPage = () => {
                     <label className="checkbox-item">
                       <input
                         type="checkbox"
-                        checked={healthSurvey.otherMedications}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("otherMedications", e.target.checked)
-                        }
+                        checked={!!healthSurvey.otherMedications}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleHealthSurveyChange("otherMedications", "");
+                          } else {
+                            handleHealthSurveyChange("otherMedications", "");
+                          }
+                        }}
                       />
                       <span>Khác (cụ thể)</span>
                     </label>
                   </div>
-                  {healthSurvey.otherMedications && (
+                  {typeof healthSurvey.otherMedications === "string" && healthSurvey.otherMedications !== undefined && (
                     <div className="form-group">
                       <input
                         type="text"
@@ -1345,6 +1526,13 @@ const BloodDonationFormPage = () => {
                       }
                       min={new Date().toISOString().split("T")[0]}
                       required
+                      onBlur={e => {
+                        const today = new Date().toISOString().split("T")[0];
+                        if (e.target.value && e.target.value < today) {
+                          alert("Vui lòng chọn đúng thời gian!");
+                          setAppointmentData((prev) => ({ ...prev, preferredDate: "" }));
+                        }
+                      }}
                     />
                   </div>
 
@@ -1396,32 +1584,8 @@ const BloodDonationFormPage = () => {
 
                 {/* Location Information */}
                 <div className="form-section">
-                  <h3>📍 Thông tin vị trí & Bệnh viện</h3>
-                  <div className="location-summary">
-                    <div className="location-info-card">
-                      <div className="location-header">
-                        <span className="location-icon">📍</span>
-                        <span className="location-title">
-                          Vị trí hiện tại của bạn
-                        </span>
-                      </div>
-                      <div className="location-details">
-                        <div className="address-text">
-                          {personalInfo.location?.address || "Chưa chọn vị trí"}
-                        </div>
-                        {distanceInfo && (
-                          <div className="distance-summary">
-                            <span className="distance-badge">
-                              📏 {distanceInfo.formattedDistance}
-                            </span>
-                            <span className="travel-time-badge">
-                              🚗 {distanceInfo.travelTime}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
+                  <h3>📍 Thông tin địa điểm hiến máu</h3>
+                  <div className="hospital-booking-summary">
                     <div className="hospital-info-card">
                       <div className="location-header">
                         <span className="location-icon">🏥</span>
@@ -1431,21 +1595,19 @@ const BloodDonationFormPage = () => {
                       </div>
                       <div className="hospital-details">
                         <div className="hospital-name">
-                          Bệnh viện Đa khoa Ánh Dương
+                          <strong>Bệnh viện Đa khoa Ánh Dương</strong>
                         </div>
                         <div className="hospital-address">
-                          📍 Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
+                          <span role="img" aria-label="address">📍</span> Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
                         </div>
                         <div className="hospital-department">
-                          🩸 Khoa Huyết học - Tầng 2
+                          <span role="img" aria-label="department">🩸</span> Khoa Huyết học - Tầng 2
+                        </div>
+                        <div className="hospital-note" style={{ marginTop: '0.5rem', color: '#888', fontSize: '0.95em' }}>
+                          Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đến hiến máu.
                         </div>
                       </div>
                     </div>
-
-                    <p className="location-note">
-                      📍 Khoảng cách được tính từ vị trí hiện tại của bạn đến
-                      bệnh viện
-                    </p>
                   </div>
                 </div>
 
