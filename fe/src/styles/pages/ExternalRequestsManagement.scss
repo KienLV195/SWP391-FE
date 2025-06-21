@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .external-requests-management {
   display: flex;
@@ -33,7 +33,7 @@
 
     .page-header {
       margin-bottom: 2rem;
-      
+
       div {
         h1 {
           color: #28a745;

@@ -1,5 +1,6 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mix;
+@use "sass:color";
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
 
 .main-title,
 .merriweather-title,
@@ -35,7 +36,7 @@ li {
     color: vars.$white;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -90,7 +91,10 @@ li {
         margin-top: vars.$spacing-md;
 
         .cta-button {
-          @include mix.primary-button(vars.$secondary-color, vars.$secondary-hover);
+          @include mix.primary-button(
+            vars.$secondary-color,
+            vars.$secondary-hover
+          );
           border-radius: 25px;
           font-size: 1.2rem;
           box-shadow: 0 4px 8px vars.$shadow-color;
@@ -237,7 +241,7 @@ li {
       text-transform: uppercase;
       border-bottom: 2px solid vars.$secondary-color;
       padding-bottom: vars.$spacing-xxs;
-      color: #B42F2F;
+      color: #b42f2f;
     }
 
     .hospital-name {
@@ -291,7 +295,10 @@ li {
           }
 
           &:hover {
-            background-color: lighten(vars.$primary-color, 10%);
+            background-color: color.adjust(
+              vars.$primary-color,
+              $lightness: 10%
+            );
             transform: scale(1.1);
           }
         }
@@ -328,7 +335,7 @@ li {
 
   .emergency-section {
     padding: vars.$spacing-xxl 40px;
-    background: vars.$dark-blue;
+    background: color.adjust(vars.$primary-color, $lightness: -20%);
     max-width: 100%;
     margin: 0 auto;
 
@@ -419,7 +426,7 @@ li {
           box-shadow: 0 2px 6px vars.$shadow-color;
 
           &:active {
-            background: darken(vars.$primary-color, 20%);
+            background: color.adjust(vars.$primary-color, $lightness: -20%);
           }
         }
       }
@@ -844,7 +851,7 @@ li {
         }
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -862,7 +869,7 @@ li {
         }
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -990,9 +997,8 @@ li {
 
         .ant-pagination {
           justify-content: end;
-          
+
           .ant-pagination-item {
-            
             border-radius: 50%;
             margin: 0 4px;
             width: 36px;

@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .notification-dropdown {
   position: relative;
@@ -157,7 +157,11 @@
         }
 
         &.unread {
-          background: linear-gradient(135deg, rgba(40, 167, 69, 0.05), rgba(32, 201, 151, 0.05));
+          background: linear-gradient(
+            135deg,
+            rgba(40, 167, 69, 0.05),
+            rgba(32, 201, 151, 0.05)
+          );
           border-left: 4px solid #28a745;
         }
 
@@ -325,8 +329,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive

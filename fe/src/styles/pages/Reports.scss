@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 .reports {
   padding: 0px;
@@ -15,7 +15,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          vars.$text-primary
+        );
         @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
         margin-bottom: vars.$spacing-2;
       }
@@ -105,7 +109,11 @@
       @include mixins.shadow-elevation(2);
 
       h2 {
-        @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-semibold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-2xl,
+          vars.$font-weight-semibold,
+          vars.$text-primary
+        );
         margin-bottom: vars.$spacing-6;
         text-align: center;
       }
@@ -126,7 +134,7 @@
           overflow: hidden;
 
           &::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
@@ -156,7 +164,10 @@
             @include mixins.shadow-elevation(2);
 
             .users & {
-              @include mixins.gradient-bg(vars.$primary-color, vars.$primary-hover);
+              @include mixins.gradient-bg(
+                vars.$primary-color,
+                vars.$primary-hover
+              );
             }
 
             .blogs & {
@@ -164,7 +175,10 @@
             }
 
             .requests & {
-              @include mixins.gradient-bg(vars.$secondary-color, vars.$secondary-hover);
+              @include mixins.gradient-bg(
+                vars.$secondary-color,
+                vars.$secondary-hover
+              );
             }
           }
 
@@ -172,14 +186,22 @@
             flex: 1;
 
             h3 {
-              @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-bold);
+              @include mixins.text(
+                vars.$font-size-base,
+                vars.$text-secondary,
+                vars.$font-weight-bold
+              );
               margin: 0 0 vars.$spacing-2 0;
               text-transform: uppercase;
               letter-spacing: 1px;
             }
 
             .number {
-              @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-extrabold, vars.$text-primary);
+              @include mixins.heading(
+                vars.$font-size-3xl,
+                vars.$font-weight-extrabold,
+                vars.$text-primary
+              );
               margin: 0 0 vars.$spacing-2 0;
             }
 
@@ -202,7 +224,11 @@
           @include mixins.card-padding(vars.$spacing-6);
 
           h3 {
-            @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+            @include mixins.heading(
+              vars.$font-size-lg,
+              vars.$font-weight-semibold,
+              vars.$text-primary
+            );
             margin-bottom: vars.$spacing-4;
             text-align: center;
           }
@@ -223,7 +249,11 @@
             }
 
             p {
-              @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-medium);
+              @include mixins.text(
+                vars.$font-size-base,
+                vars.$text-secondary,
+                vars.$font-weight-medium
+              );
               margin: 0;
             }
 
@@ -252,12 +282,20 @@
 
                 .role-name,
                 .blood-type {
-                  @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+                  @include mixins.text(
+                    vars.$font-size-sm,
+                    vars.$text-primary,
+                    vars.$font-weight-medium
+                  );
                 }
 
                 .role-count,
                 .blood-count {
-                  @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+                  @include mixins.text(
+                    vars.$font-size-sm,
+                    vars.$text-secondary,
+                    vars.$font-weight-bold
+                  );
                 }
               }
 
@@ -280,7 +318,11 @@
 
               .role-percentage,
               .blood-percentage {
-                @include mixins.text(vars.$font-size-xs, vars.$text-muted, vars.$font-weight-medium);
+                @include mixins.text(
+                  vars.$font-size-xs,
+                  vars.$text-muted,
+                  vars.$font-weight-medium
+                );
                 min-width: 40px;
                 text-align: right;
               }
@@ -302,14 +344,22 @@
           text-align: center;
 
           h4 {
-            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+            @include mixins.text(
+              vars.$font-size-sm,
+              vars.$text-secondary,
+              vars.$font-weight-bold
+            );
             margin: 0 0 vars.$spacing-2 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
 
           .stat-number {
-            @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, vars.$primary-color);
+            @include mixins.heading(
+              vars.$font-size-2xl,
+              vars.$font-weight-bold,
+              vars.$primary-color
+            );
             margin: 0;
           }
         }
@@ -328,11 +378,19 @@
           }
 
           .category-name {
-            @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-sm,
+              vars.$text-primary,
+              vars.$font-weight-medium
+            );
           }
 
           .category-count {
-            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+            @include mixins.text(
+              vars.$font-size-sm,
+              vars.$text-secondary,
+              vars.$font-weight-bold
+            );
           }
         }
       }
@@ -349,14 +407,22 @@
           text-align: center;
 
           h4 {
-            @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-bold);
+            @include mixins.text(
+              vars.$font-size-sm,
+              vars.$text-secondary,
+              vars.$font-weight-bold
+            );
             margin: 0 0 vars.$spacing-2 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
 
           .system-value {
-            @include mixins.heading(vars.$font-size-xl, vars.$font-weight-bold, vars.$primary-color);
+            @include mixins.heading(
+              vars.$font-size-xl,
+              vars.$font-weight-bold,
+              vars.$primary-color
+            );
             margin: 0;
           }
         }
@@ -386,8 +452,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   // === RESPONSIVE DESIGN ===

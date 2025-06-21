@@ -1,5 +1,6 @@
 @use "../../base/variables" as vars;
 @use "../../base/mixin" as mix;
+@use "sass:color";
 
 .blogManagement {
   padding: vars.$spacing-lg;
@@ -170,22 +171,22 @@
 
     .ant-btn {
       &-primary {
-        background: vars.$primary-color;
-        border-color: vars.$primary-color;
+        background: color.adjust(vars.$primary-color, $lightness: -10%);
+        border-color: color.adjust(vars.$primary-color, $lightness: -10%);
 
         &:hover {
-          background: darken(vars.$primary-color, 10%);
-          border-color: darken(vars.$primary-color, 10%);
+          background: color.adjust(vars.$primary-color, $lightness: -20%);
+          border-color: color.adjust(vars.$primary-color, $lightness: -20%);
         }
       }
 
       &-danger {
-        background: vars.$error-color;
-        border-color: vars.$error-color;
+        background: color.adjust(vars.$error-color, $lightness: -10%);
+        border-color: color.adjust(vars.$error-color, $lightness: -10%);
 
         &:hover {
-          background: darken(vars.$error-color, 10%);
-          border-color: darken(vars.$error-color, 10%);
+          background: color.adjust(vars.$error-color, $lightness: -20%);
+          border-color: color.adjust(vars.$error-color, $lightness: -20%);
         }
       }
     }

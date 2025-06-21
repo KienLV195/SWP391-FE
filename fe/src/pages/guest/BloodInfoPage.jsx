@@ -1,82 +1,57 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React from "react";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
 import ScrollToTop from "../../components/common/ScrollToTop";
 import { Input, Select, Space, Typography, Spin, Alert } from "antd";
 import { FaSearch, FaFilter } from "react-icons/fa";
-import { fetchBloodArticles } from "../../services/bloodArticleService";
+import { getBloodArticles } from "../../services/bloodArticleService";
 import ArticleGroup from "../../components/common/ArticleGroup";
+import useRequest from "../../hooks/useFetchData";
+import useSearchAndFilter from "../../hooks/useSearchAndFilter";
+import { getShortContent } from "../../utils/textUtils";
 import "../../styles/pages/BloodInfoPage.scss";
 
 const { Option } = Select;
 const { Title, Paragraph } = Typography;
 
 const TAG_GROUPS = [
-  {
-    key: "Nhóm Máu",
-    label: "Nhóm Máu",
-  },
-  {
-    key: "Hiến Máu",
-    label: "Hiến Máu",
-  },
-  {
-    key: "Truyền máu",
-    label: "Truyền máu",
-  },
+  { key: "Nhóm Máu", label: "Nhóm Máu" },
+  { key: "Hiến Máu", label: "Hiến Máu" },
+  { key: "Truyền máu", label: "Truyền máu" },
 ];
 
 const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTag, setSelectedTag] = useState("all");
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Fetch articles
+  const {
+    data: articles = [],
+    loading,
+    error,
+  } = useRequest(getBloodArticles, []);
 
-  useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchBloodArticles();
-        setArticles(data);
-        setError(null);
-      } catch (err) {
-        setError("Không thể tải danh sách bài viết. Vui lòng thử lại sau.");
-        console.error("Error loading articles:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadArticles();
-  }, []);
-
-  // Filter articles based on search term and selected tag
-  const filteredArticles = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return articles.filter((article) =>
-        selectedTag === "all"
-          ? true
-          : Array.isArray(article.tags) && article.tags.includes(selectedTag)
-      );
-    }
-    const lowerKeyword = searchTerm.toLowerCase();
-    return articles.filter((article) => {
-      const inTitle = article.title?.toLowerCase().includes(lowerKeyword);
-      const inSummary = article.summary?.toLowerCase().includes(lowerKeyword);
-      const inContent = article.content?.toLowerCase().includes(lowerKeyword);
-      const inTags = Array.isArray(article.tags)
-        ? article.tags.some((tag) => tag.toLowerCase().includes(lowerKeyword))
-        : false;
-      const matches = inTitle || inSummary || inContent || inTags;
-      if (!matches) return false;
-      if (selectedTag === "all") return true;
-      return Array.isArray(article.tags) && article.tags.includes(selectedTag);
-    });
-  }, [articles, searchTerm, selectedTag]);
+  // Search/filter logic
+  const searchFn = (article, keyword) => {
+    const lower = keyword.toLowerCase();
+    return (
+      article.title?.toLowerCase().includes(lower) ||
+      article.summary?.toLowerCase().includes(lower) ||
+      article.content?.toLowerCase().includes(lower) ||
+      (Array.isArray(article.tags) &&
+        article.tags.some((tag) => tag.toLowerCase().includes(lower)))
+    );
+  };
+  const filterFn = (article, tag) =>
+    tag === "all" ||
+    (Array.isArray(article.tags) && article.tags.includes(tag));
+  const {
+    searchTerm,
+    setSearchTerm,
+    filter: selectedTag,
+    setFilter: setSelectedTag,
+    filteredData: filteredArticles,
+  } = useSearchAndFilter(articles, searchFn, filterFn);
 
   // Group articles by main tags
-  const groupedArticles = useMemo(() => {
+  const groupedArticles = React.useMemo(() => {
     const result = {};
     TAG_GROUPS.forEach((group) => {
       result[group.key] = filteredArticles.filter(
@@ -87,25 +62,6 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     return result;
   }, [filteredArticles]);
 
-  // Get short content for article preview, highlight keyword, only show snippet around keyword
-  const getShortContent = (content) => {
-    if (!content) return "";
-    if (!searchTerm.trim())
-      return content.length > 120 ? content.slice(0, 120) + "..." : content;
-    const lowerContent = content.toLowerCase();
-    const lowerKeyword = searchTerm.toLowerCase();
-    const idx = lowerContent.indexOf(lowerKeyword);
-    if (idx === -1)
-      return content.length > 120 ? content.slice(0, 120) + "..." : content;
-    const start = Math.max(0, idx - 40);
-    const end = Math.min(content.length, idx + lowerKeyword.length + 40);
-    let snippet =
-      (start > 0 ? "..." : "") +
-      content.slice(start, end) +
-      (end < content.length ? "..." : "");
-    return snippet;
-  };
-
   // Format article data for ArticleGroup component
   const getGroupData = (groupKey) =>
     groupedArticles[groupKey]?.map((article) => ({
@@ -113,7 +69,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
       title: article.title,
       summary: article.summary,
       imgUrl: article.imgUrl || article.image,
-      shortContent: getShortContent(article.content),
+      shortContent: getShortContent(article.content, searchTerm),
       tags: article.tags,
     })) || [];
 
@@ -168,7 +124,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
               <Space>
                 <FaFilter className="filter-icon" />
                 <Select
-                  value={selectedTag}
+                  value={selectedTag || "all"}
                   onChange={setSelectedTag}
                   size="large"
                   className="category-select"

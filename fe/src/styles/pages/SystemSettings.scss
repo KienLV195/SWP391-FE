@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 .system-settings {
   padding: 0px;
@@ -15,7 +15,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          vars.$text-primary
+        );
         @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
         margin-bottom: vars.$spacing-2;
       }
@@ -95,7 +99,11 @@
         padding: vars.$spacing-8;
 
         h3 {
-          @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-xl,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin-bottom: vars.$spacing-6;
           padding-bottom: vars.$spacing-3;
           border-bottom: 1px solid vars.$border-light;
@@ -139,7 +147,11 @@
             @include mixins.flex-align(flex-start, center);
             gap: vars.$spacing-3;
             cursor: pointer;
-            @include mixins.text(vars.$font-size-base, vars.$text-primary, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-base,
+              vars.$text-primary,
+              vars.$font-weight-medium
+            );
 
             input[type="checkbox"] {
               position: absolute;
@@ -166,7 +178,7 @@
               transition: all 0.3s ease;
 
               &::after {
-                content: '';
+                content: "";
                 position: absolute;
                 display: none;
                 left: 6px;
@@ -216,11 +228,19 @@
             @include mixins.flex-between;
 
             .label {
-              @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+              @include mixins.text(
+                vars.$font-size-sm,
+                vars.$text-secondary,
+                vars.$font-weight-medium
+              );
             }
 
             .value {
-              @include mixins.text(vars.$font-size-sm, vars.$text-primary, vars.$font-weight-semibold);
+              @include mixins.text(
+                vars.$font-size-sm,
+                vars.$text-primary,
+                vars.$font-weight-semibold
+              );
             }
           }
         }
@@ -252,7 +272,11 @@
           }
 
           span {
-            @include mixins.text(vars.$font-size-sm, vars.$warning-color, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-sm,
+              vars.$warning-color,
+              vars.$font-weight-medium
+            );
           }
         }
       }
@@ -281,8 +305,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   // === RESPONSIVE DESIGN ===

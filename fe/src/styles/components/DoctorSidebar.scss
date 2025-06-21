@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .doctor-sidebar {
   width: 280px;
@@ -135,7 +135,6 @@
       }
 
       .doctor-type {
-
         .blood-dept,
         .other-dept {
           font-size: 0.8rem;

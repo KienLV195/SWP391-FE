@@ -3,16 +3,18 @@
  * Free alternative to Google Maps API using OpenStreetMap data
  */
 
+import axios from "axios";
+
 class NominatimService {
   // Nominatim API endpoint
-  static BASE_URL = 'https://nominatim.openstreetmap.org';
+  static BASE_URL = "https://nominatim.openstreetmap.org";
 
   // Hospital coordinates (Bệnh viện Đa khoa Ánh Dương)
   static HOSPITAL_COORDINATES = {
     lat: 10.7751237,
     lng: 106.6862143,
-    name: 'Bệnh viện Đa khoa Ánh Dương',
-    address: 'Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam'
+    name: "Bệnh viện Đa khoa Ánh Dương",
+    address: "Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam",
   };
 
   /**
@@ -21,62 +23,39 @@ class NominatimService {
    * @returns {Promise<Object>} - Object containing lat, lng, and formatted_address
    */
   static async geocodeAddress(address) {
-    try {
-      if (!address || address.trim().length < 5) {
-        throw new Error('Địa chỉ quá ngắn');
-      }
-
-      // Build search URL with Vietnam country code
-      const searchParams = new URLSearchParams({
-        q: address,
-        format: 'json',
-        countrycodes: 'vn',
-        limit: 1,
-        addressdetails: 1,
-        'accept-language': 'vi'
-      });
-
-      const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.length === 0) {
-        throw new Error('Không tìm thấy địa chỉ này. Vui lòng kiểm tra lại địa chỉ.');
-      }
-
-      const result = data[0];
-
-      // Log for debugging
-      console.log('Nominatim geocoding result:', {
-        input: address,
-        formatted: result.display_name,
-        coordinates: { lat: result.lat, lon: result.lon },
-        importance: result.importance
-      });
-
-      return {
-        lat: parseFloat(result.lat),
-        lng: parseFloat(result.lon),
-        address: result.display_name,
-        place_id: result.place_id,
-        importance: result.importance,
-        boundingbox: result.boundingbox,
-        addressDetails: result.address
-      };
-    } catch (error) {
-      // console.error('Nominatim geocoding error:', error);
-      throw error;
+    if (!address || address.trim().length < 5) {
+      throw new Error("Địa chỉ quá ngắn");
     }
+    const searchParams = new URLSearchParams({
+      q: address,
+      format: "json",
+      countrycodes: "vn",
+      limit: 1,
+      addressdetails: 1,
+      "accept-language": "vi",
+    });
+    const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+      },
+    });
+    const data = response.data;
+    if (!data || data.length === 0) {
+      throw new Error(
+        "Không tìm thấy địa chỉ này. Vui lòng kiểm tra lại địa chỉ."
+      );
+    }
+    const result = data[0];
+    return {
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+      address: result.display_name,
+      place_id: result.place_id,
+      importance: result.importance,
+      boundingbox: result.boundingbox,
+      addressDetails: result.address,
+    };
   }
 
   /**
@@ -86,43 +65,29 @@ class NominatimService {
    * @returns {Promise<Object>} - Object containing address information
    */
   static async reverseGeocode(lat, lng) {
-    try {
-      const searchParams = new URLSearchParams({
-        lat: lat.toString(),
-        lon: lng.toString(),
-        format: 'json',
-        addressdetails: 1,
-        'accept-language': 'vi'
-      });
-
-      const url = `${this.BASE_URL}/reverse?${searchParams.toString()}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      return {
-        lat: parseFloat(data.lat),
-        lng: parseFloat(data.lon),
-        address: data.display_name,
-        addressDetails: data.address
-      };
-    } catch (error) {
-      console.error('Nominatim reverse geocoding error:', error);
-      throw error;
+    const searchParams = new URLSearchParams({
+      lat: lat.toString(),
+      lon: lng.toString(),
+      format: "json",
+      addressdetails: 1,
+      "accept-language": "vi",
+    });
+    const url = `${this.BASE_URL}/reverse?${searchParams.toString()}`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+      },
+    });
+    const data = response.data;
+    if (data.error) {
+      throw new Error(data.error);
     }
+    return {
+      lat: parseFloat(data.lat),
+      lng: parseFloat(data.lon),
+      address: data.display_name,
+      addressDetails: data.address,
+    };
   }
 
   /**
@@ -131,48 +96,33 @@ class NominatimService {
    * @returns {Promise<Array>} - Array of place suggestions
    */
   static async searchPlaces(query) {
-    try {
-      if (!query || query.trim().length < 3) {
-        return [];
-      }
-
-      const searchParams = new URLSearchParams({
-        q: query,
-        format: 'json',
-        countrycodes: 'vn',
-        limit: 5,
-        addressdetails: 1,
-        'accept-language': 'vi'
-      });
-
-      const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
-        }
-      });
-
-      if (!response.ok) {
-        console.warn('Places search failed:', response.status);
-        return [];
-      }
-
-      const data = await response.json();
-
-      return data.map(item => ({
-        place_id: item.place_id,
-        display_name: item.display_name,
-        lat: parseFloat(item.lat),
-        lng: parseFloat(item.lon),
-        importance: item.importance,
-        type: item.type,
-        addressDetails: item.address
-      }));
-    } catch (error) {
-      console.error('Places search error:', error);
+    if (!query || query.trim().length < 3) {
       return [];
     }
+    const searchParams = new URLSearchParams({
+      q: query,
+      format: "json",
+      countrycodes: "vn",
+      limit: 5,
+      addressdetails: 1,
+      "accept-language": "vi",
+    });
+    const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+      },
+    });
+    const data = response.data;
+    return data.map((item) => ({
+      place_id: item.place_id,
+      display_name: item.display_name,
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon),
+      importance: item.importance,
+      type: item.type,
+      addressDetails: item.address,
+    }));
   }
 
   /**
@@ -181,40 +131,19 @@ class NominatimService {
    * @returns {Promise<Object>} - Detailed place information
    */
   static async getPlaceDetails(placeId) {
-    try {
-      const searchParams = new URLSearchParams({
-        place_id: placeId,
-        format: 'json',
-        addressdetails: 1,
-        'accept-language': 'vi'
-      });
-
-      const url = `${this.BASE_URL}/details?${searchParams.toString()}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      return {
-        lat: parseFloat(data.lat),
-        lng: parseFloat(data.lon),
-        address: data.display_name,
-        addressDetails: data.address,
-        category: data.category,
-        type: data.type
-      };
-    } catch (error) {
-      console.error('Place details error:', error);
-      throw error;
-    }
+    const searchParams = new URLSearchParams({
+      place_id: placeId,
+      format: "json",
+      addressdetails: 1,
+      "accept-language": "vi",
+    });
+    const url = `${this.BASE_URL}/details?${searchParams.toString()}`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+      },
+    });
+    return response.data;
   }
 
   /**
@@ -222,18 +151,13 @@ class NominatimService {
    * @returns {Promise<boolean>} - True if service is available
    */
   static async isServiceAvailable() {
-    try {
-      const response = await fetch(`${this.BASE_URL}/status`, {
-        method: 'HEAD',
-        headers: {
-          'User-Agent': 'BloodDonationApp/1.0 (Contact: admin@blooddonation.com)'
-        }
-      });
-      return response.ok;
-    } catch (error) {
-      console.warn('Nominatim service check failed:', error);
-      return false;
-    }
+    const url = `${this.BASE_URL}/status`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+      },
+    });
+    return response.data;
   }
 
   /**
@@ -250,7 +174,7 @@ class NominatimService {
    * @returns {string} - Formatted address string
    */
   static formatAddress(addressDetails) {
-    if (!addressDetails) return '';
+    if (!addressDetails) return "";
 
     const parts = [];
 
@@ -273,7 +197,7 @@ class NominatimService {
     // Country
     if (addressDetails.country) parts.push(addressDetails.country);
 
-    return parts.join(', ');
+    return parts.join(", ");
   }
 }
 

@@ -124,7 +124,6 @@ const LocationPicker = ({
       if (response.ok) {
         const data = await response.json();
         if (data.length > 0) {
-          console.log("Nominatim geocoding result:", data[0]);
           return {
             lat: parseFloat(data[0].lat),
             lng: parseFloat(data[0].lon),
@@ -133,8 +132,7 @@ const LocationPicker = ({
         }
       }
     } catch (error) {
-      console.warn("Nominatim geocoding failed:", error);
-    }
+      }
 
     return null;
   };
@@ -159,17 +157,10 @@ const LocationPicker = ({
         setDistance(calculatedDistance);
         setTravelTime(""); // Empty travel time
 
-        console.log("Fallback geocoding successful:", {
-          address,
-          coordinates: fallbackResult,
-          distance: calculatedDistance,
-        });
-
         return;
       }
     } catch (error) {
-      console.warn("Fallback geocoding failed:", error);
-    }
+      }
 
     // If fallback geocoding fails, use keyword-based estimation
     const addressLower = address.toLowerCase();
@@ -245,12 +236,7 @@ const LocationPicker = ({
         hospitalCoords
       );
 
-      console.log("Generated coordinates for unknown address:", {
-        address,
-        coordinates: { lat: mockLat, lng: mockLng },
-        calculatedDistance: estimatedDistance,
-      });
-    }
+      }
 
     setLocation((prev) => ({
       ...prev,

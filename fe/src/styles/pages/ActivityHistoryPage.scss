@@ -1,8 +1,11 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .activity-history-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 
   .activity-content {
     padding: 2rem;
@@ -23,6 +26,7 @@
       .header-content {
         h1 {
           background: linear-gradient(135deg, #667eea, #764ba2);
+          background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           margin-bottom: 0.5rem;
@@ -99,6 +103,7 @@
             font-weight: 800;
             margin: 0 0 0.25rem 0;
             background: linear-gradient(45deg, #6f42c1, #6610f2);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
           }
@@ -114,22 +119,30 @@
 
         &.total {
           border-left: 4px solid #6f42c1;
-          .stat-icon { color: #6f42c1; }
+          .stat-icon {
+            color: #6f42c1;
+          }
         }
 
         &.donations {
           border-left: 4px solid #dc3545;
-          .stat-icon { color: #dc3545; }
+          .stat-icon {
+            color: #dc3545;
+          }
         }
 
         &.requests {
           border-left: 4px solid #17a2b8;
-          .stat-icon { color: #17a2b8; }
+          .stat-icon {
+            color: #17a2b8;
+          }
         }
 
         &.completed {
           border-left: 4px solid #28a745;
-          .stat-icon { color: #28a745; }
+          .stat-icon {
+            color: #28a745;
+          }
         }
       }
     }
@@ -435,6 +448,7 @@
         h3 {
           margin: 0;
           background: linear-gradient(45deg, #6f42c1, #6610f2);
+          background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           font-size: 1.3rem;
@@ -488,8 +502,12 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive

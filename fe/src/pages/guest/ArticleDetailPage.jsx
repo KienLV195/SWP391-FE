@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchBloodArticleDetail } from "../../services/bloodArticleService";
+import { getBloodArticleDetail } from "../../services/bloodArticleService";
 import { Card, Spin, Tag, Typography, Button, Divider, Space } from "antd";
 import {
   ArrowLeftOutlined,
@@ -9,6 +9,7 @@ import {
   BookOutlined,
   TagOutlined,
 } from "@ant-design/icons";
+import useRequest from "../../hooks/useFetchData";
 import "../../styles/pages/BloodInfoPage.scss";
 
 const { Title, Paragraph, Text } = Typography;
@@ -16,19 +17,10 @@ const { Title, Paragraph, Text } = Typography;
 const ArticleDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    fetchBloodArticleDetail(id)
-      .then((data) => setArticle(data))
-      .catch((error) => {
-        console.error("Error fetching article:", error);
-        setArticle(null);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: article, loading } = useRequest(
+    () => getBloodArticleDetail(id),
+    [id]
+  );
 
   if (loading) {
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import GuestNavbar from "../../components/guest/GuestNavbar";
 import Footer from "../../components/common/Footer";
@@ -8,7 +8,6 @@ import {
   Row,
   Col,
   Card,
-  Button,
   Carousel,
   Pagination,
   Spin,
@@ -16,7 +15,11 @@ import {
 } from "antd";
 import { FaSearch, FaEye, FaCalendarAlt } from "react-icons/fa";
 import Highlighter from "react-highlight-words";
+import useRequest from "../../hooks/useFetchData";
+import useSearchAndFilter from "../../hooks/useSearchAndFilter";
+import usePagination from "../../hooks/usePagination";
 import { fetchAllNews } from "../../services/newsService";
+import { getHighlightedSnippet } from "../../utils/textUtils";
 import "../../styles/pages/BlogPage.scss";
 
 // Custom highlight style for BlogPage
@@ -30,74 +33,41 @@ const { Meta } = Card;
 const { Title, Paragraph } = Typography;
 
 const BlogPage = ({ CustomNavbar, hideNavbar }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Fetch news
+  const { data: news = [], loading, error } = useRequest(fetchAllNews, []);
+
+  // Search/filter logic
+  const searchFn = (item, keyword) => {
+    const lower = keyword.toLowerCase();
+    return (
+      item.title?.toLowerCase().includes(lower) ||
+      item.summary?.toLowerCase().includes(lower) ||
+      item.content?.toLowerCase().includes(lower)
+    );
+  };
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredData: filteredNews,
+  } = useSearchAndFilter(news, searchFn);
+
+  // Pagination
   const pageSize = 4;
-  const navigate = useNavigate();
+  const {
+    currentPage,
+    setCurrentPage,
+    paginatedData: paginatedPosts,
+  } = usePagination(filteredNews, pageSize);
 
-  useEffect(() => {
-    const loadNews = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchAllNews();
-        setNews(Array.isArray(data) ? data : []);
-        setError(null);
-      } catch {
-        setError("Không thể tải danh sách tin tức. Vui lòng thử lại sau.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadNews();
-  }, []);
-
-  const filteredNews = useMemo(() => {
-    const lowerKeyword = searchTerm.toLowerCase();
-    return news
-      .filter(
-        (item) =>
-          item.title?.toLowerCase().includes(lowerKeyword) ||
-          item.summary?.toLowerCase().includes(lowerKeyword) ||
-          item.content?.toLowerCase().includes(lowerKeyword)
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
-      );
-  }, [news, searchTerm]);
-
+  // Carousel posts
   const carouselPosts = filteredNews.slice(0, Math.min(3, filteredNews.length));
-  const paginatedPosts = filteredNews.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
 
+  const navigate = useNavigate();
   const handleKnowMore = (post) => {
     if (post && post.postId) {
       navigate(`/blog/${post.postId}`);
     }
   };
-
-  function getHighlightedSnippet(content, keyword) {
-    if (!content) return "";
-    if (!keyword?.trim())
-      return content.length > 120 ? content.slice(0, 120) + "..." : content;
-    const lowerContent = content.toLowerCase();
-    const lowerKeyword = keyword.toLowerCase();
-    const idx = lowerContent.indexOf(lowerKeyword);
-    if (idx === -1)
-      return content.length > 120 ? content.slice(0, 120) + "..." : content;
-    const start = Math.max(0, idx - 40);
-    const end = Math.min(content.length, idx + lowerKeyword.length + 40);
-    let snippet =
-      (start > 0 ? "..." : "") +
-      content.slice(start, end) +
-      (end < content.length ? "..." : "");
-    return snippet;
-  }
 
   if (loading) {
     return (
@@ -250,65 +220,26 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                               highlightStyle={highlightStyle}
                             />
                           </p>
-
-                          <Button
-                            type="primary"
-                            className="read-more-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleKnowMore(post);
-                            }}
-                          >
-                            Đọc ngay
-                          </Button>
                         </div>
                       </Card>
                     </Col>
                   ))}
                 </Row>
               </div>
-              <div className="pagination-bar">
-                <div className="pagination-total">
-                  {`Tổng số ${filteredNews.length} bài viết`}
-                </div>
+              <div className="pagination-section">
                 <Pagination
                   current={currentPage}
-                  pageSize={pageSize}
                   total={filteredNews.length}
-                  onChange={(page) => setCurrentPage(page)}
+                  pageSize={pageSize}
+                  onChange={setCurrentPage}
                   showSizeChanger={false}
-                  showQuickJumper={false}
-                  itemRender={(page, type, originalElement) => {
-                    const totalPages = Math.ceil(
-                      filteredNews.length / pageSize
-                    );
-                    if (type === "page") {
-                      if (page <= 3 || page === totalPages)
-                        return originalElement;
-                      if (page === 4 && totalPages > 4)
-                        return <span key="ellipsis">...</span>;
-                      return null;
-                    }
-                    return originalElement;
-                  }}
                 />
               </div>
             </>
           ) : (
-            <div className="no-news">
-              <div
-                className="no-results-icon"
-                style={{ fontSize: 64, marginBottom: 12 }}
-              ></div>
-              <div className="no-results">
-                <div className="no-results-icon">📚</div>
-                <Title level={3}>
-                  Không tìm thấy kết quả phù hợp với từ khóa: '{searchTerm}'
-                </Title>
-                <Paragraph>
-                  Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
-                </Paragraph>
-              </div>
+            <div className="no-results">
+              <Title level={3}>Không tìm thấy kết quả phù hợp</Title>
+              <Paragraph>Hãy thử thay đổi từ khóa tìm kiếm.</Paragraph>
             </div>
           )}
         </section>

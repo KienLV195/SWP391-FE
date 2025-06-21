@@ -1,23 +1,24 @@
+@use "sass:color";
 // Manager Design System - Unified styling for all Manager pages
-@use 'variables' as *;
+@use "variables" as *;
 
 // ===== TYPOGRAPHY SYSTEM =====
-$manager-font-family: 'Inter', sans-serif;
+$manager-font-family: "Inter", sans-serif;
 $manager-font-size-base: 16px;
 $manager-font-size-sm: 14px;
 $manager-font-size-lg: 18px;
 $manager-font-size-xl: 20px;
 $manager-font-size-xxl: 24px;
 
-$manager-text-color: #20374E;
+$manager-text-color: #20374e;
 $manager-text-color-secondary: #666666;
 $manager-text-color-light: #999999;
 
 // ===== COLOR SYSTEM =====
-$manager-primary-color: #D93E4C;
-$manager-secondary-color: #20374E;
-$manager-accent-color: #DECCAA;
-$manager-danger-color: #D91022;
+$manager-primary-color: #d93e4c;
+$manager-secondary-color: #20374e;
+$manager-accent-color: #deccaa;
+$manager-danger-color: #d91022;
 
 $manager-bg-color: #ffffff;
 $manager-bg-secondary: #f8f9fa;
@@ -47,10 +48,17 @@ $manager-spacing-xxl: 48px;
   color: white !important;
   font-family: $manager-font-family;
   font-weight: 500;
-  
-  &:hover, &:focus {
-    background-color: darken($manager-primary-color, 8%) !important;
-    border-color: darken($manager-primary-color, 8%) !important;
+
+  &:hover,
+  &:focus {
+    background-color: color.adjust(
+      $manager-primary-color,
+      $lightness: -8%
+    ) !important;
+    border-color: color.adjust(
+      $manager-primary-color,
+      $lightness: -8%
+    ) !important;
   }
 }
 
@@ -60,11 +68,18 @@ $manager-spacing-xxl: 48px;
   color: $manager-text-color !important;
   font-family: $manager-font-family;
   font-weight: 500;
-  
-  &:hover, &:focus {
-    background-color: $manager-bg-secondary !important;
-    border-color: $manager-primary-color !important;
-    color: $manager-primary-color !important;
+
+  &:hover,
+  &:focus {
+    background-color: color.adjust(
+      $manager-bg-secondary,
+      $lightness: 2%
+    ) !important;
+    border-color: color.adjust(
+      $manager-primary-color,
+      $lightness: -8%
+    ) !important;
+    color: color.adjust($manager-primary-color, $lightness: -8%) !important;
   }
 }
 
@@ -78,7 +93,7 @@ $manager-spacing-xxl: 48px;
 
 @mixin manager-table {
   font-family: $manager-font-family;
-  
+
   .ant-table-thead > tr > th {
     background-color: $manager-bg-secondary;
     color: $manager-text-color;
@@ -86,28 +101,28 @@ $manager-spacing-xxl: 48px;
     font-size: $manager-font-size-sm;
     border-bottom: 1px solid $manager-border-color;
   }
-  
+
   .ant-table-tbody > tr > td {
     color: $manager-text-color;
     font-size: $manager-font-size-base;
-    border-bottom: 1px solid lighten($manager-border-color, 5%);
+    border-bottom: 1px solid color.adjust($manager-border-color, $lightness: 5%);
   }
-  
+
   .ant-table-tbody > tr:hover > td {
-    background-color: lighten($manager-bg-secondary, 2%);
+    background-color: color.adjust($manager-bg-secondary, $lightness: 2%);
   }
 }
 
 // ===== BLOOD TYPE COLORS =====
 $blood-type-colors: (
-  'A+': #e74c3c,
-  'A-': #c0392b,
-  'B+': #3498db,
-  'B-': #2980b9,
-  'AB+': #9b59b6,
-  'AB-': #8e44ad,
-  'O+': #e67e22,
-  'O-': #d35400
+  "A+": #e74c3c,
+  "A-": #c0392b,
+  "B+": #3498db,
+  "B-": #2980b9,
+  "AB+": #9b59b6,
+  "AB-": #8e44ad,
+  "O+": #e67e22,
+  "O-": #d35400,
 );
 
 @mixin blood-type-tag($blood-type) {
@@ -119,14 +134,14 @@ $blood-type-colors: (
 
 // ===== STATUS COLORS =====
 $status-colors: (
-  'critical': $manager-danger-color,
-  'low': #fa8c16,
-  'normal': #52c41a,
-  'high': #1890ff,
-  'pending': #faad14,
-  'approved': #52c41a,
-  'rejected': $manager-danger-color,
-  'completed': #13c2c2
+  "critical": $manager-danger-color,
+  "low": #fa8c16,
+  "normal": #52c41a,
+  "high": #1890ff,
+  "pending": #faad14,
+  "approved": #52c41a,
+  "rejected": $manager-danger-color,
+  "completed": #13c2c2,
 );
 
 @mixin status-tag($status) {
@@ -142,18 +157,18 @@ $status-colors: (
   min-height: 100vh;
   background: $manager-bg-color;
   font-family: $manager-font-family;
-  
+
   .manager-content {
     flex: 1;
     margin-left: 280px;
     padding: $manager-spacing-lg;
     transition: margin-left 0.3s ease;
-    
+
     @media (max-width: 768px) {
       margin-left: 0;
       padding: $manager-spacing-md;
     }
-    
+
     @media (max-width: 576px) {
       padding: $manager-spacing-sm;
     }
@@ -164,23 +179,23 @@ $status-colors: (
   display: flex;
   align-items: center;
   gap: $manager-spacing-md;
-  
+
   .ant-btn {
     font-family: $manager-font-family;
-    
+
     &.ant-btn-primary {
       @include manager-button-primary;
     }
-    
+
     &:not(.ant-btn-primary) {
       @include manager-button-default;
     }
   }
-  
+
   @media (max-width: 576px) {
     flex-direction: column;
     gap: $manager-spacing-sm;
-    
+
     .ant-btn {
       width: 100%;
     }
@@ -189,11 +204,11 @@ $status-colors: (
 
 // ===== RESPONSIVE BREAKPOINTS =====
 $manager-breakpoints: (
-  'xs': 576px,
-  'sm': 768px,
-  'md': 992px,
-  'lg': 1200px,
-  'xl': 1400px
+  "xs": 576px,
+  "sm": 768px,
+  "md": 992px,
+  "lg": 1200px,
+  "xl": 1400px,
 );
 
 @mixin manager-responsive($breakpoint) {
@@ -206,44 +221,44 @@ $manager-breakpoints: (
 @mixin manager-sidebar {
   .ant-layout-sider {
     background: $manager-secondary-color !important;
-    
+
     .ant-layout-sider-children {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
-    
+
     .ant-menu {
       background: transparent !important;
       border: none !important;
       color: white !important;
-      
+
       .ant-menu-item {
         color: rgba(255, 255, 255, 0.8) !important;
         font-family: $manager-font-family;
         font-size: $manager-font-size-base;
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.1) !important;
           color: white !important;
         }
-        
+
         &.ant-menu-item-selected {
           background-color: $manager-primary-color !important;
           color: white !important;
         }
       }
-      
+
       .ant-menu-item-icon {
         font-size: 18px;
       }
     }
   }
-  
+
   .ant-layout-sider-collapsed {
     .ant-menu-item {
       padding: 0 calc(50% - 9px) !important;
-      
+
       .ant-menu-title-content {
         display: none;
       }
@@ -275,78 +290,78 @@ $manager-breakpoints: (
 // ===== COMPONENT OVERRIDES =====
 .manager-page {
   @include manager-page-layout;
-  
+
   .ant-card {
     @include manager-card;
     font-family: $manager-font-family;
-    
+
     .ant-card-head-title {
       color: $manager-text-color;
       font-family: $manager-font-family;
       font-weight: 600;
     }
   }
-  
+
   .ant-table-wrapper {
     @include manager-table;
   }
-  
+
   .ant-statistic {
     .ant-statistic-title {
       color: $manager-text-color-secondary;
       font-family: $manager-font-family;
       font-size: $manager-font-size-sm;
     }
-    
+
     .ant-statistic-content {
       color: $manager-text-color;
       font-family: $manager-font-family;
       font-weight: 600;
     }
   }
-  
+
   .ant-select {
     font-family: $manager-font-family;
-    
+
     .ant-select-selector {
       border-color: $manager-border-color;
-      
+
       &:hover {
         border-color: $manager-primary-color;
       }
     }
-    
+
     &.ant-select-focused .ant-select-selector {
       border-color: $manager-primary-color;
       box-shadow: 0 0 0 2px rgba($manager-primary-color, 0.2);
     }
   }
-  
+
   .ant-input {
     font-family: $manager-font-family;
     border-color: $manager-border-color;
-    
+
     &:hover {
       border-color: $manager-primary-color;
     }
-    
+
     &:focus {
       border-color: $manager-primary-color;
       box-shadow: 0 0 0 2px rgba($manager-primary-color, 0.2);
     }
   }
-  
+
   .ant-modal {
     .ant-modal-header {
       border-bottom: 1px solid $manager-border-color;
-      
+
       .ant-modal-title {
         color: $manager-text-color;
         font-family: $manager-font-family;
         font-weight: 600;
       }
     }
-    
+
     .ant-modal-body {
       font-family: $manager-font-family;
     }

@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .blood-request-form-page {
   min-height: 100vh;
@@ -20,6 +20,7 @@
 
       h1 {
         background: linear-gradient(135deg, #667eea, #764ba2);
+        background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
@@ -46,6 +47,7 @@
 
         h2 {
           background: linear-gradient(135deg, #667eea, #764ba2);
+          background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           margin-bottom: 2rem;

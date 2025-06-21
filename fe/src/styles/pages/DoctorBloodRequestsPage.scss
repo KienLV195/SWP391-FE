@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .doctor-blood-requests {
   display: flex;
@@ -17,7 +17,7 @@
       align-items: flex-start;
       flex-wrap: wrap;
       gap: 1rem;
-      
+
       div {
         h1 {
           color: #28a745;
@@ -169,7 +169,8 @@
           width: 100%;
           border-collapse: collapse;
 
-          th, td {
+          th,
+          td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #eee;
@@ -201,39 +202,46 @@
             font-size: 0.8rem;
           }
 
-          .status-badge, .urgency-badge {
+          .status-badge,
+          .urgency-badge {
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             font-weight: 600;
             font-size: 0.8rem;
             text-transform: uppercase;
 
-            &.status-warning, &.urgency-warning {
+            &.status-warning,
+            &.urgency-warning {
               background: #fff3cd;
               color: #856404;
             }
 
-            &.status-info, &.urgency-info {
+            &.status-info,
+            &.urgency-info {
               background: #d1ecf1;
               color: #0c5460;
             }
 
-            &.status-primary, &.urgency-primary {
+            &.status-primary,
+            &.urgency-primary {
               background: rgba(#28a745, 0.1);
               color: #28a745;
             }
 
-            &.status-success, &.urgency-success {
+            &.status-success,
+            &.urgency-success {
               background: #d4edda;
               color: #155724;
             }
 
-            &.status-danger, &.urgency-danger {
+            &.status-danger,
+            &.urgency-danger {
               background: #f8d7da;
               color: #721c24;
             }
 
-            &.status-secondary, &.urgency-secondary {
+            &.status-secondary,
+            &.urgency-secondary {
               background: #e2e3e5;
               color: #383d41;
             }
@@ -375,7 +383,9 @@
           color: #333;
         }
 
-        select, input, textarea {
+        select,
+        input,
+        textarea {
           width: 100%;
           padding: 0.5rem;
           border: 1px solid #ddd;
@@ -494,7 +504,11 @@
 }
 
 // Action buttons styling
-.doctor-blood-requests .doctor-blood-requests-content .requests-section .requests-table-container .requests-table {
+.doctor-blood-requests
+  .doctor-blood-requests-content
+  .requests-section
+  .requests-table-container
+  .requests-table {
   .action-buttons {
     display: flex;
     gap: 0.5rem;

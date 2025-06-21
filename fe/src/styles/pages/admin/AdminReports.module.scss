@@ -1,25 +1,26 @@
-@import "../../base/variables";
-@import "../../base/mixins";
+@use "../../base/variables" as vars;
+@use "../../base/mixins" as mixins;
+@use "sass:color";
 
 .adminReports {
-  padding: $spacing-lg;
-  background-color: $manager-bg-light;
-  border-radius: $border-radius-lg;
-  box-shadow: $shadow-sm;
+  padding: vars.$spacing-lg;
+  background-color: vars.$manager-bg-light;
+  border-radius: vars.$border-radius-lg;
+  box-shadow: vars.$shadow-sm;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-xl;
+    margin-bottom: vars.$spacing-xl;
     flex-wrap: wrap;
-    gap: $spacing-md;
+    gap: vars.$spacing-md;
 
     h1 {
       margin: 0;
-      color: $manager-text;
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-bold;
+      color: vars.$manager-text;
+      font-size: vars.$font-size-2xl;
+      font-weight: vars.$font-weight-bold;
     }
 
     .ant-space {
@@ -31,113 +32,113 @@
   }
 
   .chartCard {
-    background-color: $manager-bg;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-sm;
+    background-color: vars.$manager-bg;
+    border: 1px solid vars.$border-color;
+    border-radius: vars.$border-radius-lg;
+    box-shadow: vars.$shadow-sm;
     transition: box-shadow 0.3s ease;
 
     &:hover {
-      box-shadow: $shadow-md;
+      box-shadow: vars.$shadow-md;
     }
 
     .ant-card-head {
-      border-bottom: 1px solid $border-color;
-      padding: $spacing-md $spacing-lg;
+      border-bottom: 1px solid vars.$border-color;
+      padding: vars.$spacing-md vars.$spacing-lg;
 
       .ant-card-head-title {
-        color: $manager-text;
-        font-size: $font-size-lg;
-        font-weight: $font-weight-semibold;
+        color: vars.$manager-text;
+        font-size: vars.$font-size-lg;
+        font-weight: vars.$font-weight-semibold;
       }
     }
 
     .ant-card-body {
-      padding: $spacing-lg;
+      padding: vars.$spacing-lg;
     }
   }
 
   // Global styles for Ant Design components
   :global {
     .ant-select-selector {
-      background-color: $manager-bg !important;
-      border-color: $border-color !important;
+      background-color: vars.$manager-bg !important;
+      border-color: vars.$border-color !important;
     }
 
     .ant-picker {
-      background-color: $manager-bg !important;
-      border-color: $border-color !important;
+      background-color: vars.$manager-bg !important;
+      border-color: vars.$border-color !important;
     }
 
     .ant-btn {
       &-primary {
-        background-color: $primary-color;
-        border-color: $primary-color;
+        background-color: color.adjust(vars.$primary-color, $lightness: -10%);
+        border-color: color.adjust(vars.$primary-color, $lightness: -10%);
 
         &:hover {
-          background-color: darken($primary-color, 10%);
-          border-color: darken($primary-color, 10%);
+          background-color: color.adjust(vars.$primary-color, $lightness: -20%);
+          border-color: color.adjust(vars.$primary-color, $lightness: -20%);
         }
       }
     }
 
     .recharts-default-tooltip {
-      background-color: $manager-bg !important;
-      border: 1px solid $border-color !important;
-      border-radius: $border-radius-md !important;
-      box-shadow: $shadow-md !important;
+      background-color: vars.$manager-bg !important;
+      border: 1px solid vars.$border-color !important;
+      border-radius: vars.$border-radius-md !important;
+      box-shadow: vars.$shadow-md !important;
 
       .recharts-tooltip-label {
-        color: $manager-text !important;
+        color: vars.$manager-text !important;
       }
 
       .recharts-tooltip-item {
-        color: $manager-text !important;
+        color: vars.$manager-text !important;
       }
     }
 
     .recharts-legend-item-text {
-      color: $manager-text !important;
+      color: vars.$manager-text !important;
     }
   }
 
   // Responsive adjustments
   @include respond-to(tablet) {
-    padding: $spacing-md;
+    padding: vars.$spacing-md;
 
     .header {
       flex-direction: column;
       align-items: flex-start;
-      gap: $spacing-md;
+      gap: vars.$spacing-md;
 
       h1 {
-        font-size: $font-size-xl;
+        font-size: vars.$font-size-xl;
       }
     }
 
     .chartCard {
       .ant-card-body {
-        padding: $spacing-md;
+        padding: vars.$spacing-md;
       }
     }
   }
 
   @include respond-to(mobile) {
-    padding: $spacing-sm;
+    padding: vars.$spacing-sm;
 
     .header {
       h1 {
-        font-size: $font-size-lg;
+        font-size: vars.$font-size-lg;
       }
     }
 
     .chartCard {
       .ant-card-head {
-        padding: $spacing-sm $spacing-md;
+        padding: vars.$spacing-sm vars.$spacing-md;
       }
 
       .ant-card-body {
-        padding: $spacing-sm;
+        padding: vars.$spacing-sm;
       }
     }
   }

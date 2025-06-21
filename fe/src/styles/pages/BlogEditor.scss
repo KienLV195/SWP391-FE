@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 .blog-editor {
   max-width: 1200px;
@@ -14,7 +14,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          vars.$text-primary
+        );
         @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
         margin-bottom: vars.$spacing-2;
       }
@@ -131,7 +135,7 @@
         textarea {
           border-radius: 0 0 vars.$border-radius-base vars.$border-radius-base;
           border-top: none;
-          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+          font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
           font-size: vars.$font-size-sm;
           line-height: vars.$line-height-relaxed;
           min-height: 400px;
@@ -146,7 +150,11 @@
         margin-bottom: vars.$spacing-6;
 
         h3 {
-          @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-lg,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin-bottom: vars.$spacing-4;
           padding-bottom: vars.$spacing-3;
           border-bottom: 1px solid vars.$border-light;
@@ -201,7 +209,11 @@
             }
 
             span {
-              @include mixins.text(vars.$font-size-base, vars.$text-secondary, vars.$font-weight-medium);
+              @include mixins.text(
+                vars.$font-size-base,
+                vars.$text-secondary,
+                vars.$font-weight-medium
+              );
             }
 
             small {
@@ -267,8 +279,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   // === RESPONSIVE DESIGN ===

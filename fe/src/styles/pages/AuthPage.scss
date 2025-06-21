@@ -1,65 +1,65 @@
 @use "../base/mixins";
-@use "../base/variables";
+@use "../base/variables" as vars;
 
 .auth-page {
-    min-height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: vars.$background-light;
+
+  &__content {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    background-color: $background-light;
+    align-items: center;
+    justify-content: center;
+    padding: vars.$spacing-xxl vars.$spacing-lg;
+  }
 
-    &__content {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: $spacing-xxl $spacing-lg;
-    }
+  &__container {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: vars.$spacing-xl;
+    border-radius: vars.$border-radius-lg;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    &__container {
-        width: 100%;
-        max-width: 400px;
-        background: white;
-        padding: $spacing-xl;
-        border-radius: $border-radius-lg;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    &__title {
-        font-size: $font-size-xlarge;
-        color: $text-color;
-        margin-bottom: $spacing-xl;
-        text-align: center;
-    }
+  &__title {
+    font-size: vars.$font-size-xlarge;
+    color: vars.$text-color;
+    margin-bottom: vars.$spacing-xl;
+    text-align: center;
+  }
 }
 
 @include tablet {
-    .auth-page {
-        &__content {
-            padding: $spacing-xl $spacing-md;
-        }
-
-        &__container {
-            padding: $spacing-lg;
-        }
-
-        &__title {
-            font-size: $font-size-large;
-        }
+  .auth-page {
+    &__content {
+      padding: vars.$spacing-xl vars.$spacing-md;
     }
+
+    &__container {
+      padding: vars.$spacing-lg;
+    }
+
+    &__title {
+      font-size: vars.$font-size-large;
+    }
+  }
 }
 
 @include mobile {
-    .auth-page {
-        &__content {
-            padding: $spacing-lg $spacing-sm;
-        }
-
-        &__container {
-            padding: $spacing-md;
-        }
-
-        &__title {
-            font-size: $font-size-base;
-        }
+  .auth-page {
+    &__content {
+      padding: vars.$spacing-lg vars.$spacing-sm;
     }
+
+    &__container {
+      padding: vars.$spacing-md;
+    }
+
+    &__title {
+      font-size: vars.$font-size-base;
+    }
+  }
 }

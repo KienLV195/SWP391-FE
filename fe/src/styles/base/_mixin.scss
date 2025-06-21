@@ -1,4 +1,4 @@
-@use './variables' as vars;
+@use "./variables" as vars;
 
 // Reset CSS
 @mixin reset {
@@ -44,14 +44,22 @@
 }
 
 // Typography
-@mixin heading($size: vars.$font-size-xlarge, $weight: 800, $color: vars.$primary-color) {
+@mixin heading(
+  $size: vars.$font-size-xlarge,
+  $weight: 800,
+  $color: vars.$primary-color
+) {
   font-family: vars.$font-primary;
   font-weight: $weight;
   font-size: $size;
   color: $color;
 }
 
-@mixin text($size: vars.$font-size-base, $color: vars.$text-secondary, $weight: 400) {
+@mixin text(
+  $size: vars.$font-size-base,
+  $color: vars.$text-secondary,
+  $weight: 400
+) {
   font-family: vars.$font-secondary;
   font-size: $size;
   color: $color;
@@ -60,13 +68,16 @@
 
 @mixin text-gradient($color1, $color2) {
   background: linear-gradient(135deg, $color1, $color2);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 // Buttons
-@mixin primary-button($bg-color: vars.$primary-color, $hover-bg: vars.$primary-hover) {
+@mixin primary-button(
+  $bg-color: vars.$primary-color,
+  $hover-bg: vars.$primary-hover
+) {
   @include reset();
   display: inline-flex;
   padding: 12px vars.$spacing-lg;
@@ -87,7 +98,10 @@
   }
 }
 
-@mixin button-primary($bg-color: vars.$primary-color, $hover-bg: vars.$primary-hover) {
+@mixin button-primary(
+  $bg-color: vars.$primary-color,
+  $hover-bg: vars.$primary-hover
+) {
   @include primary-button($bg-color, $hover-bg);
 }
 

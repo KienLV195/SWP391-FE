@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .notifications-page {
   min-height: 100vh;
@@ -181,7 +181,11 @@
 
           &.unread {
             border-left: 5px solid #28a745;
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.05), rgba(32, 201, 151, 0.05));
+            background: linear-gradient(
+              135deg,
+              rgba(40, 167, 69, 0.05),
+              rgba(32, 201, 151, 0.05)
+            );
           }
 
           .notification-header {
@@ -399,8 +403,12 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive

@@ -1,113 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import { BarChartOutlined } from "@ant-design/icons";
+import useRequest from "../../hooks/useFetchData";
 import "../../styles/pages/Reports.scss";
 
+const fetchReportData = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  return {
+    overview: {
+      totalUsers: 1247,
+      totalBlogs: 89,
+      totalRequests: 456,
+      totalDonations: 234,
+      activeUsers: 892,
+      pendingApprovals: 12,
+    },
+    userStats: {
+      newRegistrations: [
+        { month: "Jan", count: 45 },
+        { month: "Feb", count: 52 },
+        { month: "Mar", count: 38 },
+        { month: "Apr", count: 67 },
+        { month: "May", count: 71 },
+        { month: "Jun", count: 59 },
+      ],
+      usersByRole: [
+        { role: "Member", count: 1089, percentage: 87.3 },
+        { role: "Doctor", count: 89, percentage: 7.1 },
+        { role: "Manager", count: 45, percentage: 3.6 },
+        { role: "Admin", count: 24, percentage: 1.9 },
+      ],
+      activeUsers: 892,
+      inactiveUsers: 355,
+    },
+    bloodStats: {
+      requestsByType: [
+        { type: "O+", count: 89, percentage: 32.1 },
+        { type: "A+", count: 67, percentage: 24.2 },
+        { type: "B+", count: 45, percentage: 16.2 },
+        { type: "AB+", count: 23, percentage: 8.3 },
+        { type: "O-", count: 34, percentage: 12.3 },
+        { type: "A-", count: 12, percentage: 4.3 },
+        { type: "B-", count: 5, percentage: 1.8 },
+        { type: "AB-", count: 2, percentage: 0.7 },
+      ],
+      monthlyRequests: [
+        { month: "Jan", requests: 78, donations: 45 },
+        { month: "Feb", requests: 82, donations: 52 },
+        { month: "Mar", requests: 65, donations: 38 },
+        { month: "Apr", requests: 91, donations: 67 },
+        { month: "May", requests: 88, donations: 71 },
+        { month: "Jun", requests: 76, donations: 59 },
+      ],
+    },
+    blogStats: {
+      totalBlogs: 89,
+      publishedBlogs: 67,
+      pendingBlogs: 12,
+      rejectedBlogs: 10,
+      blogsByCategory: [
+        { category: "Kinh nghiệm", count: 34 },
+        { category: "Tin tức", count: 23 },
+        { category: "Câu chuyện", count: 18 },
+        { category: "Hướng dẫn", count: 14 },
+      ],
+      monthlyBlogs: [
+        { month: "Jan", count: 12 },
+        { month: "Feb", count: 15 },
+        { month: "Mar", count: 8 },
+        { month: "Apr", count: 18 },
+        { month: "May", count: 21 },
+        { month: "Jun", count: 15 },
+      ],
+    },
+    systemStats: {
+      serverUptime: "99.8%",
+      averageResponseTime: "245ms",
+      totalPageViews: 45678,
+      uniqueVisitors: 12345,
+      storageUsed: "2.3GB",
+      storageTotal: "10GB",
+    },
+  };
+};
+
 const Reports = () => {
-  const [reportData, setReportData] = useState({
-    overview: {},
-    userStats: {},
-    bloodStats: {},
-    blogStats: {},
-    systemStats: {},
-  });
-  const [loading, setLoading] = useState(true);
-  const [selectedReport, setSelectedReport] = useState("overview");
-
-  useEffect(() => {
-    // Mock API call - replace with actual API
-    const fetchReportData = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        const mockData = {
-          overview: {
-            totalUsers: 1247,
-            totalBlogs: 89,
-            totalRequests: 456,
-            totalDonations: 234,
-            activeUsers: 892,
-            pendingApprovals: 12,
-          },
-          userStats: {
-            newRegistrations: [
-              { month: "Jan", count: 45 },
-              { month: "Feb", count: 52 },
-              { month: "Mar", count: 38 },
-              { month: "Apr", count: 67 },
-              { month: "May", count: 71 },
-              { month: "Jun", count: 59 },
-            ],
-            usersByRole: [
-              { role: "Member", count: 1089, percentage: 87.3 },
-              { role: "Doctor", count: 89, percentage: 7.1 },
-              { role: "Manager", count: 45, percentage: 3.6 },
-              { role: "Admin", count: 24, percentage: 1.9 },
-            ],
-            activeUsers: 892,
-            inactiveUsers: 355,
-          },
-          bloodStats: {
-            requestsByType: [
-              { type: "O+", count: 89, percentage: 32.1 },
-              { type: "A+", count: 67, percentage: 24.2 },
-              { type: "B+", count: 45, percentage: 16.2 },
-              { type: "AB+", count: 23, percentage: 8.3 },
-              { type: "O-", count: 34, percentage: 12.3 },
-              { type: "A-", count: 12, percentage: 4.3 },
-              { type: "B-", count: 5, percentage: 1.8 },
-              { type: "AB-", count: 2, percentage: 0.7 },
-            ],
-            monthlyRequests: [
-              { month: "Jan", requests: 78, donations: 45 },
-              { month: "Feb", requests: 82, donations: 52 },
-              { month: "Mar", requests: 65, donations: 38 },
-              { month: "Apr", requests: 91, donations: 67 },
-              { month: "May", requests: 88, donations: 71 },
-              { month: "Jun", requests: 76, donations: 59 },
-            ],
-          },
-          blogStats: {
-            totalBlogs: 89,
-            publishedBlogs: 67,
-            pendingBlogs: 12,
-            rejectedBlogs: 10,
-            blogsByCategory: [
-              { category: "Kinh nghiệm", count: 34 },
-              { category: "Tin tức", count: 23 },
-              { category: "Câu chuyện", count: 18 },
-              { category: "Hướng dẫn", count: 14 },
-            ],
-            monthlyBlogs: [
-              { month: "Jan", count: 12 },
-              { month: "Feb", count: 15 },
-              { month: "Mar", count: 8 },
-              { month: "Apr", count: 18 },
-              { month: "May", count: 21 },
-              { month: "Jun", count: 15 },
-            ],
-          },
-          systemStats: {
-            serverUptime: "99.8%",
-            averageResponseTime: "245ms",
-            totalPageViews: 45678,
-            uniqueVisitors: 12345,
-            storageUsed: "2.3GB",
-            storageTotal: "10GB",
-          },
-        };
-
-        setReportData(mockData);
-      } catch (error) {
-        console.error("Error fetching report data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReportData();
-  }, []);
+  const { data: reportData = {}, loading } = useRequest(fetchReportData, []);
+  const [selectedReport, setSelectedReport] = React.useState("overview");
 
   const renderOverviewReport = () => (
     <div className="report-section">

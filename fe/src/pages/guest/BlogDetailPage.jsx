@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchNewsById } from "../../services/newsService";
 import { Card, Spin, Typography, Button, Divider, Space } from "antd";
@@ -8,6 +8,7 @@ import {
   UserOutlined,
   BookOutlined,
 } from "@ant-design/icons";
+import useRequest from "../../hooks/useFetchData";
 import "../../styles/pages/BloodInfoPage.scss";
 
 const { Title, Paragraph, Text } = Typography;
@@ -15,24 +16,10 @@ const { Title, Paragraph, Text } = Typography;
 const BlogDetailPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!postId) {
-      setArticle(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    fetchNewsById(postId)
-      .then((data) => setArticle(data))
-      .catch((error) => {
-        console.error("Error fetching blog detail:", error);
-        setArticle(null);
-      })
-      .finally(() => setLoading(false));
-  }, [postId]);
+  const { data: article, loading } = useRequest(
+    () => fetchNewsById(postId),
+    [postId]
+  );
 
   if (loading) {
     return (

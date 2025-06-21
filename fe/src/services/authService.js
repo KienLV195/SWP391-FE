@@ -1,6 +1,6 @@
 import { ROLES } from "./mockData";
 import axios from "axios";
-import config from '../config/environment';
+import config from "../config/environment";
 
 const AUTH_API = config.api.auth;
 const INFORMATION_API = config.api.information;
@@ -123,7 +123,11 @@ class AuthService {
               return ROLES.MEMBER;
             if (rawRole === "Staff_Doctor" || rawRole === 2 || rawRole === "2")
               return ROLES.STAFF_DOCTOR;
-            if (rawRole === "Staff_Blood_Manager" || rawRole === 3 || rawRole === "3")
+            if (
+              rawRole === "Staff_Blood_Manager" ||
+              rawRole === 3 ||
+              rawRole === "3"
+            )
               return ROLES.STAFF_BLOOD_MANAGER;
             return ROLES.GUEST;
           }
@@ -132,10 +136,11 @@ class AuthService {
           function determineDoctorType(department) {
             if (!department) return null;
             console.log("Determining doctor type for department:", department); // Debug log
-            const isBloodDept = department.toLowerCase().includes('máu') ||
-              department.toLowerCase().includes('huyết học');
+            const isBloodDept =
+              department.toLowerCase().includes("máu") ||
+              department.toLowerCase().includes("huyết học");
             console.log("Is blood department:", isBloodDept); // Debug log
-            return isBloodDept ? 'blood_department' : 'other_department';
+            return isBloodDept ? "blood_department" : "other_department";
           }
 
           // Extract user information from token payload
@@ -145,29 +150,29 @@ class AuthService {
             ],
             email:
               payload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
               ],
             name:
               payload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
               ] ||
               payload[
                 "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
               ].split("@")[0],
             role: mapRole(
               payload[
-              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
               ]
             ),
             status: 1,
             profile: {
               email:
                 payload[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
                 ],
               fullName:
                 payload[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
                 ] ||
                 payload[
                   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
@@ -188,19 +193,18 @@ class AuthService {
           // Fetch additional user details from API for both doctors and members
           try {
             console.log("Fetching user details for ID:", user.id);
-            const infoResponse = await axios.get(
-              `${INFORMATION_API}/`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
+            const infoResponse = await axios.get(`${INFORMATION_API}/`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
 
             if (infoResponse.data) {
               // Find the user's information
-              const userInfo = infoResponse.data.find(info => info.userID === parseInt(user.id));
+              const userInfo = infoResponse.data.find(
+                (info) => info.userID === parseInt(user.id)
+              );
               console.log("Found user info:", userInfo);
 
               if (userInfo) {
@@ -214,14 +218,17 @@ class AuthService {
 
                 // For doctors, determine doctor type based on department
                 if (user.role === ROLES.STAFF_DOCTOR) {
-                  const department = userInfo.department?.toLowerCase() || '';
+                  const department = userInfo.department?.toLowerCase() || "";
                   console.log("Doctor department:", department);
-                  const isBloodDept = department.includes('máu') ||
-                    department.includes('huyết học') ||
-                    department.includes('blood') ||
-                    department.includes('hematology');
+                  const isBloodDept =
+                    department.includes("máu") ||
+                    department.includes("huyết học") ||
+                    department.includes("blood") ||
+                    department.includes("hematology");
                   console.log("Is blood department:", isBloodDept);
-                  user.doctorType = isBloodDept ? 'blood_department' : 'other_department';
+                  user.doctorType = isBloodDept
+                    ? "blood_department"
+                    : "other_department";
                   console.log("Doctor type determined:", user.doctorType);
                 }
 
@@ -230,11 +237,14 @@ class AuthService {
               }
             }
           } catch (error) {
-            console.error("Error fetching user details:", error.response?.data || error.message);
+            console.error(
+              "Error fetching user details:",
+              error.response?.data || error.message
+            );
             console.error("Error status:", error.response?.status);
             // Continue with login even if API call fails
             if (user.role === ROLES.STAFF_DOCTOR) {
-              user.doctorType = 'other_department';
+              user.doctorType = "other_department";
             }
           }
 
@@ -278,7 +288,8 @@ class AuthService {
         } else if (status === 401) {
           errorMessage = "Email hoặc mật khẩu không đúng.";
         } else if (status === 403) {
-          errorMessage = "Bạn không có quyền truy cập. Vui lòng liên hệ quản trị viên.";
+          errorMessage =
+            "Bạn không có quyền truy cập. Vui lòng liên hệ quản trị viên.";
         } else {
           errorMessage =
             error.response.data?.message ||

@@ -1,5 +1,6 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mix;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
+@use "sass:color";
 
 .donation-schedule-page {
   display: flex;
@@ -34,6 +35,8 @@
           font-weight: 600;
           color: vars.$manager-text;
           font-family: vars.$font-manager;
+          background-clip: text;
+          -webkit-background-clip: text;
         }
 
         p {
@@ -42,6 +45,8 @@
           color: vars.$manager-text-light;
           font-weight: 400;
           font-family: vars.$font-manager;
+          background-clip: text;
+          -webkit-background-clip: text;
         }
       }
 
@@ -56,12 +61,12 @@
         font-size: 0.9rem;
 
         &.btn-primary {
-          background: vars.$manager-primary;
-          color: vars.$white;
+          background: color.adjust(vars.$manager-primary, $lightness: -10%);
+          color: color.adjust(vars.$manager-primary, $lightness: 10%);
           border: 1px solid vars.$manager-primary;
 
           &:hover:not(:disabled) {
-            background: darken(vars.$manager-primary, 10%);
+            background: color.adjust(vars.$manager-primary, $lightness: -10%);
             transform: translateY(-1px);
             box-shadow: 0 4px 12px vars.$manager-shadow;
           }
@@ -98,12 +103,12 @@
         font-family: vars.$font-manager;
 
         &:hover {
-          color: vars.$manager-primary;
-          background: vars.$manager-hover;
+          color: color.adjust(vars.$manager-primary, $lightness: 10%);
+          background: color.adjust(vars.$manager-primary, $lightness: 5%);
         }
 
         &.active {
-          background: vars.$manager-primary;
+          background: color.adjust(vars.$manager-primary, $lightness: 5%);
           color: vars.$white;
         }
       }
@@ -143,6 +148,8 @@
             margin: 0 0 4px 0;
             color: vars.$manager-text;
             font-family: vars.$font-manager;
+            background-clip: text;
+            -webkit-background-clip: text;
           }
 
           .stat-label {
@@ -150,27 +157,40 @@
             font-size: 0.85rem;
             font-weight: 500;
             font-family: vars.$font-manager;
+            background-clip: text;
+            -webkit-background-clip: text;
           }
         }
 
         &.today {
-          border-left: 3px solid vars.$info-color;
-          .stat-icon { color: vars.$info-color; }
+          border-left: 3px solid color.adjust(vars.$info-color, $lightness: 10%);
+          .stat-icon {
+            color: color.adjust(vars.$info-color, $lightness: 10%);
+          }
         }
 
         &.upcoming {
-          border-left: 3px solid vars.$warning-color;
-          .stat-icon { color: vars.$warning-color; }
+          border-left: 3px solid
+            color.adjust(vars.$warning-color, $lightness: 10%);
+          .stat-icon {
+            color: color.adjust(vars.$warning-color, $lightness: 10%);
+          }
         }
 
         &.completed {
-          border-left: 3px solid vars.$success-color;
-          .stat-icon { color: vars.$success-color; }
+          border-left: 3px solid
+            color.adjust(vars.$success-color, $lightness: 10%);
+          .stat-icon {
+            color: color.adjust(vars.$success-color, $lightness: 10%);
+          }
         }
 
         &.total {
-          border-left: 3px solid vars.$manager-primary;
-          .stat-icon { color: vars.$manager-primary; }
+          border-left: 3px solid
+            color.adjust(vars.$manager-primary, $lightness: 5%);
+          .stat-icon {
+            color: color.adjust(vars.$manager-primary, $lightness: 5%);
+          }
         }
       }
     }
@@ -196,6 +216,8 @@
           color: vars.$manager-text;
           font-size: 0.9rem;
           font-family: vars.$font-manager;
+          background-clip: text;
+          -webkit-background-clip: text;
         }
 
         select {
@@ -209,6 +231,8 @@
           min-width: 150px;
           font-family: vars.$font-manager;
           color: vars.$manager-text;
+          background-clip: text;
+          -webkit-background-clip: text;
 
           &:focus {
             outline: none;
@@ -299,6 +323,8 @@
                 color: vars.$manager-text;
                 margin-bottom: 8px;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
 
               .donor-contact {
@@ -306,6 +332,8 @@
                 font-size: 0.9rem;
                 margin-bottom: 12px;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
 
               .blood-type-badge {
@@ -317,6 +345,8 @@
                 font-size: 0.85rem;
                 display: inline-block;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
             }
 
@@ -330,6 +360,8 @@
                 color: vars.$manager-text;
                 margin-bottom: 4px;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
 
               .appointment-time {
@@ -337,6 +369,8 @@
                 font-weight: 500;
                 font-size: 0.9rem;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
             }
 
@@ -353,6 +387,8 @@
                 display: inline-block;
                 margin-bottom: 4px;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
             }
           }
@@ -373,6 +409,8 @@
                 font-size: 1rem;
                 font-weight: 600;
                 font-family: vars.$font-manager;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
 
               .health-info,
@@ -390,6 +428,8 @@
                   font-weight: 500;
                   color: vars.$manager-text;
                   font-family: vars.$font-manager;
+                  background-clip: text;
+                  -webkit-background-clip: text;
                 }
               }
 
@@ -399,16 +439,26 @@
                   font-size: 0.9rem;
                   margin-bottom: 8px;
                   font-family: vars.$font-manager;
+                  background-clip: text;
+                  -webkit-background-clip: text;
                 }
 
                 .distance {
                   font-weight: 600;
                   font-family: vars.$font-manager;
 
-                  &.very-close { color: vars.$success-color; }
-                  &.close { color: vars.$info-color; }
-                  &.moderate { color: vars.$warning-color; }
-                  &.far { color: vars.$error-color; }
+                  &.very-close {
+                    color: vars.$success-color;
+                  }
+                  &.close {
+                    color: vars.$info-color;
+                  }
+                  &.moderate {
+                    color: vars.$warning-color;
+                  }
+                  &.far {
+                    color: vars.$error-color;
+                  }
 
                   .travel-time {
                     font-size: 0.8rem;
@@ -416,6 +466,8 @@
                     font-weight: 400;
                     margin-left: 8px;
                     font-family: vars.$font-manager;
+                    background-clip: text;
+                    -webkit-background-clip: text;
                   }
                 }
               }
@@ -429,6 +481,8 @@
                 border-left: 3px solid vars.$info-color;
                 font-family: vars.$font-manager;
                 font-size: 0.9rem;
+                background-clip: text;
+                -webkit-background-clip: text;
               }
             }
           }
@@ -458,7 +512,7 @@
                 border: 1px solid vars.$info-color;
 
                 &:hover {
-                  background: darken(vars.$info-color, 10%);
+                  background: color.adjust(vars.$info-color, $lightness: -10%);
                   transform: translateY(-1px);
                   box-shadow: 0 2px 8px vars.$manager-shadow;
                   text-decoration: none;
@@ -486,7 +540,10 @@
                 box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 
                 &:hover {
-                  background: darken(vars.$success-color, 10%);
+                  background: color.adjust(
+                    vars.$success-color,
+                    $lightness: -10%
+                  );
                   transform: translateY(-1px);
                   box-shadow: 0 2px 8px vars.$manager-shadow;
                   text-decoration: none;
@@ -528,6 +585,8 @@
             margin-bottom: 8px;
             color: vars.$manager-text;
             font-family: vars.$font-manager;
+            background-clip: text;
+            -webkit-background-clip: text;
           }
 
           .stat-label {
@@ -535,26 +594,36 @@
             font-size: 0.85rem;
             font-weight: 500;
             font-family: vars.$font-manager;
+            background-clip: text;
+            -webkit-background-clip: text;
           }
 
           &.testing {
             border-left: 4px solid #ffc107;
-            .stat-number { color: #ffc107; }
+            .stat-number {
+              color: #ffc107;
+            }
           }
 
           &.completed {
             border-left: 4px solid #28a745;
-            .stat-number { color: #28a745; }
+            .stat-number {
+              color: #28a745;
+            }
           }
 
           &.stored {
             border-left: 4px solid #17a2b8;
-            .stat-number { color: #17a2b8; }
+            .stat-number {
+              color: #17a2b8;
+            }
           }
 
           &.total {
             border-left: 4px solid #6f42c1;
-            .stat-number { color: #6f42c1; }
+            .stat-number {
+              color: #6f42c1;
+            }
           }
         }
       }
@@ -577,7 +646,11 @@
 
           .process-header {
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            background: linear-gradient(
+              135deg,
+              rgba(255, 255, 255, 0.1),
+              rgba(255, 255, 255, 0.05)
+            );
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             justify-content: space-between;
@@ -901,8 +974,12 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive
@@ -1093,7 +1170,11 @@
 
         &.today {
           .stat-icon {
-            background: linear-gradient(135deg, vars.$manager-primary, lighten(vars.$manager-primary, 10%));
+            background: linear-gradient(
+              135deg,
+              vars.$manager-primary,
+              color.adjust(vars.$manager-primary, $lightness: 10%)
+            );
             color: vars.$white;
           }
           .stat-number {
@@ -1103,7 +1184,11 @@
 
         &.upcoming {
           .stat-icon {
-            background: linear-gradient(135deg, vars.$info-color, lighten(vars.$info-color, 10%));
+            background: linear-gradient(
+              135deg,
+              vars.$info-color,
+              color.adjust(vars.$info-color, $lightness: 10%)
+            );
             color: vars.$white;
           }
           .stat-number {
@@ -1113,7 +1198,11 @@
 
         &.completed {
           .stat-icon {
-            background: linear-gradient(135deg, vars.$success-color, lighten(vars.$success-color, 10%));
+            background: linear-gradient(
+              135deg,
+              vars.$success-color,
+              color.adjust(vars.$success-color, $lightness: 10%)
+            );
             color: vars.$white;
           }
           .stat-number {
@@ -1123,7 +1212,11 @@
 
         &.total {
           .stat-icon {
-            background: linear-gradient(135deg, vars.$warning-color, lighten(vars.$warning-color, 10%));
+            background: linear-gradient(
+              135deg,
+              vars.$warning-color,
+              color.adjust(vars.$warning-color, $lightness: 10%)
+            );
             color: vars.$white;
           }
           .stat-number {
@@ -1173,7 +1266,11 @@
 
       .ant-table {
         .ant-table-thead > tr > th {
-          background: linear-gradient(135deg, vars.$manager-primary, lighten(vars.$manager-primary, 5%));
+          background: linear-gradient(
+            135deg,
+            vars.$manager-primary,
+            color.adjust(vars.$manager-primary, $lightness: 5%)
+          );
           color: vars.$white;
           font-weight: 600;
           border: none;
@@ -1400,13 +1497,13 @@
 
           // Hide less important columns on mobile
           .ant-table-column-title {
-            &:nth-child(n+4) {
+            &:nth-child(n + 4) {
               display: none;
             }
           }
 
           .ant-table-cell {
-            &:nth-child(n+4) {
+            &:nth-child(n + 4) {
               display: none;
             }
           }

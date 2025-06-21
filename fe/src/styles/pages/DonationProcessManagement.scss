@@ -1,4 +1,5 @@
-@import '../base/variables';
+@import "../base/variables";
+@use "sass:color";
 
 .donation-process-management {
   display: flex;
@@ -18,7 +19,7 @@
       align-items: flex-start;
       flex-wrap: wrap;
       gap: 1rem;
-      
+
       div {
         h1 {
           color: $primary-color;
@@ -43,11 +44,14 @@
         transition: all 0.3s ease;
 
         &.btn-primary {
-          background: $primary-color;
+          background: color.adjust($primary-color, $lightness: -10%);
           color: white;
 
           &:hover {
-            background: darken($primary-color, 10%);
+            background: color.adjust(
+              color.adjust($primary-color, $lightness: -10%),
+              $lightness: -10%
+            );
             transform: translateY(-2px);
           }
         }
@@ -144,7 +148,8 @@
         width: 100%;
         border-collapse: collapse;
 
-        th, td {
+        th,
+        td {
           padding: 1rem;
           text-align: left;
           border-bottom: 1px solid #eee;
@@ -255,7 +260,7 @@
               color: white;
 
               &:hover {
-                background: darken($primary-color, 10%);
+                background: color.adjust($primary-color, $lightness: -10%);
               }
             }
 
@@ -394,7 +399,7 @@
 
           div {
             margin-bottom: 0.5rem;
-            
+
             &:last-child {
               margin-bottom: 0;
             }
@@ -412,7 +417,9 @@
           color: #333;
         }
 
-        select, input, textarea {
+        select,
+        input,
+        textarea {
           width: 100%;
           padding: 0.5rem;
           border: 1px solid #ddd;
@@ -460,7 +467,7 @@
             color: white;
 
             &:hover {
-              background: darken($primary-color, 10%);
+              background: color.adjust($primary-color, $lightness: -10%);
             }
 
             &:disabled {

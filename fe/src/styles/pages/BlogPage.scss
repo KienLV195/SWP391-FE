@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mix;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
 
 .article-group {
   margin-bottom: 48px;
@@ -7,7 +7,7 @@
 
 .article-group-title {
   color: #1890ff;
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 24px;
@@ -32,7 +32,7 @@
   display: flex;
   flex-direction: column;
   min-height: 340px;
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 
   &:hover {
     box-shadow: 0 8px 32px rgba(24, 144, 255, 0.18);
@@ -53,7 +53,7 @@
     font-weight: 600;
     color: #1890ff;
     margin-bottom: 8px;
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   }
 
   .ant-card-meta-description {
@@ -65,7 +65,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     max-height: 2.8em; // 2 dòng
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   }
 }
 
@@ -87,12 +87,12 @@
   background: #e6f7ff;
   min-height: 100vh;
   padding: 32px 0;
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 
   .ant-card {
     background: #fff;
     border-radius: 20px;
-    box-shadow: 0 4px 24px rgba(24, 144, 255, 0.10);
+    box-shadow: 0 4px 24px rgba(24, 144, 255, 0.1);
     padding: 0 0 24px 0;
     max-width: 800px;
     margin: 0 auto;
@@ -103,7 +103,7 @@
     font-weight: 700;
     color: #1890ff;
     text-align: center;
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   }
 
   .ant-card-cover img {
@@ -112,7 +112,7 @@
     max-height: 340px;
     border-radius: 16px;
     object-fit: cover;
-    box-shadow: 0 2px 12px rgba(24, 144, 255, 0.10);
+    box-shadow: 0 2px 12px rgba(24, 144, 255, 0.1);
   }
 
   .ant-card-body {
@@ -124,7 +124,7 @@
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 24px;
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   }
 
   .article-tags {
@@ -152,7 +152,8 @@
 }
 
 // Button style
-.ant-btn-primary, .read-more-btn {
+.ant-btn-primary,
+.read-more-btn {
   background: #1890ff;
   border: none;
   color: #fff;
@@ -161,9 +162,10 @@
   padding: 8px 20px;
   font-size: 1rem;
   transition: background 0.3s, box-shadow 0.3s;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.10);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background: #1765ad;
     color: #fff;
     box-shadow: 0 4px 16px rgba(24, 144, 255, 0.18);
@@ -253,7 +255,6 @@
   }
 }
 
-
 .pagination-bar {
   display: flex;
   align-items: center;
@@ -266,7 +267,7 @@
     flex: 1;
     color: #888;
     font-size: 1rem;
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
     text-align: left;
   }
 
@@ -283,7 +284,7 @@
       a {
         color: #1e293b;
         font-weight: 500;
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
       }
 
       &:hover {

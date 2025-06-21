@@ -45,11 +45,6 @@ const config = {
 
 // Log configuration in development
 if (config.app.isDevelopment()) {
-  console.log('Environment configuration:', {
-    environment: config.app.environment,
-    apiBaseUrl: config.api.baseUrl,
-    hospital: config.hospital.name
-  });
-}
+  }
 
 export default config;

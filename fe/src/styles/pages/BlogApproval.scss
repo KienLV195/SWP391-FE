@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 .blog-approval {
   padding: vars.$spacing-8;
@@ -15,7 +15,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, #d32f2f);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          #d32f2f
+        );
         margin-bottom: vars.$spacing-2;
       }
 
@@ -33,13 +37,21 @@
         text-align: center;
 
         .stat-number {
-          @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, #d32f2f);
+          @include mixins.heading(
+            vars.$font-size-2xl,
+            vars.$font-weight-bold,
+            #d32f2f
+          );
           display: block;
           margin-bottom: vars.$spacing-1;
         }
 
         .stat-label {
-          @include mixins.text(vars.$font-size-sm, vars.$text-secondary, vars.$font-weight-medium);
+          @include mixins.text(
+            vars.$font-size-sm,
+            vars.$text-secondary,
+            vars.$font-weight-medium
+          );
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
@@ -145,7 +157,11 @@
           gap: vars.$spacing-3;
 
           .category {
-            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$primary-color,
+              vars.$font-weight-medium
+            );
             background: vars.$primary-light;
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
@@ -154,7 +170,11 @@
           }
 
           .status-badge {
-            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$white,
+              vars.$font-weight-medium
+            );
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
             text-transform: uppercase;
@@ -178,7 +198,11 @@
           }
 
           .role-badge {
-            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$white,
+              vars.$font-weight-medium
+            );
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
             text-transform: uppercase;
@@ -241,7 +265,11 @@
         padding: vars.$spacing-6;
 
         .blog-title {
-          @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-lg,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin-bottom: vars.$spacing-3;
           line-height: vars.$line-height-tight;
         }
@@ -298,7 +326,11 @@
           flex-wrap: wrap;
 
           .tag {
-            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$primary-color,
+              vars.$font-weight-medium
+            );
             background: vars.$primary-light;
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
@@ -320,7 +352,11 @@
     }
 
     h3 {
-      @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+      @include mixins.heading(
+        vars.$font-size-xl,
+        vars.$font-weight-semibold,
+        vars.$text-primary
+      );
       margin-bottom: vars.$spacing-3;
     }
 
@@ -363,7 +399,11 @@
         background: vars.$background-section;
 
         h2 {
-          @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-xl,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin: 0;
         }
 
@@ -391,7 +431,11 @@
           border-bottom: 1px solid vars.$border-light;
 
           h1 {
-            @include mixins.heading(vars.$font-size-2xl, vars.$font-weight-bold, vars.$text-primary);
+            @include mixins.heading(
+              vars.$font-size-2xl,
+              vars.$font-weight-bold,
+              vars.$text-primary
+            );
             margin-bottom: vars.$spacing-3;
             line-height: vars.$line-height-tight;
           }
@@ -410,7 +454,12 @@
         .preview-content {
           line-height: vars.$line-height-relaxed;
 
-          h1, h2, h3, h4, h5, h6 {
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
             color: vars.$text-primary;
             margin-top: vars.$spacing-6;
             margin-bottom: vars.$spacing-3;
@@ -425,7 +474,8 @@
             color: vars.$text-secondary;
           }
 
-          ul, ol {
+          ul,
+          ol {
             margin-bottom: vars.$spacing-4;
             padding-left: vars.$spacing-6;
 
@@ -485,8 +535,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   // === RESPONSIVE DESIGN ===

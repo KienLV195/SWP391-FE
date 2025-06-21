@@ -3,7 +3,8 @@
 
 @use "../base/variables" as *;
 @use "../base/mixin" as *;
-@import "../base/admin-design-system.scss";
+@use "../base/admin-design-system.scss" as admin;
+@use "sass:color";
 
 .manager-page-header {
   background: $manager-bg;
@@ -45,7 +46,7 @@
         background: linear-gradient(
           135deg,
           $primary-color 0%,
-          darken($primary-color, 10%) 100%
+          color.adjust($primary-color, $lightness: -10%) 100%
         );
         border-radius: 12px;
         color: white;
@@ -74,7 +75,7 @@
           margin: 0 0 4px 0 !important;
           font-size: 1.8rem;
           font-weight: 600;
-          color: $manager-text;
+          color: color.adjust($manager-text, $lightness: 10%);
           font-family: $font-manager;
           line-height: 1.2;
           word-wrap: break-word;
@@ -90,7 +91,7 @@
 
         .header-description {
           margin: 0;
-          color: $manager-text-light;
+          color: color.adjust($manager-text-light, $lightness: 15%);
           font-size: 1rem;
           font-family: $font-manager;
           line-height: 1.4;
@@ -147,12 +148,18 @@
       }
 
       &.ant-btn-primary {
-        background: $primary-color;
-        border-color: $primary-color;
+        background: color.adjust($primary-color, $lightness: -8%);
+        border-color: color.adjust($primary-color, $lightness: -8%);
 
         &:hover:not(:disabled) {
-          background: darken($primary-color, 8%);
-          border-color: darken($primary-color, 8%);
+          background: color.adjust(
+            color.adjust($primary-color, $lightness: -8%),
+            $lightness: -8%
+          );
+          border-color: color.adjust(
+            color.adjust($primary-color, $lightness: -8%),
+            $lightness: -8%
+          );
         }
       }
 
@@ -162,8 +169,8 @@
         color: $manager-text;
 
         &:hover:not(:disabled) {
-          border-color: $primary-color;
-          color: $primary-color;
+          border-color: color.adjust($primary-color, $lightness: -8%);
+          color: color.adjust($primary-color, $lightness: -8%);
         }
       }
 
@@ -178,7 +185,7 @@
   // Hover effect for entire header
   &:hover {
     box-shadow: 0 4px 16px rgba($manager-shadow, 0.15);
-    border-color: rgba($primary-color, 0.2);
+    border-color: color.adjust($primary-color, $lightness: -8%);
   }
 
   // Custom variants
@@ -215,37 +222,37 @@
 // Dark theme support
 .dark-theme {
   .manager-page-header {
-    background: darken($manager-bg, 5%);
-    border-color: darken($manager-border, 10%);
+    background: color.adjust($manager-bg, $lightness: -5%);
+    border-color: color.adjust($manager-border, $lightness: -10%);
 
     .header-info .header-title-section .header-text {
       .header-title {
-        color: lighten($manager-text, 10%);
+        color: color.adjust($manager-text, $lightness: 10%);
       }
 
       .header-description {
-        color: lighten($manager-text-light, 15%);
+        color: color.adjust($manager-text-light, $lightness: 15%);
       }
     }
   }
 }
 
 .page-header {
-  background-color: $background-white;
-  border-radius: $border-radius-lg;
-  box-shadow: $box-shadow-card;
-  margin-bottom: $spacing-lg;
-  padding: $spacing-lg;
+  background-color: admin.$background-white;
+  border-radius: admin.$border-radius-lg;
+  box-shadow: admin.$box-shadow-card;
+  margin-bottom: admin.$spacing-lg;
+  padding: admin.$spacing-lg;
 
   .header-content {
     @include flex-between;
     flex-wrap: wrap;
-    gap: $spacing-md;
+    gap: admin.$spacing-md;
 
     .header-title-section {
       display: flex;
       align-items: center;
-      gap: $spacing-md;
+      gap: admin.$spacing-md;
       flex: 1;
       min-width: 200px;
 
@@ -257,8 +264,8 @@
         justify-content: center;
         width: 40px;
         height: 40px;
-        background-color: rgba($primary-color, 0.1);
-        border-radius: $border-radius-base;
+        background-color: color.adjust($primary-color, $lightness: -10%);
+        border-radius: admin.$border-radius-base;
       }
 
       .header-title {
@@ -268,31 +275,31 @@
       }
 
       .header-description {
-        margin-top: $spacing-xs;
+        margin-top: admin.$spacing-xs;
         color: $text-secondary;
       }
     }
 
     .header-breadcrumb {
-      margin: $spacing-sm 0;
+      margin: admin.$spacing-sm 0;
       color: $text-secondary;
       font-size: $font-size-sm;
     }
 
     .header-actions {
       display: flex;
-      gap: $spacing-sm;
+      gap: admin.$spacing-sm;
       flex-wrap: wrap;
 
       .ant-btn {
         display: inline-flex;
         align-items: center;
-        gap: $spacing-xs;
+        gap: admin.$spacing-xs;
         height: 32px;
-        padding: 0 $spacing-md;
-        border-radius: $border-radius-base;
+        padding: 0 admin.$spacing-md;
+        border-radius: admin.$border-radius-base;
         font-size: $font-size-base;
-        transition: all $transition-duration $transition-timing;
+        transition: all admin.$transition-duration admin.$transition-timing;
 
         &:hover {
           transform: translateY(-1px);
@@ -303,8 +310,8 @@
           border-color: $primary-color;
 
           &:hover {
-            background-color: darken($primary-color, 10%);
-            border-color: darken($primary-color, 10%);
+            background-color: color.adjust($primary-color, $lightness: -10%);
+            border-color: color.adjust($primary-color, $lightness: -10%);
           }
         }
 

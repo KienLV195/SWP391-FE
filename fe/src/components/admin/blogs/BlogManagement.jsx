@@ -17,12 +17,12 @@ import {
   DeleteOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styles from "../../../styles/pages/admin/BlogManagement.module.scss";
+import useSearchAndFilter from "../../../hooks/useSearchAndFilter";
 
-const { Option } = Select;
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -144,7 +144,24 @@ const BlogManagement = () => {
     }
   };
 
+  // Chuẩn hóa dữ liệu đầu vào cho bảng
+  const mappedBlogs = blogs.map((blog) => ({
+    id: blog.articleId || blog.id,
+    articleId: blog.articleId || blog.id,
+    title: blog.title,
+    author: blog.author || blog.userId || "",
+    imgUrl: blog.imgUrl,
+    ...blog,
+  }));
+
+  // columns không có cột Tags
   const columns = [
+    {
+      title: "ID",
+      dataIndex: "articleId",
+      key: "articleId",
+      width: 80,
+    },
     {
       title: "Tiêu đề",
       dataIndex: "title",
@@ -157,23 +174,30 @@ const BlogManagement = () => {
       ),
     },
     {
-      title: "Tác giả",
+      title: "Người viết",
       dataIndex: "author",
       key: "author",
+      render: (_, record) => record.author || record.userId || "",
     },
     {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={statusColors[status]}>{statusLabels[status]}</Tag>
-      ),
+      title: "Thumbnail",
+      dataIndex: "imgUrl",
+      key: "imgUrl",
+      render: (imgUrl) =>
+        imgUrl ? (
+          <img
+            src={imgUrl.startsWith("http") ? imgUrl : `/uploads/${imgUrl}`}
+            alt="thumbnail"
+            style={{
+              width: 60,
+              height: 40,
+              objectFit: "cover",
+              borderRadius: 4,
+            }}
+          />
+        ) : (
+          <span style={{ color: "#aaa" }}>Không có</span>
+        ),
     },
     {
       title: "Thao tác",
@@ -196,7 +220,7 @@ const BlogManagement = () => {
           </Button>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa bài viết này?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.articleId || record.id)}
             okText="Có"
             cancelText="Không"
           >
@@ -209,6 +233,17 @@ const BlogManagement = () => {
     },
   ];
 
+  const {
+    filteredData: filteredBlogs,
+    searchTerm: searchKeyword,
+    setSearchTerm: setSearchKeyword,
+  } = useSearchAndFilter(
+    mappedBlogs,
+    (blog, keyword) =>
+      blog.title?.toLowerCase().includes(keyword.toLowerCase()) ||
+      (blog.author + "").toLowerCase().includes(keyword.toLowerCase())
+  );
+
   return (
     <div className={styles.blogManagement}>
       <div className={styles.header}>
@@ -217,14 +252,22 @@ const BlogManagement = () => {
           Thêm mới
         </Button>
       </div>
-
+      <div style={{ marginBottom: 16 }}>
+        <Input.Search
+          placeholder="Tìm kiếm theo tiêu đề hoặc người viết"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          style={{ width: 320 }}
+          allowClear
+        />
+      </div>
       <Table
         columns={columns}
-        dataSource={blogs}
+        dataSource={filteredBlogs}
         loading={loading}
         rowKey="id"
         pagination={{
-          total: blogs.length,
+          total: filteredBlogs.length,
           pageSize: 10,
           showSizeChanger: true,
           showTotal: (total) => `Tổng số ${total} bài viết`,

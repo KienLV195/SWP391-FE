@@ -1,5 +1,6 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mix;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mix;
+@use "sass:color";
 
 .manager-sidebar {
   width: 280px;
@@ -185,7 +186,7 @@
         font-weight: 600;
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           left: 0;
           top: 50%;
@@ -217,7 +218,7 @@
       @include mix.flex-align(center, center);
       gap: 8px;
       text-decoration: none;
-      background: vars.$manager-primary;
+      background: color.adjust(vars.$manager-primary, $lightness: -10%);
       color: vars.$white;
       padding: 12px vars.$spacing-lg;
       border-radius: 8px;

@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .location-picker {
   background: #f8f9fa;
@@ -282,7 +282,7 @@
 
     .coordinates {
       margin-bottom: 1rem;
-      font-family: 'Courier New', monospace;
+      font-family: "Courier New", monospace;
       background: rgba(255, 255, 255, 0.7);
       padding: 0.75rem;
       border-radius: 8px;
@@ -307,8 +307,12 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive

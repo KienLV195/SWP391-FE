@@ -129,8 +129,6 @@ const BlogEditor = () => {
       // Mock API call - replace with actual API
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      console.log("Saving blog:", blogData);
-
       // Show success message
       alert(
         status === "draft"

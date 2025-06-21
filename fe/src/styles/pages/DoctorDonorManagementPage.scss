@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .doctor-donor-management-page {
   display: flex;
@@ -145,22 +145,30 @@
 
         &.today {
           border-left: 4px solid #17a2b8;
-          .stat-icon { color: #17a2b8; }
+          .stat-icon {
+            color: #17a2b8;
+          }
         }
 
         &.pending {
           border-left: 4px solid #ffc107;
-          .stat-icon { color: #ffc107; }
+          .stat-icon {
+            color: #ffc107;
+          }
         }
 
         &.completed {
           border-left: 4px solid #28a745;
-          .stat-icon { color: #28a745; }
+          .stat-icon {
+            color: #28a745;
+          }
         }
 
         &.total {
           border-left: 4px solid #6f42c1;
-          .stat-icon { color: #6f42c1; }
+          .stat-icon {
+            color: #6f42c1;
+          }
         }
       }
     }
@@ -671,8 +679,12 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive
@@ -791,7 +803,11 @@
 // Status Modal specific styling
 .doctor-donor-management-page .modal-overlay .status-modal {
   .donor-summary {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.1),
+      rgba(118, 75, 162, 0.1)
+    );
     padding: 2rem;
     border-radius: 16px;
     margin-bottom: 2rem;
@@ -886,7 +902,11 @@
   }
 
   .health-check-section {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.05),
+      rgba(118, 75, 162, 0.05)
+    );
     padding: 2rem;
     border-radius: 16px;
     margin-bottom: 2rem;
@@ -948,7 +968,11 @@
 
   .modal-footer {
     padding: 2rem;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.05),
+      rgba(118, 75, 162, 0.05)
+    );
     border-top: 1px solid rgba(102, 126, 234, 0.2);
     display: flex;
     gap: 1rem;

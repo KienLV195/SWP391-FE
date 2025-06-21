@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Row, Col, Card, Statistic, Spin, Typography, List, Badge } from "antd";
 import {
   UserOutlined,
@@ -16,6 +16,7 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import WelcomeBanner from "../../components/admin/dashboard/WelcomeBanner";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import { getUserName } from "../../utils/userUtils";
+import useRequest from "../../hooks/useFetchData";
 import "../../styles/pages/AdminDashboard.scss";
 
 const { Title, Text } = Typography;
@@ -44,67 +45,56 @@ const sectionCardStyle = {
   boxShadow: "0 2px 8px #f0f1f2",
 };
 
-const AdminDashboard = () => {
-  const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState({
-    totalUsers: 0,
-    totalPosts: 0,
-    totalRequests: 0,
-    totalVisits: 0,
-    totalAdmins: 0,
-    totalManagers: 0,
-    totalDoctors: 0,
-    totalMembers: 0,
-    notifications: [],
-  });
-  // const cardRef = useRef(null);
+const fetchDashboardData = async () => {
+  // Simulate loading dashboard data
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return {
+    totalUsers: 1250,
+    totalPosts: 45,
+    totalRequests: 89,
+    totalVisits: 5670,
+    totalAdmins: 3,
+    totalManagers: 5,
+    totalDoctors: 12,
+    totalMembers: 1230,
+    notifications: [
+      {
+        id: 1,
+        type: "success",
+        title: "Hệ thống hoạt động bình thường",
+        message: "Tất cả dịch vụ đang hoạt động ổn định.",
+        time: "2 phút trước",
+      },
+      {
+        id: 2,
+        type: "warning",
+        title: "Cần bổ sung máu nhóm O-",
+        message: "Kho máu nhóm O- đang ở mức thấp.",
+        time: "15 phút trước",
+      },
+      {
+        id: 3,
+        type: "info",
+        title: "Cập nhật hệ thống",
+        message: "Hệ thống đã được cập nhật phiên bản mới.",
+        time: "1 giờ trước",
+      },
+      {
+        id: 4,
+        type: "error",
+        title: "Đăng nhập bất thường",
+        message: "Có đăng nhập bất thường từ IP lạ.",
+        time: "4 giờ trước",
+      },
+    ],
+  };
+};
 
-  useEffect(() => {
-    // Simulate loading dashboard data
-    setTimeout(() => {
-      setDashboardData({
-        totalUsers: 1250,
-        totalPosts: 45,
-        totalRequests: 89,
-        totalVisits: 5670,
-        totalAdmins: 3,
-        totalManagers: 5,
-        totalDoctors: 12,
-        totalMembers: 1230,
-        notifications: [
-          {
-            id: 1,
-            type: "success",
-            title: "Hệ thống hoạt động bình thường",
-            message: "Tất cả dịch vụ đang hoạt động ổn định.",
-            time: "2 phút trước",
-          },
-          {
-            id: 2,
-            type: "warning",
-            title: "Cần bổ sung máu nhóm O-",
-            message: "Kho máu nhóm O- đang ở mức thấp.",
-            time: "15 phút trước",
-          },
-          {
-            id: 3,
-            type: "info",
-            title: "Cập nhật hệ thống",
-            message: "Hệ thống đã được cập nhật phiên bản mới.",
-            time: "1 giờ trước",
-          },
-          {
-            id: 4,
-            type: "error",
-            title: "Đăng nhập bất thường",
-            message: "Có đăng nhập bất thường từ IP lạ.",
-            time: "4 giờ trước",
-          },
-        ],
-      });
-      setLoading(false);
-    }, 1000);
-  }, []);
+const AdminDashboard = () => {
+  const { data: dashboardData = {}, loading } = useRequest(
+    fetchDashboardData,
+    []
+  );
 
   // Pie chart config for user type
   const userTypePieData = [
@@ -202,89 +192,44 @@ const AdminDashboard = () => {
               </Card>
             </Col>
           </Row>
-          <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+
+          <Row gutter={[24, 24]}>
             <Col xs={24} md={12}>
-              <Card
-                bordered={false}
-                style={sectionCardStyle}
-                className="statistic-card"
-                title="Phân loại người dùng"
-              >
+              <Card bordered={false} style={sectionCardStyle}>
+                <Title level={4} style={{ marginBottom: 16 }}>
+                  Phân loại người dùng
+                </Title>
                 <Pie {...pieConfig} />
+              </Card>
+            </Col>
+            <Col xs={24} md={12}>
+              <Card bordered={false} style={sectionCardStyle}>
+                <Title level={4} style={{ marginBottom: 16 }}>
+                  Thông báo hệ thống
+                </Title>
                 <List
                   itemLayout="horizontal"
-                  dataSource={userTypePieData}
-                  style={{ marginTop: 24 }}
+                  dataSource={dashboardData.notifications}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
                         avatar={
                           <Badge
-                            color={
-                              pieConfig.color[
-                              userTypePieData.findIndex(
-                                (i) => i.type === item.type
-                              )
-                              ]
+                            status={
+                              item.type === "success"
+                                ? "success"
+                                : item.type === "warning"
+                                ? "warning"
+                                : item.type === "error"
+                                ? "error"
+                                : "processing"
                             }
-                            text={item.type}
                           />
                         }
-                        title={<Text strong>{item.type}</Text>}
+                        title={item.title}
+                        description={item.message}
                       />
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          color:
-                            pieConfig.color[
-                            userTypePieData.findIndex(
-                              (i) => i.type === item.type
-                            )
-                            ],
-                        }}
-                      >
-                        {item.value}
-                      </div>
-                    </List.Item>
-                  )}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card
-                bordered={false}
-                style={sectionCardStyle}
-                className="statistic-card"
-                title={
-                  <span>
-                    <BellOutlined /> Thông báo gần đây
-                  </span>
-                }
-              >
-                <List
-                  itemLayout="horizontal"
-                  dataSource={dashboardData.notifications}
-                  style={{ minHeight: 260 }}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        avatar={
-                          item.type === "success" ? (
-                            <CheckCircleOutlined style={{ color: "#52c41a" }} />
-                          ) : item.type === "warning" ? (
-                            <WarningOutlined style={{ color: "#faad14" }} />
-                          ) : item.type === "error" ? (
-                            <ExclamationCircleOutlined
-                              style={{ color: "#ff4d4f" }}
-                            />
-                          ) : (
-                            <InfoCircleOutlined style={{ color: "#1890ff" }} />
-                          )
-                        }
-                        title={<Text strong>{item.title}</Text>}
-                        description={<Text>{item.message}</Text>}
-                      />
-                      <Text type="secondary">{item.time}</Text>
+                      <div style={{ color: "#888" }}>{item.time}</div>
                     </List.Item>
                   )}
                 />

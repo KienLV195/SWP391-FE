@@ -1,4 +1,4 @@
-@import '../base/variables';
+@use "../base/variables" as vars;
 
 .status-statistics {
   background: white;
@@ -356,7 +356,10 @@
       }
     }
 
-    .success-rate-section .success-rate-chart .circular-progress .progress-circle {
+    .success-rate-section
+      .success-rate-chart
+      .circular-progress
+      .progress-circle {
       svg {
         width: 100px;
         height: 100px;

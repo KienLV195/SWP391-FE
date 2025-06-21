@@ -1,8 +1,9 @@
 // Blood Requests Management Page Styles
 // Medical color scheme: #D93E4C, #20374E, #DECCAA, #D91022
 
-@use '../base/variables' as *;
-@use '../base/mixin' as *;
+@use "../base/variables" as vars;
+@use "../base/mixin" as *;
+@use "sass:color";
 
 .blood-requests-management {
   display: flex;
@@ -35,7 +36,7 @@
       .header-info {
         h2 {
           margin-bottom: 8px !important;
-          color: #20374E;
+          color: #20374e;
           font-weight: 600;
         }
       }
@@ -101,11 +102,11 @@
         .ant-input,
         .ant-select {
           border-radius: 6px;
-          border-color: #DECCAA;
+          border-color: #deccaa;
 
           &:hover,
           &:focus {
-            border-color: #D93E4C;
+            border-color: #d93e4c;
             box-shadow: 0 0 0 2px rgba(217, 62, 76, 0.1);
           }
         }
@@ -179,8 +180,8 @@
 
           &:focus {
             outline: none;
-            border-color: $primary-color;
-            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+            border-color: vars.$primary-color;
+            box-shadow: 0 0 0 3px rgba(vars.$primary-color, 0.1);
           }
         }
       }
@@ -190,24 +191,24 @@
     .requests-table-card {
       background: #ffffff;
       border-radius: 12px;
-      border: 1px solid $manager-border;
-      box-shadow: 0 2px 8px $manager-shadow;
+      border: 1px solid vars.$manager-border;
+      box-shadow: 0 2px 8px vars.$manager-shadow;
       overflow-x: auto;
       max-width: 100%;
 
       .ant-table {
         min-width: 1200px;
-        font-family: $font-manager;
+        font-family: vars.$font-manager;
 
         .ant-table-thead > tr > th {
           background: #ffffff;
-          color: $manager-text;
+          color: vars.$manager-text;
           font-weight: 600;
-          border-bottom: 1px solid $manager-border;
+          border-bottom: 1px solid vars.$manager-border;
           padding: 16px;
           text-align: center;
           font-size: 14px;
-          font-family: $font-manager;
+          font-family: vars.$font-manager;
 
           &:first-child {
             border-top-left-radius: 8px;
@@ -222,26 +223,26 @@
           transition: all 0.3s ease;
 
           &:hover > td {
-            background: rgba($primary-color, 0.02);
+            background: rgba(vars.$primary-color, 0.02);
           }
 
           &.urgent-row {
             background-color: rgba(217, 16, 34, 0.05);
-            border-left: 4px solid #D91022;
+            border-left: 4px solid #d91022;
           }
 
           &.priority-row {
             background-color: rgba(217, 62, 76, 0.05);
-            border-left: 4px solid #D93E4C;
+            border-left: 4px solid #d93e4c;
           }
 
           > td {
             background: #ffffff;
-            border-bottom: 1px solid $manager-border;
+            border-bottom: 1px solid vars.$manager-border;
             padding: 16px;
             text-align: center;
             font-size: 14px;
-            font-family: $font-manager;
+            font-family: vars.$font-manager;
           }
         }
 
@@ -249,13 +250,13 @@
           border-radius: 6px;
           font-weight: 600;
           padding: 4px 12px;
-          font-family: $font-manager;
+          font-family: vars.$font-manager;
         }
 
         .ant-btn {
           border-radius: 6px;
           font-weight: 500;
-          font-family: $font-manager;
+          font-family: vars.$font-manager;
 
           &:hover {
             transform: translateY(-1px);
@@ -276,8 +277,8 @@
           transition: all 0.3s ease;
 
           &:hover {
-            border-color: #20374E;
-            color: #20374E;
+            border-color: #20374e;
+            color: #20374e;
             background-color: rgba(32, 55, 78, 0.05);
           }
 
@@ -288,14 +289,14 @@
         }
 
         .ant-pagination-item-active {
-          background-color: #20374E;
-          border-color: #20374E;
+          background-color: #20374e;
+          border-color: #20374e;
           color: #ffffff;
           font-weight: 600;
 
           &:hover {
-            background-color: #20374E;
-            border-color: #20374E;
+            background-color: #20374e;
+            border-color: #20374e;
             color: #ffffff;
           }
 
@@ -313,8 +314,8 @@
           transition: all 0.3s ease;
 
           &:hover {
-            border-color: #20374E;
-            color: #20374E;
+            border-color: #20374e;
+            color: #20374e;
             background-color: rgba(32, 55, 78, 0.05);
           }
 
@@ -341,7 +342,7 @@
           color: #666666;
 
           &:hover {
-            color: #20374E;
+            color: #20374e;
           }
         }
       }
@@ -384,7 +385,7 @@
 
       .ant-card-actions {
         background-color: #f8f9fa;
-        border-top: 1px solid #DECCAA;
+        border-top: 1px solid #deccaa;
 
         li {
           margin: 8px 0;
@@ -412,7 +413,8 @@
         width: 100%;
         border-collapse: collapse;
 
-        th, td {
+        th,
+        td {
           padding: 1rem;
           text-align: left;
           border-bottom: 1px solid #eee;
@@ -436,7 +438,7 @@
         }
 
         .blood-type-badge {
-          background: $primary-color;
+          background: vars.$primary-color;
           color: white;
           padding: 0.25rem 0.5rem;
           border-radius: 4px;
@@ -444,34 +446,40 @@
           font-size: 0.8rem;
         }
 
-        .status-badge, .urgency-badge {
+        .status-badge,
+        .urgency-badge {
           padding: 0.25rem 0.5rem;
           border-radius: 4px;
           font-weight: 600;
           font-size: 0.8rem;
           text-transform: uppercase;
 
-          &.status-warning, &.urgency-warning {
+          &.status-warning,
+          &.urgency-warning {
             background: #fff3cd;
             color: #856404;
           }
 
-          &.status-info, &.urgency-info {
+          &.status-info,
+          &.urgency-info {
             background: #d1ecf1;
             color: #0c5460;
           }
 
-          &.status-success, &.urgency-success {
+          &.status-success,
+          &.urgency-success {
             background: #d4edda;
             color: #155724;
           }
 
-          &.status-danger, &.urgency-danger {
+          &.status-danger,
+          &.urgency-danger {
             background: #f8d7da;
             color: #721c24;
           }
 
-          &.status-secondary, &.urgency-secondary {
+          &.status-secondary,
+          &.urgency-secondary {
             background: #e2e3e5;
             color: #383d41;
           }
@@ -523,11 +531,11 @@
             }
 
             &.btn-primary {
-              background: $primary-color;
+              background: color.adjust(vars.$primary-color, $lightness: -10%);
               color: white;
 
               &:hover {
-                background: darken($primary-color, 10%);
+                background: color.adjust(vars.$primary-color, $lightness: -20%);
               }
             }
           }
@@ -559,7 +567,7 @@
           font-size: 2rem;
           font-weight: 700;
           margin: 0;
-          color: $primary-color;
+          color: vars.$primary-color;
 
           &.warning {
             color: #ffc107;
@@ -609,7 +617,7 @@
 
       h2 {
         margin: 0;
-        color: $primary-color;
+        color: vars.$primary-color;
       }
 
       .close-btn {
@@ -688,6 +696,7 @@
           font-weight: 800;
           margin: 0 0 0.5rem 0;
           background: linear-gradient(135deg, #667eea, #764ba2);
+          background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -732,7 +741,7 @@
         overflow: hidden;
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -742,10 +751,16 @@
 
         &.urgent::before {
           background: linear-gradient(135deg, #ffc107, #fd7e14);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         &.critical::before {
           background: linear-gradient(135deg, #dc3545, #c82333);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           animation: pulse 2s infinite;
         }
 
@@ -764,6 +779,7 @@
             font-size: 2.5rem;
             font-weight: 800;
             background: linear-gradient(135deg, #dc3545, #fd7e14);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
           }
@@ -778,12 +794,18 @@
 
             &:contains("CỰC KHẨN CẤP") {
               background: linear-gradient(135deg, #dc3545, #c82333);
+              background-clip: text;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
               color: white;
               animation: pulse 2s infinite;
             }
 
             &:contains("KHẨN CẤP") {
               background: linear-gradient(135deg, #ffc107, #fd7e14);
+              background-clip: text;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
               color: white;
             }
           }
@@ -883,9 +905,15 @@
 
 // Animations
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 // Enhanced Responsive Design
@@ -999,14 +1027,14 @@
         padding: 20px 24px;
 
         .ant-modal-title {
-          font-family: $font-manager;
+          font-family: vars.$font-manager;
           font-weight: 600;
           font-size: 18px;
         }
       }
 
       .ant-modal-body {
-        font-family: $font-manager;
+        font-family: vars.$font-manager;
 
         .manage-content {
           .ant-card {
@@ -1021,7 +1049,7 @@
           }
 
           .ant-btn {
-            font-family: $font-manager;
+            font-family: vars.$font-manager;
             border-radius: 6px;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -1039,12 +1067,12 @@
           .ant-input {
             border-radius: 6px;
             border: 1px solid #e8e8e8;
-            font-family: $font-manager;
+            font-family: vars.$font-manager;
 
             &:hover,
             &:focus {
-              border-color: $primary-color;
-              box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+              border-color: vars.$primary-color;
+              box-shadow: 0 0 0 2px rgba(vars.$primary-color, 0.1);
             }
           }
         }

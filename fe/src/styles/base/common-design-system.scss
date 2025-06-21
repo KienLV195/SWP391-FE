@@ -1,23 +1,24 @@
+@use "sass:color";
 // Common Design System - Shared variables, mixins, and base styles for Manager & Doctor
-@use 'variables' as *;
+@use "variables" as *;
 
 // ===== TYPOGRAPHY SYSTEM =====
-$font-family-base: 'Inter', sans-serif;
+$font-family-base: "Inter", sans-serif;
 $font-size-base: 16px;
 $font-size-sm: 14px;
 $font-size-lg: 18px;
 $font-size-xl: 20px;
 $font-size-xxl: 24px;
 
-$text-color: #20374E;
+$text-color: #20374e;
 $text-color-secondary: #666666;
 $text-color-light: #999999;
 
 // ===== COLOR SYSTEM =====
-$primary-color: #D93E4C;
-$secondary-color: #20374E;
-$accent-color: #DECCAA;
-$danger-color: #D91022;
+$primary-color: #d93e4c;
+$secondary-color: #20374e;
+$accent-color: #deccaa;
+$danger-color: #d91022;
 
 $bg-color: #ffffff;
 $bg-secondary: #f8f9fa;
@@ -54,7 +55,7 @@ $spacing-xxl: 48px;
   font-weight: 500;
   transition: background 0.2s;
   &:hover {
-    background: darken($primary-color, 8%);
+    background: color.adjust($primary-color, $lightness: -8%);
   }
 }
 
@@ -65,7 +66,7 @@ $spacing-xxl: 48px;
   font-weight: 500;
   transition: background 0.2s;
   &:hover {
-    background: darken($danger-color, 8%);
+    background: color.adjust($danger-color, $lightness: -8%);
   }
 }
 

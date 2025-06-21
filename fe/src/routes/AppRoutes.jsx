@@ -301,6 +301,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/admin/users/:userType",
+    element: (
+      <AdminRoute>
+        <UserManagement />
+      </AdminRoute>
+    ),
+  },
+  {
     path: "/admin/blogs",
     element: (
       <AdminRoute>

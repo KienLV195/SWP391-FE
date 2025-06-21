@@ -9,6 +9,7 @@ import {
   Select,
   message,
   Popconfirm,
+  Avatar,
 } from "antd";
 import {
   PlusOutlined,
@@ -67,7 +68,7 @@ const UserManagement = () => {
       const response = await fetch(`/api/users?role=${roleMap[userType]}`);
       const data = await response.json();
       setUsers(data);
-    } catch (error) {
+    } catch {
       message.error("Không thể tải danh sách người dùng");
     } finally {
       setLoading(false);
@@ -99,8 +100,23 @@ const UserManagement = () => {
       await fetch(`/api/users/${id}`, { method: "DELETE" });
       message.success("Xóa người dùng thành công");
       fetchUsers();
-    } catch (error) {
+    } catch {
       message.error("Không thể xóa người dùng");
+    }
+  };
+
+  const handleStatusChange = async (userId, newStatus) => {
+    try {
+      // TODO: Replace with actual API call
+      await fetch(`/api/users/${userId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      message.success("Cập nhật trạng thái thành công");
+      fetchUsers();
+    } catch {
+      message.error("Không thể cập nhật trạng thái");
     }
   };
 
@@ -127,7 +143,7 @@ const UserManagement = () => {
       }
       setModalVisible(false);
       fetchUsers();
-    } catch (error) {
+    } catch {
       message.error("Có lỗi xảy ra");
     }
   };
@@ -158,7 +174,7 @@ const UserManagement = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (
+      render: (status, record) => (
         <Select
           value={status}
           style={{ width: 120 }}

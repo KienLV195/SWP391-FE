@@ -1,3 +1,4 @@
+@use "sass:color";
 // Admin Design System
 // Colors
 $primary-color: #d93e4c;
@@ -193,13 +194,19 @@ $z-index-tooltip: 1070;
 
 // Ant Design overrides
 .ant-btn-primary {
-  background-color: $primary-color;
-  border-color: $primary-color;
+  background-color: color.adjust($primary-color, $lightness: -10%);
+  border-color: color.adjust($primary-color, $lightness: -10%);
 
   &:hover,
   &:focus {
-    background-color: darken($primary-color, 10%);
-    border-color: darken($primary-color, 10%);
+    background-color: color.adjust(
+      color.adjust($primary-color, $lightness: -10%),
+      $lightness: -10%
+    );
+    border-color: color.adjust(
+      color.adjust($primary-color, $lightness: -10%),
+      $lightness: -10%
+    );
   }
 }
 

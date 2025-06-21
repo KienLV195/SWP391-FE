@@ -21,7 +21,7 @@ const { Text } = Typography;
 const AdminSidebar = ({ collapsed, onCollapse }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   const navItems = [
     {
