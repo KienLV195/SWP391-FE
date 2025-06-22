@@ -15,6 +15,9 @@ import {
   message,
   Statistic,
   Tooltip,
+  Tabs,
+  Spin,
+  DatePicker,
 } from "antd";
 import {
   DatabaseOutlined,
@@ -26,61 +29,122 @@ import {
   CheckCircleOutlined,
   WarningOutlined,
   StarOutlined,
+  MinusOutlined,
 } from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
 import PageHeader from "../../components/manager/PageHeader";
 import {
-  mockBloodInventory,
-  getBloodInventoryWithStatus,
-  BLOOD_GROUPS,
-  RH_TYPES,
-  COMPONENT_TYPES,
-} from "../../services/mockData";
+  fetchBloodInventory,
+  checkInBloodInventory,
+  checkOutBloodInventory,
+} from "../../services/bloodInventoryService";
+import authService from "../../services/authService";
 import "../../styles/pages/BloodInventoryManagement.scss";
 import "../../styles/components/PageHeader.scss";
+import useBloodInventoryHistory from "../../hooks/useBloodInventoryHistory";
+import ManagerBloodCheckInModal from "../../components/manager/blood-inventory/ManagerBloodCheckInModal";
+import ManagerBloodCheckOutModal from "../../components/manager/blood-inventory/ManagerBloodCheckOutModal";
+import ManagerBloodInventoryHistoryTable from "../../components/manager/blood-inventory/ManagerBloodInventoryHistoryTable";
+import ManagerBloodInventoryHistoryFilters from "../../components/manager/blood-inventory/ManagerBloodInventoryHistoryFilters";
+import useInventoryFilter from "../../hooks/useInventoryFilter";
+import ManagerBloodInventoryFilters from "../../components/manager/blood-inventory/ManagerBloodInventoryFilters";
+import ManagerBloodInventoryStats from "../../components/manager/blood-inventory/ManagerBloodInventoryStats";
+import ManagerBloodInventoryTable from "../../components/manager/blood-inventory/ManagerBloodInventoryTable";
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
+
+const mapRhTypeToSymbol = (rhType) => {
+  if (rhType === "Rh+") return "+";
+  if (rhType === "Rh-") return "-";
+  return rhType;
+};
 
 const BloodInventoryManagement = () => {
   const [inventory, setInventory] = useState([]);
-  const [filteredInventory, setFilteredInventory] = useState([]);
-  const [filters, setFilters] = useState({
-    bloodType: "all",
-    component: "all",
-    status: "all",
-  });
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [newInventory, setNewInventory] = useState({
     bloodGroup: "",
-    rhType: "",
-    componentType: COMPONENT_TYPES.WHOLE,
+    rhType: "Rh+",
+    componentType: "Whole",
     quantity: 0,
     isRare: false,
   });
+  const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const [checkInForm, setCheckInForm] = useState({
+    inventoryId: null,
+    quantity: 0,
+    reason: "",
+    notes: "",
+  });
+  const [checkOutForm, setCheckOutForm] = useState({
+    inventoryId: null,
+    quantity: 0,
+    reason: "",
+    notes: "",
+  });
+  const [loadingCheckIn, setLoadingCheckIn] = useState(false);
+  const [loadingCheckOut, setLoadingCheckOut] = useState(false);
+  const [activeTab, setActiveTab] = useState("inventory");
+
+  // Lịch sử hoạt động
+  const {
+    filters: historyFilters,
+    setFilters: setHistoryFilters,
+    filteredHistory,
+    historyLoading,
+    performers,
+    fetchHistory,
+  } = useBloodInventoryHistory();
+
+  const [inventoryFilters, setInventoryFilters] = useState({
+    bloodType: "all",
+    component: "all",
+    status: "all",
+  });
+
+  const filteredInventory = useInventoryFilter(inventory, inventoryFilters);
 
   useEffect(() => {
     loadInventory();
   }, []);
 
-  const loadInventory = () => {
-    // TODO_API_REPLACE: Replace with actual API call - GET /api/manager/blood-inventory
-    const inventoryWithStatus = getBloodInventoryWithStatus();
-    setInventory(inventoryWithStatus);
-    setFilteredInventory(inventoryWithStatus);
+  // Map lại trạng thái theo số lượng túi
+  const loadInventory = async () => {
+    try {
+      const data = await fetchBloodInventory();
+      const inventoryWithStatus = data.map((item) => {
+        let status = "critical";
+        if (item.quantity >= 0 && item.quantity <= 10) status = "critical";
+        else if (item.quantity >= 11 && item.quantity <= 30) status = "low";
+        else if (item.quantity >= 31 && item.quantity <= 60) status = "medium";
+        else if (item.quantity >= 61) status = "safe";
+        const bloodType = `${item.bloodGroup}${mapRhTypeToSymbol(item.rhType)}`;
+        return {
+          ...item,
+          bloodType,
+          status,
+        };
+      });
+      setInventory(inventoryWithStatus);
+    } catch {
+      setInventory([]);
+    }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "critical":
-        return "#D91022";
+        return "#D91022"; // đỏ
       case "low":
-        return "#fa8c16";
-      case "normal":
-        return "#52c41a";
-      case "high":
-        return "#1890ff";
+        return "#fa8c16"; // cam
+      case "medium":
+        return "#FFD600"; // vàng
+      case "safe":
+        return "#52c41a"; // xanh lá
       default:
         return "#666666";
     }
@@ -89,13 +153,13 @@ const BloodInventoryManagement = () => {
   const getStatusText = (status) => {
     switch (status) {
       case "critical":
-        return "Cực kỳ thiếu";
+        return "Cảnh báo khẩn cấp";
       case "low":
-        return "Thiếu";
-      case "normal":
-        return "Bình thường";
-      case "high":
-        return "Dư thừa";
+        return "Thiếu máu";
+      case "medium":
+        return "Trung bình";
+      case "safe":
+        return "An toàn";
       default:
         return "Không xác định";
     }
@@ -107,9 +171,9 @@ const BloodInventoryManagement = () => {
         return <ExclamationCircleOutlined />;
       case "low":
         return <WarningOutlined />;
-      case "normal":
-        return <CheckCircleOutlined />;
-      case "high":
+      case "medium":
+        return <WarningOutlined style={{ color: "#FFD600" }} />;
+      case "safe":
         return <CheckCircleOutlined />;
       default:
         return <ExclamationCircleOutlined />;
@@ -159,7 +223,7 @@ const BloodInventoryManagement = () => {
           style={{ fontWeight: "bold", color: "#20374E", fontSize: "16px" }}
         >
           {quantity}{" "}
-          <span style={{ fontSize: "12px", color: "#666" }}>đơn vị</span>
+          <span style={{ fontSize: "12px", color: "#666" }}>túi</span>
         </span>
       ),
     },
@@ -209,57 +273,7 @@ const BloodInventoryManagement = () => {
         </span>
       ),
     },
-    {
-      title: "Hành động",
-      key: "actions",
-      width: 120,
-      align: "center",
-      render: (_, record) => (
-        <Space>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="primary"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => handleEditItem(record)}
-              style={{ backgroundColor: "#20374E", borderColor: "#20374E" }}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Button
-              danger
-              size="small"
-              icon={<DeleteOutlined />}
-              onClick={() => handleDeleteItem(record)}
-            />
-          </Tooltip>
-        </Space>
-      ),
-    },
   ];
-
-  useEffect(() => {
-    // Apply filters
-    let filtered = inventory;
-
-    if (filters.bloodType !== "all") {
-      filtered = filtered.filter(
-        (item) => item.bloodType === filters.bloodType
-      );
-    }
-
-    if (filters.component !== "all") {
-      filtered = filtered.filter(
-        (item) => item.componentType === filters.component
-      );
-    }
-
-    if (filters.status !== "all") {
-      filtered = filtered.filter((item) => item.status === filters.status);
-    }
-
-    setFilteredInventory(filtered);
-  }, [filters, inventory]);
 
   const handleUpdateQuantity = (inventoryID, newQuantity) => {
     setInventory((prev) =>
@@ -333,33 +347,11 @@ const BloodInventoryManagement = () => {
     setNewInventory({
       bloodGroup: "",
       rhType: "",
-      componentType: COMPONENT_TYPES.WHOLE,
+      componentType: "Whole",
       quantity: 0,
       isRare: false,
     });
     message.success("Đã thêm kho máu mới thành công!");
-  };
-
-  const handleEditItem = (item) => {
-    setSelectedItem(item);
-    setShowUpdateModal(true);
-  };
-
-  const handleDeleteItem = (item) => {
-    Modal.confirm({
-      title: "Xác nhận xóa",
-      content: `Bạn có chắc chắn muốn xóa kho máu ${item.bloodType} - ${item.componentType}?`,
-      okText: "Xóa",
-      cancelText: "Hủy",
-      okType: "danger",
-      onOk: () => {
-        // TODO_API_REPLACE: Replace with actual API call - DELETE /api/manager/blood-inventory/:id
-        setInventory((prev) =>
-          prev.filter((inv) => inv.inventoryID !== item.inventoryID)
-        );
-        message.success("Đã xóa kho máu thành công!");
-      },
-    });
   };
 
   const handleUpdateItem = () => {
@@ -371,7 +363,39 @@ const BloodInventoryManagement = () => {
     }
   };
 
-  const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+  // Định nghĩa lại các hằng số đúng chuẩn API
+  const COMPONENT_TYPES = {
+    WHOLE: "Whole",
+    RBC: "RBC",
+    PLASMA: "Plasma",
+    PLATELET: "Platelet",
+  };
+  const BLOOD_GROUPS = ["A", "B", "AB", "O"];
+  const RH_TYPES = ["Rh+", "Rh-"];
+
+  // Tạo các options filter động từ inventory
+  const bloodTypes = Array.from(
+    new Set(inventory.map((i) => i.bloodType))
+  ).filter(Boolean);
+  const componentTypes = Array.from(
+    new Set(inventory.map((i) => i.componentType))
+  ).filter(Boolean);
+  const statusOptions = Array.from(new Set(inventory.map((i) => i.status)))
+    .filter(Boolean)
+    .map((s) => {
+      switch (s) {
+        case "critical":
+          return { value: "critical", label: "Cảnh báo khẩn cấp" };
+        case "low":
+          return { value: "low", label: "Thiếu máu" };
+        case "medium":
+          return { value: "medium", label: "Trung bình" };
+        case "safe":
+          return { value: "safe", label: "An toàn" };
+        default:
+          return { value: s, label: s };
+      }
+    });
 
   // Calculate statistics
   const totalUnits = inventory.reduce((sum, item) => sum + item.quantity, 0);
@@ -383,6 +407,99 @@ const BloodInventoryManagement = () => {
     .filter((item) => item.isRare)
     .reduce((sum, item) => sum + item.quantity, 0);
 
+  // Xử lý nhập kho
+  const handleCheckIn = async () => {
+    setLoadingCheckIn(true);
+    try {
+      const userId = authService.getCurrentUser()?.id;
+      const payload = {
+        inventoryId: checkInForm.inventoryId,
+        quantity: checkInForm.quantity,
+        reason: checkInForm.reason,
+        notes: checkInForm.notes,
+        performedBy: userId,
+      };
+      await checkInBloodInventory(payload);
+      // Cập nhật UI và status
+      setInventory((prev) =>
+        prev.map((item) => {
+          if (String(item.inventoryId) === String(checkInForm.inventoryId)) {
+            const newQuantity = item.quantity + Number(checkInForm.quantity);
+            let status = "critical";
+            if (newQuantity >= 0 && newQuantity <= 10) status = "critical";
+            else if (newQuantity >= 11 && newQuantity <= 30) status = "low";
+            else if (newQuantity >= 31 && newQuantity <= 60) status = "medium";
+            else if (newQuantity >= 61) status = "safe";
+            return {
+              ...item,
+              quantity: newQuantity,
+              status,
+              lastUpdated: new Date().toISOString(),
+            };
+          }
+          return item;
+        })
+      );
+      message.success("Nhập kho thành công!");
+      setShowCheckInModal(false);
+      setCheckInForm({ inventoryId: null, quantity: 0, reason: "", notes: "" });
+      fetchHistory();
+    } catch {
+      message.error("Nhập kho thất bại!");
+    } finally {
+      setLoadingCheckIn(false);
+    }
+  };
+
+  // Xử lý xuất kho
+  const handleCheckOut = async () => {
+    setLoadingCheckOut(true);
+    try {
+      const userId = authService.getCurrentUser()?.id;
+      const payload = {
+        inventoryId: checkOutForm.inventoryId,
+        quantity: checkOutForm.quantity,
+        reason: checkOutForm.reason,
+        notes: checkOutForm.notes,
+        performedBy: userId,
+      };
+      await checkOutBloodInventory(payload);
+      // Cập nhật UI và status
+      setInventory((prev) =>
+        prev.map((item) => {
+          if (String(item.inventoryId) === String(checkOutForm.inventoryId)) {
+            const newQuantity = item.quantity - Number(checkOutForm.quantity);
+            let status = "critical";
+            if (newQuantity >= 0 && newQuantity <= 10) status = "critical";
+            else if (newQuantity >= 11 && newQuantity <= 30) status = "low";
+            else if (newQuantity >= 31 && newQuantity <= 60) status = "medium";
+            else if (newQuantity >= 61) status = "safe";
+            return {
+              ...item,
+              quantity: newQuantity,
+              status,
+              lastUpdated: new Date().toISOString(),
+            };
+          }
+          return item;
+        })
+      );
+      message.success("Xuất kho thành công!");
+      setShowCheckOutModal(false);
+      setCheckOutForm({
+        inventoryId: null,
+        quantity: 0,
+        reason: "",
+        notes: "",
+      });
+      fetchHistory();
+    } catch {
+      message.error("Xuất kho thất bại!");
+    } finally {
+      setLoadingCheckOut(false);
+    }
+  };
+
   return (
     <div className="blood-inventory-management">
       <ManagerSidebar />
@@ -392,157 +509,107 @@ const BloodInventoryManagement = () => {
           title="Quản lý Kho Máu"
           description="Theo dõi và quản lý tồn kho máu theo nhóm máu và thành phần"
           icon={DatabaseOutlined}
-          actions={[
-            {
-              label: "Thêm kho máu",
-              type: "primary",
-              icon: <PlusOutlined />,
-              onClick: () => setShowAddModal(true),
-              style: { backgroundColor: "#D93E4C", borderColor: "#D93E4C" },
-            },
-            {
-              label: "Làm mới",
-              icon: <ReloadOutlined />,
-              onClick: loadInventory,
-            },
-          ]}
         />
 
-        {/* Quick Stats */}
-        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Tổng đơn vị"
-                value={totalUnits}
-                prefix={<DatabaseOutlined style={{ color: "#20374E" }} />}
-                valueStyle={{ color: "#20374E", fontFamily: "$font-manager" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Cực kỳ thiếu"
-                value={criticalItems}
-                prefix={
-                  <ExclamationCircleOutlined style={{ color: "#D91022" }} />
-                }
-                valueStyle={{ color: "#D91022", fontFamily: "$font-manager" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Thiếu"
-                value={lowItems}
-                prefix={<WarningOutlined style={{ color: "#fa8c16" }} />}
-                valueStyle={{ color: "#fa8c16", fontFamily: "$font-manager" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Máu hiếm"
-                value={rareBloodUnits}
-                prefix={<StarOutlined style={{ color: "#D93E4C" }} />}
-                valueStyle={{ color: "#D93E4C", fontFamily: "$font-manager" }}
-              />
-            </Card>
-          </Col>
-        </Row>
-
-        {/* Filters */}
-        <Card style={{ marginBottom: 24 }}>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={8} md={6}>
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ fontWeight: "bold", color: "#20374E" }}>
-                  Nhóm máu:
-                </label>
-              </div>
-              <Select
-                value={filters.bloodType}
-                onChange={(value) =>
-                  setFilters((prev) => ({ ...prev, bloodType: value }))
-                }
-                style={{ width: "100%" }}
-                placeholder="Chọn nhóm máu"
-              >
-                <Option value="all">Tất cả</Option>
-                {bloodTypes.map((type) => (
-                  <Option key={type} value={type}>
-                    {type}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-
-            <Col xs={24} sm={8} md={6}>
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ fontWeight: "bold", color: "#20374E" }}>
-                  Thành phần:
-                </label>
-              </div>
-              <Select
-                value={filters.component}
-                onChange={(value) =>
-                  setFilters((prev) => ({ ...prev, component: value }))
-                }
-                style={{ width: "100%" }}
-                placeholder="Chọn thành phần"
-              >
-                <Option value="all">Tất cả</Option>
-                {Object.values(COMPONENT_TYPES).map((component) => (
-                  <Option key={component} value={component}>
-                    {component}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-
-            <Col xs={24} sm={8} md={6}>
-              <div style={{ marginBottom: 8 }}>
-                <label style={{ fontWeight: "bold", color: "#20374E" }}>
-                  Trạng thái:
-                </label>
-              </div>
-              <Select
-                value={filters.status}
-                onChange={(value) =>
-                  setFilters((prev) => ({ ...prev, status: value }))
-                }
-                style={{ width: "100%" }}
-                placeholder="Chọn trạng thái"
-              >
-                <Option value="all">Tất cả</Option>
-                <Option value="critical">Cực kỳ thiếu</Option>
-                <Option value="low">Thiếu</Option>
-                <Option value="normal">Bình thường</Option>
-                <Option value="high">Dư thừa</Option>
-              </Select>
-            </Col>
-          </Row>
-        </Card>
-
-        {/* Inventory Table */}
-        <Card>
-          <Table
-            columns={getTableColumns()}
-            dataSource={filteredInventory}
-            rowKey="inventoryID"
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} của ${total} mục`,
-            }}
-            scroll={{ x: 800 }}
+        {/* Tabs + 2 nút nhập/xuất kho */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: 16,
+            gap: 12,
+          }}
+        >
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={[
+              { key: "inventory", label: "Kho máu" },
+              { key: "history", label: "Lịch sử hoạt động" },
+            ]}
+            style={{ flex: 1 }}
           />
-        </Card>
+          {activeTab === "inventory" && (
+            <>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                onClick={() => setShowCheckInModal(true)}
+              >
+                Nhập kho
+              </Button>
+              <Button
+                type="primary"
+                icon={<MinusOutlined />}
+                style={{ backgroundColor: "#D91022", borderColor: "#D91022" }}
+                onClick={() => setShowCheckOutModal(true)}
+              >
+                Xuất kho
+              </Button>
+            </>
+          )}
+        </div>
+
+        {/* Tab content */}
+        {activeTab === "inventory" && (
+          <>
+            <ManagerBloodInventoryStats
+              totalUnits={totalUnits}
+              criticalItems={criticalItems}
+              lowItems={lowItems}
+              rareBloodUnits={rareBloodUnits}
+            />
+            <ManagerBloodInventoryFilters
+              filters={inventoryFilters}
+              setFilters={setInventoryFilters}
+              bloodTypes={bloodTypes}
+              componentTypes={componentTypes}
+              statusOptions={[
+                { value: "all", label: "Tất cả" },
+                ...statusOptions,
+              ]}
+            />
+            <div
+              style={{
+                marginBottom: 8,
+                fontStyle: "italic",
+                color: "#888",
+                fontSize: 14,
+              }}
+            >
+              * 1 túi = 250ml
+            </div>
+            <Card>
+              <ManagerBloodInventoryTable
+                columns={getTableColumns()}
+                data={filteredInventory}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} của ${total} mục`,
+                }}
+                scroll={{ x: 800 }}
+              />
+            </Card>
+          </>
+        )}
+        {activeTab === "history" && (
+          <Card>
+            <ManagerBloodInventoryHistoryFilters
+              filters={historyFilters}
+              setFilters={setHistoryFilters}
+              inventory={inventory}
+              performers={performers}
+            />
+            <ManagerBloodInventoryHistoryTable
+              data={filteredHistory}
+              loading={historyLoading}
+            />
+          </Card>
+        )}
       </div>
 
       {/* Add Inventory Modal */}
@@ -578,7 +645,7 @@ const BloodInventoryManagement = () => {
                 style={{ width: "100%" }}
                 placeholder="Chọn nhóm máu"
               >
-                {Object.values(BLOOD_GROUPS).map((group) => (
+                {BLOOD_GROUPS.map((group) => (
                   <Option key={group} value={group}>
                     {group}
                   </Option>
@@ -602,7 +669,7 @@ const BloodInventoryManagement = () => {
                 style={{ width: "100%" }}
                 placeholder="Chọn Rh"
               >
-                {Object.values(RH_TYPES).map((rh) => (
+                {RH_TYPES.map((rh) => (
                   <Option key={rh} value={rh}>
                     {rh}
                   </Option>
@@ -747,6 +814,28 @@ const BloodInventoryManagement = () => {
           </div>
         )}
       </Modal>
+
+      {/* Modal Nhập kho */}
+      <ManagerBloodCheckInModal
+        open={showCheckInModal}
+        onOk={handleCheckIn}
+        onCancel={() => setShowCheckInModal(false)}
+        confirmLoading={loadingCheckIn}
+        inventory={inventory}
+        form={checkInForm}
+        setForm={setCheckInForm}
+      />
+
+      {/* Modal Xuất kho */}
+      <ManagerBloodCheckOutModal
+        open={showCheckOutModal}
+        onOk={handleCheckOut}
+        onCancel={() => setShowCheckOutModal(false)}
+        confirmLoading={loadingCheckOut}
+        inventory={inventory}
+        form={checkOutForm}
+        setForm={setCheckOutForm}
+      />
     </div>
   );
 };

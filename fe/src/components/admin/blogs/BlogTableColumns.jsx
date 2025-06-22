@@ -23,8 +23,8 @@ const BlogTableColumns = ({ activeTab, userMap, onView, onEdit, onDelete }) => [
   },
   {
     title: "Ngày đăng",
-    dataIndex: "postedAt",
-    key: "postedAt",
+    dataIndex: activeTab === "Tài liệu" ? "createdAt" : "postedAt",
+    key: "createdAt",
     render: (date) => {
       if (!date) return "-";
       return new Date(date).toLocaleDateString("vi-VN", {

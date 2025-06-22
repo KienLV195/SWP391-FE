@@ -14,10 +14,11 @@ import "../../styles/pages/BloodInfoPage.scss";
 const { Option } = Select;
 const { Title, Paragraph } = Typography;
 
+// Định nghĩa lại TAG_GROUPS cho đúng yêu cầu
 const TAG_GROUPS = [
-  { key: "Nhóm Máu", label: "Nhóm Máu" },
-  { key: "Hiến Máu", label: "Hiến Máu" },
-  { key: "Truyền máu", label: "Truyền máu" },
+  { key: "hien-mau", label: "Hiến máu" },
+  { key: "truyen-mau", label: "Truyền máu" },
+  { key: "nhom-mau", label: "Nhóm máu" },
 ];
 
 const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
@@ -50,16 +51,31 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     filteredData: filteredArticles,
   } = useSearchAndFilter(articles, searchFn, filterFn);
 
-  // Group articles by main tags
+  // Nhóm lại bài viết theo yêu cầu mới
   const groupedArticles = React.useMemo(() => {
-    const result = {};
-    TAG_GROUPS.forEach((group) => {
-      result[group.key] = filteredArticles.filter(
-        (article) =>
-          Array.isArray(article.tags) && article.tags.includes(group.key)
-      );
-    });
-    return result;
+    const hienMau = filteredArticles.filter(
+      (a) =>
+        Array.isArray(a.tags) &&
+        a.tags.some((tag) => tag.toLowerCase().includes("hiến máu"))
+    );
+    const truyenMau = filteredArticles.filter(
+      (a) =>
+        Array.isArray(a.tags) &&
+        a.tags.some((tag) => tag.toLowerCase().includes("truyền máu"))
+    );
+    const nhomMau = filteredArticles.filter(
+      (a) =>
+        !(
+          Array.isArray(a.tags) &&
+          (a.tags.some((tag) => tag.toLowerCase().includes("hiến máu")) ||
+            a.tags.some((tag) => tag.toLowerCase().includes("truyền máu")))
+        )
+    );
+    return {
+      "hien-mau": hienMau,
+      "truyen-mau": truyenMau,
+      "nhom-mau": nhomMau,
+    };
   }, [filteredArticles]);
 
   // Format article data for ArticleGroup component
@@ -142,7 +158,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
           </div>
 
           {/* Article Groups */}
-          {selectedTag === "all" ? (
+          {selectedTag === "all" || !selectedTag ? (
             TAG_GROUPS.map((group) => (
               <ArticleGroup
                 key={group.key}

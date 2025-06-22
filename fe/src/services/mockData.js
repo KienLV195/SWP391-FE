@@ -1,3 +1,6 @@
+import axios from "axios";
+import config from "../config/environment";
+
 // Mock data for Blood Management System based on database schema
 
 // User roles matching database Roles table
@@ -689,6 +692,13 @@ export const getBloodInventoryWithStatus = () => {
     };
   });
 };
+
+const BLOOD_INVENTORY_API = config.api.bloodInventory || import.meta.env.VITE_BLOOD_INVENTORY_API;
+
+export async function fetchBloodInventory() {
+  const response = await axios.get(BLOOD_INVENTORY_API);
+  return response.data;
+}
 
 // Mock Blog Data for testing - Updated for new workflow
 // Doctor: Auto-publish all posts (no approval needed)
