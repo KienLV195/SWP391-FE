@@ -8,7 +8,6 @@ import vietnamProvinces from "../../data/vietnam-provinces.json";
 
 const documentTypes = [
   { value: "cccd", label: "Căn cước công dân" },
-  { value: "cmnd", label: "Chứng minh nhân dân" },
   { value: "passport", label: "Hộ chiếu" },
 ];
 
@@ -64,12 +63,13 @@ const MemberInfoPage = () => {
   const [districtList, setDistrictList] = useState([]);
   const [wardList, setWardList] = useState([]);
   const [isValid, setIsValid] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' });
 
   // Thêm hàm fetchUserInfo để lấy thông tin người dùng từ API
   const fetchUserInfo = async () => {
     try {
       const response = await axios.get(
-        `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${currentUser.id}`,
+        ` https://localhost:7021/api/Information/${currentUser.id}`,
         {
           headers: {
             Authorization: `Bearer ${currentUser.token}`
@@ -82,7 +82,7 @@ const MemberInfoPage = () => {
 
         // Format date from "2003-02-16T00:00:00" to "2003-02-16"
         const formattedDate = userData.dateOfBirth
-          ? new Date(userData.dateOfBirth).toISOString().split('T')[0]
+          ? userData.dateOfBirth.split('T')[0]
           : "";
 
         // Cập nhật form với dữ liệu mới
@@ -235,7 +235,6 @@ const MemberInfoPage = () => {
     }
   };
   const handleSubmit = async (e) => {
-    
     e.preventDefault();
     if (validate()) {
       try {
@@ -280,7 +279,7 @@ const MemberInfoPage = () => {
 
         // Gửi thông tin xuống database
         const response = await axios.put(
-          `https://blooddonationswp391-h6b6cvehfca8dpey.canadacentral-01.azurewebsites.net/api/Information/${currentUser.id}`,
+          ` https://localhost:7021/api/Information/${currentUser.id}`,
           dataToSave,
           {
             headers: {
@@ -311,11 +310,9 @@ const MemberInfoPage = () => {
 
           // Lấy thông tin mới nhất từ database sau khi lưu thành công
           await fetchUserInfo();
-
-          alert("Lưu thông tin thành công!");
+          setNotification({ message: "Lưu thông tin thành công!", type: "success" });
+          setTimeout(() => setNotification({ message: '', type: '' }), 3500);
           console.log("Thông tin đã lưu:", dataToSave);
-
-          // Redirect based on context
           if (isFirstTime) {
             navigate("/member", {
               state: { message: "Chào mừng bạn đến với hệ thống hiến máu!" },
@@ -327,7 +324,8 @@ const MemberInfoPage = () => {
         if (error.response) {
           console.error("Response status:", error.response.status);
         }
-        alert("Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.");
+        setNotification({ message: "Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.", type: "error" });
+        setTimeout(() => setNotification({ message: '', type: '' }), 3500);
       }
     }
   };
@@ -371,6 +369,22 @@ const MemberInfoPage = () => {
           </div>
         </div>
         <div className="member-info-form-box">
+          {notification.message && (
+            <div style={{
+              marginBottom: 16,
+              padding: 12,
+              borderRadius: 6,
+              color: notification.type === 'success' ? '#155724' : '#721c24',
+              background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
+              border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
+              fontWeight: 500,
+              fontSize: '1.08rem',
+              textAlign: 'center',
+              transition: 'all 0.3s'
+            }}>
+              {notification.message}
+            </div>
+          )}
           <form
             className="member-info-form"
             onSubmit={handleSubmit}
@@ -395,13 +409,11 @@ const MemberInfoPage = () => {
               </div>{" "}
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>
-                  Số{" "}
-                  {form.documentType === "passport"
-                    ? "hộ chiếu"
-                    : form.documentType === "cmnd"
-                      ? "chứng minh nhân dân"
-                      : "căn cước công dân"}{" "}
-                  <span className="text-danger">*</span>
+                  
+                  Số{form.documentType === "passport"
+                    ? " hộ chiếu"   
+                    : " căn cước công dân"} 
+                    <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
@@ -413,8 +425,7 @@ const MemberInfoPage = () => {
                   style={{ fontSize: "1.1rem" }}
                   placeholder={`Nhập ${form.documentType === "passport"
                     ? "số hộ chiếu"
-                    : form.documentType === "cmnd"
-                      ? "số CMND (9 hoặc 12 số)"
+                   
                       : "số CCCD (12 số)"
                     }`}
                 />

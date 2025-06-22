@@ -264,7 +264,7 @@ const BloodDonationFormPage = () => {
 
     // Kiểm tra cân nặng
     if (!healthSurvey.weight) {
-      alert("Vui lòng nhập cân nặng!");
+      alert("Vui lòng nhập cân nặng của bạn để tiếp tục khảo sát sức khỏe!");
       return;
     }
 
@@ -526,8 +526,8 @@ const BloodDonationFormPage = () => {
           email: storedMemberInfo.email || userProfile.email || currentUser?.email || "",
           phone: storedMemberInfo.phone || userProfile.phone || currentUser?.phone || "",
           dateOfBirth: storedMemberInfo.dateOfBirth
-            ? new Date(storedMemberInfo.dateOfBirth).toISOString().split('T')[0]
-            : userProfile.dateOfBirth || "",
+            ? storedMemberInfo.dateOfBirth.split("T")[0] // Chỉ lấy phần ngày
+            : userProfile.dateOfBirth ? userProfile.dateOfBirth.split("T")[0] : "",
           gender: storedMemberInfo.gender || userProfile.gender || "",
           address: {
             houseNumber: storedMemberInfo.houseNumber || "",
