@@ -1,5 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Steps,
+  Form,
+  Input,
+  InputNumber,
+  Radio,
+  Checkbox,
+  DatePicker,
+  TimePicker,
+  Button,
+  Alert,
+  Card,
+  Row,
+  Col,
+  Space,
+  Typography,
+  Divider
+} from "antd";
+import {
+  InfoCircleOutlined,
+  UserOutlined,
+  HeartOutlined,
+  CalendarOutlined,
+  RightOutlined
+} from "@ant-design/icons";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import AddressForm from "../../components/member/AddressForm";
 import authService from "../../services/authService";
@@ -7,7 +32,11 @@ import NotificationService from "../../services/notificationService";
 import GeolibService from "../../services/geolibService";
 import { DONATION_STATUS, BLOOD_TYPES } from "../../constants/systemConstants";
 import { getUserName } from "../../utils/userUtils";
+import dayjs from "dayjs";
+import Footer from "../../components/common/Footer";
 import "../../styles/pages/BloodDonationFormPage.scss";
+
+const { Title, Text } = Typography;
 
 const BloodDonationFormPage = () => {
   const navigate = useNavigate();
@@ -84,11 +113,13 @@ const BloodDonationFormPage = () => {
     // Question 7: Last 14 Days
     hadFluSymptoms: false,
     last14DaysNone: false,
+    hasOtherSymptoms: false, // checkbox for "Khác (cụ thể)"
     otherSymptoms: "", // text input for other symptoms
 
     // Question 8: Last 7 Days
     tookAntibiotics: false,
     last7DaysNone: false,
+    hasOtherMedications: false, // checkbox for "Khác (cụ thể)"
     otherMedications: "", // text input for other medications
 
     // Question 9: Women Only
@@ -111,6 +142,33 @@ const BloodDonationFormPage = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  // Helper function để xử lý logic checkbox cho các câu hỏi
+  const handleCheckboxChange = (field, value, noneField, otherFields = []) => {
+    if (field === noneField) {
+      // Nếu chọn "Không", bỏ chọn tất cả các checkbox khác
+      if (value) {
+        const updates = { [field]: value };
+        otherFields.forEach(otherField => {
+          updates[otherField] = false;
+        });
+        setHealthSurvey(prev => ({ ...prev, ...updates }));
+      } else {
+        handleHealthSurveyChange(field, value);
+      }
+    } else {
+      // Nếu chọn checkbox khác, bỏ chọn "Không"
+      if (value) {
+        setHealthSurvey(prev => ({
+          ...prev,
+          [field]: value,
+          [noneField]: false
+        }));
+      } else {
+        handleHealthSurveyChange(field, value);
+      }
+    }
   };
 
   const checkEligibility = () => {
@@ -421,6 +479,20 @@ const BloodDonationFormPage = () => {
       setLoading(false);
       alert("Vui lòng chọn khung giờ đặt lịch!");
       return;
+    }
+
+    // Validate 84-day gap if user has donated before
+    if (healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate) {
+      const lastDonationDate = dayjs(healthSurvey.lastDonationDate);
+      const appointmentDate = dayjs(appointmentData.preferredDate);
+      const daysDifference = appointmentDate.diff(lastDonationDate, 'day');
+
+      if (daysDifference < 84) {
+        const earliestDate = lastDonationDate.add(84, 'day');
+        setLoading(false);
+        alert(`Bạn cần chờ ít nhất 84 ngày từ lần hiến máu gần nhất (${lastDonationDate.format('DD/MM/YYYY')}). Ngày sớm nhất có thể hiến máu là: ${earliestDate.format('DD/MM/YYYY')}`);
+        return;
+      }
     }
 
     try {
@@ -793,850 +865,1007 @@ const BloodDonationFormPage = () => {
 
       <div className="registration-content">
         <div className="page-header">
-          <h1>🩸 Đăng ký hiến máu</h1>
-          <p>Hoàn thành các bước để đăng ký hiến máu</p>
+          {/* Hero Section */}
+          <div className="hero-section">
+            {/* Background decoration */}
+            <div className="hero-decoration-1" />
+            <div className="hero-decoration-2" />
 
-          <div className="progress-steps">
-            <div
-              className={`step ${step >= 1 ? "active" : ""} ${step > 1 ? "completed" : ""
-                }`}
-            >
-              <div className="step-number">1</div>
-              <div className="step-text">Thông tin cá nhân</div>
+            <div className="hero-content">
+              <Title level={1} className="hero-title">
+                🩸 Đăng ký hiến máu
+              </Title>
+              <Text className="hero-subtitle">
+                Hoàn thành các bước để đăng ký hiến máu
+              </Text>
+              
             </div>
-            <div
-              className={`step ${step >= 2 ? "active" : ""} ${step > 2 ? "completed" : ""
-                }`}
-            >
-              <div className="step-number">2</div>
-              <div className="step-text">Khảo sát sức khỏe</div>
-            </div>
-            <div className={`step ${step >= 3 ? "active" : ""}`}>
-              <div className="step-number">3</div>
-              <div className="step-text">Đặt lịch hẹn</div>
-            </div>
+          </div>
+
+          {/* Steps Navigation */}
+          <div className="steps-navigation">
+            <Steps
+              current={step - 1}
+              className="custom-steps"
+              size="default"
+              items={[
+                {
+                  title: <span className="step-title">Thông tin cá nhân</span>,
+                  icon: <UserOutlined className="step-icon" />,
+                  description: <span className="step-description">Kiểm tra & xác nhận thông tin</span>
+                },
+                {
+                  title: <span className="step-title">Khảo sát sức khỏe</span>,
+                  icon: <HeartOutlined className="step-icon" />,
+                  description: <span className="step-description">Đánh giá tình trạng sức khỏe</span>
+                },
+                {
+                  title: <span className="step-title">Đặt lịch hẹn</span>,
+                  icon: <CalendarOutlined className="step-icon" />,
+                  description: <span className="step-description">Chọn thời gian phù hợp</span>
+                }
+              ]}
+            />
           </div>
         </div>
 
         {step === 1 && (
-          <div className="personal-info-section">
-            <div className="form-card">
-              <h2>👤 Thông tin cá nhân</h2>
-              <p>Vui lòng kiểm tra và cập nhật thông tin cá nhân của bạn</p>
+          <Card
+            title={
+              <div className="card-title">
+                <UserOutlined className="title-icon" />
+                <span>Thông tin cá nhân</span>
+              </div>
+            }
+            className="form-card"
+            styles={{
+              header: {
+                background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+                borderRadius: '12px 12px 0 0',
+                borderBottom: '2px solid #1890ff'
+              }
+            }}
+          >
+            <div className="info-section">
+              <Text className="info-text">
+                📋 Vui lòng kiểm tra và xác nhận thông tin cá nhân của bạn
+              </Text>
 
-              <div className="profile-info-notice">
-                <div className="notice-icon">ℹ️</div>
-                <div className="notice-content">
-                  <strong>Thông tin đã được điền sẵn từ hồ sơ cá nhân</strong>
-                  <p>
-                    Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn.
-                    <span style={{ color: 'red' }}> Bạn không thể chỉnh sửa các thông tin này tại đây.</span>
-                    Nếu cần thay đổi, vui lòng cập nhật tại trang hồ sơ cá nhân.
-                  </p>
-                </div>
+              <Alert
+                message={
+                  <span className="alert-title">
+                    ✅ Thông tin đã được điền sẵn từ hồ sơ cá nhân
+                  </span>
+                }
+                description={
+                  <div className="alert-description">
+                    <Text>
+                      🔒 Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn và
+                      <Text type="danger" strong> không thể chỉnh sửa tại đây</Text>.
+                    </Text>
+                    <br />
+                    <Text type="secondary">
+                      💡 Nếu cần thay đổi, vui lòng cập nhật tại trang
+                      <Text strong className="alert-link"> Hồ sơ cá nhân</Text>.
+                    </Text>
+                  </div>
+                }
+                type="info"
+                icon={<InfoCircleOutlined />}
+                className="custom-alert"
+              />
+            </div>
+
+            <Form layout="vertical">
+              <div className="personal-info-header">
+                <Title level={4} className="header-title">
+                  👤 Thông tin cơ bản
+                </Title>
               </div>
 
-              <form className="personal-form">
-                {/* Basic Personal Info */}
-                <div className="form-section">
-                  <h3>👤 Thông tin cơ bản</h3>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>
-                        Họ và tên <span className="required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={personalInfo.fullName}
-                        readOnly
-                        disabled
-                        placeholder="Nhập họ và tên"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input
-                        type="email"
-                        value={personalInfo.email}
-                        readOnly
-                        disabled
-                        placeholder="Nhập email"
-                      />
-                    </div>
-                  </div>
+              <div className="personal-info-section">
+                <Row gutter={[24, 16]}>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    label={<span className="form-label">Họ và tên</span>}
+                    required
+                  >
+                    <Input
+                      value={personalInfo.fullName}
+                      disabled
+                      placeholder="Nhập họ và tên"
+                      className="disabled-input"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item label={<span className="form-label">Email</span>}>
+                    <Input
+                      value={personalInfo.email}
+                      disabled
+                      placeholder="Nhập email"
+                      className="disabled-input"
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>
-                        Số điện thoại <span className="required">*</span>
-                      </label>
-                      <input
-                        type="tel"
+                <Row gutter={[24, 16]}>
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label={<span className="form-label">Số điện thoại</span>}
+                      required
+                    >
+                      <Input
                         value={personalInfo.phone}
-                        readOnly
                         disabled
                         placeholder="Nhập số điện thoại"
-                        required
+                        className="disabled-input"
                       />
-                    </div>
-                    <div className="form-group">
-                      <label>
-                        Ngày sinh <span className="required">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        value={personalInfo.dateOfBirth}
-                        readOnly
-                        disabled
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Giới tính</label>
-                    <select
-                      value={personalInfo.gender}
-                      disabled
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label={<span className="form-label">Ngày sinh</span>}
+                      required
                     >
-                      <option value="">Chọn giới tính</option>
-                      <option value="male">Nam</option>
-                      <option value="female">Nữ</option>
-                      <option value="other">Khác</option>
-                    </select>
-                  </div>
-                </div>
+                      <DatePicker
+                        value={personalInfo.dateOfBirth ? dayjs(personalInfo.dateOfBirth) : null}
+                        disabled
+                        className="disabled-datepicker"
+                        placeholder="Chọn ngày sinh"
+                        format="DD/MM/YYYY"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
 
-                {/* Address Form */}
-                <AddressForm
-                  initialAddress={personalInfo.address}
-                  onAddressChange={() => { }}
-                  readOnly={true}
-                />
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handlePersonalInfoSubmit}
+                <Form.Item label={<span className="form-label"> Giới tính</span>}>
+                  <Radio.Group
+                    value={personalInfo.gender}
+                    disabled
+                    className="radio-group"
                   >
-                    ➡️ Tiếp tục
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+                    <Radio value="male" className="radio-item">Nam</Radio>
+                    <Radio value="female" className="radio-item">Nữ</Radio>
+                    <Radio value="other" className="radio-item">Khác</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+
+              <Divider />
+
+              {/* Address Form */}
+              <AddressForm
+                initialAddress={personalInfo.address}
+                onAddressChange={() => { }}
+                readOnly={true}
+              />
+
+              <div className="submit-section">
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handlePersonalInfoSubmit}
+                  icon={<RightOutlined />}
+                  className="submit-button"
+                >
+                  ➡️ Tiếp tục đến khảo sát sức khỏe
+                </Button>
+              </div>
+            </Form>
+          </Card>
         )}
 
         {step === 2 && (
-          <div className="health-survey-section">
-            <div className="form-card">
-              <h2>🏥 Khảo sát sức khỏe</h2>
-              <p>Vui lòng trả lời các câu hỏi sau để đánh giá tình trạng sức khỏe</p>
+          <Card
+            title={
+              <Space>
+                <HeartOutlined />
+                <span>Khảo sát sức khỏe</span>
+              </Space>
+            }
+            className="health-survey-card"
+          >
+            <Text className="survey-description">
+              Vui lòng trả lời các câu hỏi sau để đánh giá tình trạng sức khỏe
+            </Text>
 
-              <form className="health-form">
-                {/* Basic Health Info */}
-                <div className="form-section">
-                  <h3>Thông tin cơ bản</h3>
+            <Form layout="vertical">
+              {/* Basic Health Info */}
+              <Title level={4} className="section-title">Thông tin cơ bản</Title>
 
-                  {personalInfo.bloodType && (
-                    <div className="profile-info-notice" style={{ marginBottom: '1rem' }}>
-                      <div className="notice-icon">🩸</div>
-                      <div className="notice-content">
-                        <strong>Nhóm máu được lấy từ hồ sơ cá nhân.</strong>
-                        <p>Nhóm máu: <strong>{personalInfo.bloodType}</strong></p>
-                      </div>
-                    </div>
-                  )}
+              {personalInfo.bloodType && (
+                <Alert
+                  message="Nhóm máu được lấy từ hồ sơ cá nhân"
+                  description={`Nhóm máu: ${personalInfo.bloodType}`}
+                  type="info"
+                  icon={<InfoCircleOutlined />}
+                  className="blood-type-alert"
+                />
+              )}
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>
-                        Cân nặng (kg) <span className="required">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        value={healthSurvey.weight}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("weight", e.target.value)
-                        }
-                        placeholder="Nhập cân nặng"
-                        min="30"
-                        max="200"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Chiều cao (cm)</label>
-                      <input
-                        type="number"
-                        value={healthSurvey.height}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("height", e.target.value)
-                        }
-                        placeholder="Nhập chiều cao"
-                        min="100"
-                        max="250"
-                      />
-                    </div>
-                  </div>
+              <Row gutter={16}>
+                <Col xs={24} md={12}>
+                  <Form.Item label="Cân nặng (kg)" required>
+                    <InputNumber
+                      value={healthSurvey.weight}
+                      onChange={(value) => handleHealthSurveyChange("weight", value)}
+                      placeholder="Nhập cân nặng"
+                      min={30}
+                      max={200}
+                      className="input-number"
+                      addonAfter="kg"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item label="Chiều cao (cm)">
+                    <InputNumber
+                      value={healthSurvey.height}
+                      onChange={(value) => handleHealthSurveyChange("height", value)}
+                      placeholder="Nhập chiều cao"
+                      min={100}
+                      max={250}
+                      className="input-number"
+                      addonAfter="cm"
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-                </div>
+              <Divider />
 
-                {/* Question 1 */}
-                <div className="form-section">
-                  <h3>1. Anh/chị từng hiến máu chưa?</h3>
-                  <div className="radio-group">
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasDonatedBefore"
-                        value="true"
-                        checked={healthSurvey.hasDonatedBefore === true}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasDonatedBefore", e.target.value === "true")
-                        }
-                      />
-                      <span>Có</span>
-                    </label>
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasDonatedBefore"
-                        value="false"
-                        checked={healthSurvey.hasDonatedBefore === false}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasDonatedBefore", e.target.value === "true")
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                  </div>
-                  {healthSurvey.hasDonatedBefore === true && (
-                    <div className="form-group">
-                      <label>
-                        Ngày hiến máu gần nhất <span className="required">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        value={healthSurvey.lastDonationDate || ""}
-                        onChange={e => {
-                          const today = new Date().toISOString().split("T")[0];
-                          if (e.target.value > today) {
-                            alert("Không được chọn ngày trong tương lai!");
-                            handleHealthSurveyChange("lastDonationDate", "");
-                          } else {
-                            handleHealthSurveyChange("lastDonationDate", e.target.value);
-                          }
-                        }}
-                        max={new Date().toISOString().split("T")[0]}
-                        required
-                      />
-                    </div>
-                  )}
-                </div>
+              {/* Question 1 */}
+              <Title level={5}>1. Anh/chị từng hiến máu chưa?</Title>
+              <Form.Item>
+                <Radio.Group
+                  value={healthSurvey.hasDonatedBefore}
+                  onChange={(e) => handleHealthSurveyChange("hasDonatedBefore", e.target.value)}
+                >
+                  <Radio value={true}>Có</Radio>
+                  <Radio value={false}>Không</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-                {/* Question 2 */}
-                <div className="form-section">
-                  <h3>2. Hiện tại, anh/chị có mắc bệnh lý nào không?</h3>
-                  <div className="radio-group">
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasCurrentMedicalConditions"
-                        value="true"
-                        checked={healthSurvey.hasCurrentMedicalConditions === true}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasCurrentMedicalConditions", e.target.value === "true")
-                        }
-                      />
-                      <span>Có</span>
-                    </label>
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasCurrentMedicalConditions"
-                        value="false"
-                        checked={healthSurvey.hasCurrentMedicalConditions === false}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasCurrentMedicalConditions", e.target.value === "true")
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                  </div>
-                  {healthSurvey.hasCurrentMedicalConditions === true && (
-                    <div className="form-group">
-                      <label>Một số bệnh lý hiện tại</label>
-                      <input
-                        type="text"
-                        value={healthSurvey.currentMedicalConditionsDetail || ""}
-                        onChange={e => handleHealthSurveyChange("currentMedicalConditionsDetail", e.target.value)}
-                        placeholder="Vui lòng ghi rõ bệnh lý nếu có"
-                      />
-                    </div>
-                  )}
-                </div>
+              {healthSurvey.hasDonatedBefore === true && (
+                <Form.Item label="Ngày hiến máu gần nhất" required>
+                  <DatePicker
+                    value={healthSurvey.lastDonationDate ? dayjs(healthSurvey.lastDonationDate) : null}
+                    onChange={(date) => {
+                      if (date && date.isAfter(dayjs())) {
+                        alert("Không được chọn ngày trong tương lai!");
+                        handleHealthSurveyChange("lastDonationDate", "");
+                      } else {
+                        handleHealthSurveyChange("lastDonationDate", date ? date.format('YYYY-MM-DD') : "");
+                      }
+                    }}
+                    disabledDate={(current) => current && current > dayjs().endOf('day')}
+                    className="datepicker-full"
+                    placeholder="Chọn ngày hiến máu gần nhất"
+                    format="DD/MM/YYYY"
+                  />
+                </Form.Item>
+              )}
 
-                {/* Question 3 */}
-                <div className="form-section">
-                  <h3>3. Trước đây, anh/chị có từng mắc một trong các bệnh: viêm gan siêu vi B, C, HIV, vảy nến, phì đại tiền liệt tuyến, sốc phản vệ, tai biến mạch máu não, nhồi máu cơ tim, lupus ban đỏ, động kinh, ung thư, hen, được cấy ghép mô tạng?</h3>
-                  <div className="radio-group">
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasPreviousSeriousConditions"
-                        value="true"
-                        checked={healthSurvey.hasPreviousSeriousConditions === true}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasPreviousSeriousConditions", e.target.value === "true")
-                        }
-                      />
-                      <span>Có</span>
-                    </label>
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasPreviousSeriousConditions"
-                        value="false"
-                        checked={healthSurvey.hasPreviousSeriousConditions === false}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasPreviousSeriousConditions", e.target.value === "true")
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                    <label className="radio-item">
-                      <input
-                        type="radio"
-                        name="hasPreviousSeriousConditions"
-                        value="other"
-                        checked={healthSurvey.hasPreviousSeriousConditions === "other"}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hasPreviousSeriousConditions", "other")
-                        }
-                      />
-                      <span>Bệnh khác</span>
-                    </label>
-                  </div>
-                  {healthSurvey.hasPreviousSeriousConditions === "other" && (
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        value={healthSurvey.otherPreviousConditions}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("otherPreviousConditions", e.target.value)
-                        }
-                        placeholder="Vui lòng mô tả bệnh"
-                      />
-                    </div>
-                  )}
-                </div>
+              <Divider />
 
-                {/* Question 4 */}
-                <div className="form-section">
-                  <h3>4. Trong 12 tháng gần đây, anh/chị có:</h3>
-                  <div className="checkbox-list">
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadMalariaSyphilisTuberculosis}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadMalariaSyphilisTuberculosis", e.target.checked)
-                        }
-                      />
-                      <span>Khỏi bệnh sau khi mắc một trong các bệnh: sốt rét, giang mai, lao, viêm não-màng não, uốn ván, phẫu thuật ngoại khoa</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadBloodTransfusion}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadBloodTransfusion", e.target.checked)
-                        }
-                      />
-                      <span>Được truyền máu hoặc các chế phẩm máu</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadVaccination}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadVaccination", e.target.checked)
-                        }
-                      />
-                      <span>Tiêm Vacxin</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.last12MonthsNone}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("last12MonthsNone", e.target.checked)
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                  </div>
-                </div>
+              {/* Question 2 */}
+              <Title level={5}>2. Hiện tại, anh/chị có mắc bệnh lý nào không?</Title>
+              <Form.Item>
+                <Radio.Group
+                  value={healthSurvey.hasCurrentMedicalConditions}
+                  onChange={(e) => handleHealthSurveyChange("hasCurrentMedicalConditions", e.target.value)}
+                >
+                  <Radio value={true}>Có</Radio>
+                  <Radio value={false}>Không</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-                {/* Question 5 */}
-                <div className="form-section">
-                  <h3>5. Trong 06 tháng gần đây, anh/chị có:</h3>
-                  <div className="checkbox-list">
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadTyphoidSepsis}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadTyphoidSepsis", e.target.checked)
-                        }
-                      />
-                      <span>Khỏi bệnh sau khi mắc một trong các bệnh: thương hàn, nhiễm trùng máu, bị rắn cắn, viêm tắc động mạch, viêm tắc tĩnh mạch, viêm tụy, viêm tủy xương</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.unexplainedWeightLoss}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("unexplainedWeightLoss", e.target.checked)
-                        }
-                      />
-                      <span>Sút cân nhanh không rõ nguyên nhân</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.persistentLymphNodes}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("persistentLymphNodes", e.target.checked)
-                        }
-                      />
-                      <span>Nổi hạch kéo dài</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.invasiveMedicalProcedures}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("invasiveMedicalProcedures", e.target.checked)
-                        }
-                      />
-                      <span>Thực hiện thủ thuật y tế xâm lấn (chữa răng, châm cứu, lăn kim, nội soi,…)</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.tattoosPiercings}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("tattoosPiercings", e.target.checked)
-                        }
-                      />
-                      <span>Xăm, xỏ lỗ tai, lỗ mũi hoặc các vị trí khác trên cơ thể</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.drugUse}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("drugUse", e.target.checked)
-                        }
-                      />
-                      <span>Sử dụng ma túy</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.bloodExposure}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("bloodExposure", e.target.checked)
-                        }
-                      />
-                      <span>Tiếp xúc trực tiếp với máu, dịch tiết của người khác hoặc bị thương bởi kim tiêm</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.livedWithHepatitisB}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("livedWithHepatitisB", e.target.checked)
-                        }
-                      />
-                      <span>Sinh sống chung với người nhiễm bệnh Viêm gan siêu vi B</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.sexualContactWithInfected}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("sexualContactWithInfected", e.target.checked)
-                        }
-                      />
-                      <span>Quan hệ tình dục với người nhiễm viêm gan siêu vi B, C, HIV, giang mai hoặc người có nguy cơ nhiễm viêm gan siêu vi B, C, HIV, giang mai</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.sameSexContact}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("sameSexContact", e.target.checked)
-                        }
-                      />
-                      <span>Quan hệ tình dục với người cùng giới</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.last6MonthsNone}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("last6MonthsNone", e.target.checked)
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                  </div>
-                </div>
+              {healthSurvey.hasCurrentMedicalConditions === true && (
+                <Form.Item label="Một số bệnh lý hiện tại">
+                  <Input.TextArea
+                    value={healthSurvey.currentMedicalConditionsDetail || ""}
+                    onChange={(e) => handleHealthSurveyChange("currentMedicalConditionsDetail", e.target.value)}
+                    placeholder="Vui lòng ghi rõ bệnh lý nếu có"
+                    rows={3}
+                  />
+                </Form.Item>
+              )}
 
-                {/* Question 6 */}
-                <div className="form-section">
-                  <h3>6. Trong 01 tháng gần đây, anh/chị có:</h3>
-                  <div className="checkbox-list">
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadUrinaryInfection}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadUrinaryInfection", e.target.checked)
-                        }
-                      />
-                      <span>Khỏi bệnh sau khi mắc bệnh viêm đường tiết niệu, viêm da nhiễm trùng, viêm phế quản, viêm phổi, sởi, ho gà, quai bị, sốt xuất huyết, kiết lỵ, tả, Rubella</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.visitedEpidemicArea}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("visitedEpidemicArea", e.target.checked)
-                        }
-                      />
-                      <span>Đi vào vùng có dịch bệnh lưu hành (sốt rét, sốt xuất huyết, Zika,…)</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.last1MonthNone}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("last1MonthNone", e.target.checked)
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                  </div>
-                </div>
+              <Divider />
 
-                {/* Question 7 */}
-                <div className="form-section">
-                  <h3>7. Trong 14 ngày gần đây, anh/chị có:</h3>
-                  <div className="checkbox-list">
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.hadFluSymptoms}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("hadFluSymptoms", e.target.checked)
-                        }
-                      />
-                      <span>Bị cúm, cảm lạnh, ho, nhức đầu, sốt, đau họng</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.last14DaysNone}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("last14DaysNone", e.target.checked)
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={!!healthSurvey.otherSymptoms}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            handleHealthSurveyChange("otherSymptoms", "");
-                          } else {
-                            handleHealthSurveyChange("otherSymptoms", "");
-                          }
-                        }}
-                      />
-                      <span>Khác (cụ thể)</span>
-                    </label>
-                  </div>
-                  {typeof healthSurvey.otherSymptoms === "string" && healthSurvey.otherSymptoms !== undefined && (
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        value={healthSurvey.otherSymptoms}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("otherSymptoms", e.target.value)
-                        }
-                        placeholder="Vui lòng mô tả triệu chứng"
-                      />
-                    </div>
-                  )}
-                </div>
+              {/* Question 3 */}
+              <Title level={5}>
+                3. Trước đây, anh/chị có từng mắc một trong các bệnh: viêm gan siêu vi B, C, HIV, vảy nến,
+                phì đại tiền liệt tuyến, sốc phản vệ, tai biến mạch máu não, nhồi máu cơ tim, lupus ban đỏ,
+                động kinh, ung thư, hen, được cấy ghép mô tạng?
+              </Title>
+              <Form.Item>
+                <Radio.Group
+                  value={healthSurvey.hasPreviousSeriousConditions}
+                  onChange={(e) => handleHealthSurveyChange("hasPreviousSeriousConditions", e.target.value)}
+                >
+                  <Radio value={true}>Có</Radio>
+                  <Radio value={false}>Không</Radio>
+                  <Radio value="other">Bệnh khác</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-                {/* Question 8 */}
-                <div className="form-section">
-                  <h3>8. Trong 07 ngày gần đây, anh/chị có:</h3>
-                  <div className="checkbox-list">
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.tookAntibiotics}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("tookAntibiotics", e.target.checked)
-                        }
-                      />
-                      <span>Dùng thuốc kháng sinh, kháng viêm, Aspirin, Corticoid</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={healthSurvey.last7DaysNone}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("last7DaysNone", e.target.checked)
-                        }
-                      />
-                      <span>Không</span>
-                    </label>
-                    <label className="checkbox-item">
-                      <input
-                        type="checkbox"
-                        checked={!!healthSurvey.otherMedications}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            handleHealthSurveyChange("otherMedications", "");
-                          } else {
-                            handleHealthSurveyChange("otherMedications", "");
-                          }
-                        }}
-                      />
-                      <span>Khác (cụ thể)</span>
-                    </label>
-                  </div>
-                  {typeof healthSurvey.otherMedications === "string" && healthSurvey.otherMedications !== undefined && (
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        value={healthSurvey.otherMedications}
-                        onChange={(e) =>
-                          handleHealthSurveyChange("otherMedications", e.target.value)
-                        }
-                        placeholder="Vui lòng mô tả thuốc"
-                      />
-                    </div>
-                  )}
-                </div>
+              {healthSurvey.hasPreviousSeriousConditions === "other" && (
+                <Form.Item label="Mô tả bệnh khác">
+                  <Input
+                    value={healthSurvey.otherPreviousConditions}
+                    onChange={(e) => handleHealthSurveyChange("otherPreviousConditions", e.target.value)}
+                    placeholder="Vui lòng mô tả bệnh"
+                  />
+                </Form.Item>
+              )}
 
-                {/* Question 9 - Women Only */}
-                {personalInfo.gender === "female" && (
-                  <div className="form-section">
-                    <h3>9. Câu hỏi dành cho phụ nữ:</h3>
-                    <div className="checkbox-list">
-                      <label className="checkbox-item">
-                        <input
-                          type="checkbox"
+              <Divider />
+
+              {/* Question 4 */}
+              <Title level={5}>4. Trong 12 tháng gần đây, anh/chị có:</Title>
+              <Form.Item>
+                <Row gutter={[0, 8]}>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadMalariaSyphilisTuberculosis}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadMalariaSyphilisTuberculosis",
+                        e.target.checked,
+                        "last12MonthsNone",
+                        ["hadMalariaSyphilisTuberculosis", "hadBloodTransfusion", "hadVaccination"]
+                      )}
+                    >
+                      Khỏi bệnh sau khi mắc một trong các bệnh: sốt rét, giang mai, lao, viêm não-màng não, uốn ván, phẫu thuật ngoại khoa
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadBloodTransfusion}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadBloodTransfusion",
+                        e.target.checked,
+                        "last12MonthsNone",
+                        ["hadMalariaSyphilisTuberculosis", "hadBloodTransfusion", "hadVaccination"]
+                      )}
+                    >
+                      Được truyền máu hoặc các chế phẩm máu
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadVaccination}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadVaccination",
+                        e.target.checked,
+                        "last12MonthsNone",
+                        ["hadMalariaSyphilisTuberculosis", "hadBloodTransfusion", "hadVaccination"]
+                      )}
+                    >
+                      Tiêm Vacxin
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.last12MonthsNone}
+                      onChange={(e) => handleCheckboxChange(
+                        "last12MonthsNone",
+                        e.target.checked,
+                        "last12MonthsNone",
+                        ["hadMalariaSyphilisTuberculosis", "hadBloodTransfusion", "hadVaccination"]
+                      )}
+                    >
+                      Không
+                    </Checkbox>
+                  </Col>
+                </Row>
+              </Form.Item>
+
+              <Divider />
+
+              {/* Question 5 */}
+              <Title level={5}>5. Trong 06 tháng gần đây, anh/chị có:</Title>
+              <Form.Item>
+                <Row gutter={[0, 8]}>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadTyphoidSepsis}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadTyphoidSepsis",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Khỏi bệnh sau khi mắc một trong các bệnh: thương hàn, nhiễm trùng máu, bị rắn cắn, viêm tắc động mạch, viêm tắc tĩnh mạch, viêm tụy, viêm tủy xương
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.unexplainedWeightLoss}
+                      onChange={(e) => handleCheckboxChange(
+                        "unexplainedWeightLoss",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Sút cân nhanh không rõ nguyên nhân
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.persistentLymphNodes}
+                      onChange={(e) => handleCheckboxChange(
+                        "persistentLymphNodes",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Nổi hạch kéo dài
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.invasiveMedicalProcedures}
+                      onChange={(e) => handleCheckboxChange(
+                        "invasiveMedicalProcedures",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Thực hiện thủ thuật y tế xâm lấn (chữa răng, châm cứu, lăn kim, nội soi,…)
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.tattoosPiercings}
+                      onChange={(e) => handleCheckboxChange(
+                        "tattoosPiercings",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Xăm, xỏ lỗ tai, lỗ mũi hoặc các vị trí khác trên cơ thể
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.drugUse}
+                      onChange={(e) => handleCheckboxChange(
+                        "drugUse",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Sử dụng ma túy
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.bloodExposure}
+                      onChange={(e) => handleCheckboxChange(
+                        "bloodExposure",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Tiếp xúc trực tiếp với máu, dịch tiết của người khác hoặc bị thương bởi kim tiêm
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.livedWithHepatitisB}
+                      onChange={(e) => handleCheckboxChange(
+                        "livedWithHepatitisB",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Sinh sống chung với người nhiễm bệnh Viêm gan siêu vi B
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.sexualContactWithInfected}
+                      onChange={(e) => handleCheckboxChange(
+                        "sexualContactWithInfected",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Quan hệ tình dục với người nhiễm viêm gan siêu vi B, C, HIV, giang mai hoặc người có nguy cơ nhiễm viêm gan siêu vi B, C, HIV, giang mai
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.sameSexContact}
+                      onChange={(e) => handleCheckboxChange(
+                        "sameSexContact",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Quan hệ tình dục với người cùng giới
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.last6MonthsNone}
+                      onChange={(e) => handleCheckboxChange(
+                        "last6MonthsNone",
+                        e.target.checked,
+                        "last6MonthsNone",
+                        ["hadTyphoidSepsis", "unexplainedWeightLoss", "persistentLymphNodes", "invasiveMedicalProcedures", "tattoosPiercings", "drugUse", "bloodExposure", "livedWithHepatitisB", "sexualContactWithInfected", "sameSexContact"]
+                      )}
+                    >
+                      Không
+                    </Checkbox>
+                  </Col>
+                </Row>
+              </Form.Item>
+
+              <Divider />
+
+              {/* Question 6 */}
+              <Title level={5}>6. Trong 01 tháng gần đây, anh/chị có:</Title>
+              <Form.Item>
+                <Row gutter={[0, 8]}>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadUrinaryInfection}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadUrinaryInfection",
+                        e.target.checked,
+                        "last1MonthNone",
+                        ["hadUrinaryInfection", "visitedEpidemicArea"]
+                      )}
+                    >
+                      Khỏi bệnh sau khi mắc bệnh viêm đường tiết niệu, viêm da nhiễm trùng, viêm phế quản, viêm phổi, sởi, ho gà, quai bị, sốt xuất huyết, kiết lỵ, tả, Rubella
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.visitedEpidemicArea}
+                      onChange={(e) => handleCheckboxChange(
+                        "visitedEpidemicArea",
+                        e.target.checked,
+                        "last1MonthNone",
+                        ["hadUrinaryInfection", "visitedEpidemicArea"]
+                      )}
+                    >
+                      Đi vào vùng có dịch bệnh lưu hành (sốt rét, sốt xuất huyết, Zika,…)
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.last1MonthNone}
+                      onChange={(e) => handleCheckboxChange(
+                        "last1MonthNone",
+                        e.target.checked,
+                        "last1MonthNone",
+                        ["hadUrinaryInfection", "visitedEpidemicArea"]
+                      )}
+                    >
+                      Không
+                    </Checkbox>
+                  </Col>
+                </Row>
+              </Form.Item>
+
+              <Divider />
+
+              {/* Question 7 */}
+              <Title level={5}>7. Trong 14 ngày gần đây, anh/chị có:</Title>
+              <Form.Item>
+                <Row gutter={[0, 8]}>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hadFluSymptoms}
+                      onChange={(e) => handleCheckboxChange(
+                        "hadFluSymptoms",
+                        e.target.checked,
+                        "last14DaysNone",
+                        ["hadFluSymptoms"]
+                      )}
+                    >
+                      Bị cúm, cảm lạnh, ho, nhức đầu, sốt, đau họng
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.last14DaysNone}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          // Nếu chọn "Không" thì bỏ chọn tất cả và xóa text
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            last14DaysNone: true,
+                            hadFluSymptoms: false,
+                            hasOtherSymptoms: false,
+                            otherSymptoms: ""
+                          }));
+                        } else {
+                          handleHealthSurveyChange("last14DaysNone", false);
+                        }
+                      }}
+                    >
+                      Không
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hasOtherSymptoms}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          // Khi chọn "Khác", bỏ chọn "Không" và hiện ô nhập
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            last14DaysNone: false,
+                            hasOtherSymptoms: true,
+                            otherSymptoms: ""
+                          }));
+                        } else {
+                          // Khi bỏ chọn "Khác", xóa text và set về false
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            hasOtherSymptoms: false,
+                            otherSymptoms: ""
+                          }));
+                        }
+                      }}
+                    >
+                      Khác (cụ thể)
+                    </Checkbox>
+                  </Col>
+                </Row>
+              </Form.Item>
+
+              {healthSurvey.hasOtherSymptoms && (
+                <Form.Item label="Mô tả triệu chứng khác">
+                  <Input
+                    value={healthSurvey.otherSymptoms}
+                    onChange={(e) => handleHealthSurveyChange("otherSymptoms", e.target.value)}
+                    placeholder="Vui lòng mô tả triệu chứng"
+                  />
+                </Form.Item>
+              )}
+
+              <Divider />
+
+              {/* Question 8 */}
+              <Title level={5}>8. Trong 07 ngày gần đây, anh/chị có:</Title>
+              <Form.Item>
+                <Row gutter={[0, 8]}>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.tookAntibiotics}
+                      onChange={(e) => handleCheckboxChange(
+                        "tookAntibiotics",
+                        e.target.checked,
+                        "last7DaysNone",
+                        ["tookAntibiotics"]
+                      )}
+                    >
+                      Dùng thuốc kháng sinh, kháng viêm, Aspirin, Corticoid
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.last7DaysNone}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          // Nếu chọn "Không" thì bỏ chọn tất cả và xóa text
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            last7DaysNone: true,
+                            tookAntibiotics: false,
+                            hasOtherMedications: false,
+                            otherMedications: ""
+                          }));
+                        } else {
+                          handleHealthSurveyChange("last7DaysNone", false);
+                        }
+                      }}
+                    >
+                      Không
+                    </Checkbox>
+                  </Col>
+                  <Col span={24}>
+                    <Checkbox
+                      checked={healthSurvey.hasOtherMedications}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          // Khi chọn "Khác", bỏ chọn "Không" và hiện ô nhập
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            last7DaysNone: false,
+                            hasOtherMedications: true,
+                            otherMedications: ""
+                          }));
+                        } else {
+                          // Khi bỏ chọn "Khác", xóa text và set về false
+                          setHealthSurvey(prev => ({
+                            ...prev,
+                            hasOtherMedications: false,
+                            otherMedications: ""
+                          }));
+                        }
+                      }}
+                    >
+                      Khác (cụ thể)
+                    </Checkbox>
+                  </Col>
+                </Row>
+              </Form.Item>
+
+              {healthSurvey.hasOtherMedications && (
+                <Form.Item label="Mô tả thuốc khác">
+                  <Input
+                    value={healthSurvey.otherMedications}
+                    onChange={(e) => handleHealthSurveyChange("otherMedications", e.target.value)}
+                    placeholder="Vui lòng mô tả thuốc"
+                  />
+                </Form.Item>
+              )}
+
+              <Divider />
+
+              {/* Question 9 - Women Only */}
+              {personalInfo.gender === "female" && (
+                <>
+                  <Title level={5} className="female-section-title">9. Câu hỏi dành cho phụ nữ:</Title>
+                  <Form.Item>
+                    <Row gutter={[0, 8]}>
+                      <Col span={24}>
+                        <Checkbox
                           checked={healthSurvey.isPregnantOrNursing}
-                          onChange={(e) =>
-                            handleHealthSurveyChange("isPregnantOrNursing", e.target.checked)
-                          }
-                        />
-                        <span>Hiện chị đang mang thai hoặc nuôi con dưới 12 tháng tuổi</span>
-                      </label>
-                      <label className="checkbox-item">
-                        <input
-                          type="checkbox"
+                          onChange={(e) => handleCheckboxChange(
+                            "isPregnantOrNursing",
+                            e.target.checked,
+                            "womenQuestionsNone",
+                            ["isPregnantOrNursing", "hadPregnancyTermination"]
+                          )}
+                        >
+                          Hiện chị đang mang thai hoặc nuôi con dưới 12 tháng tuổi
+                        </Checkbox>
+                      </Col>
+                      <Col span={24}>
+                        <Checkbox
                           checked={healthSurvey.hadPregnancyTermination}
-                          onChange={(e) =>
-                            handleHealthSurveyChange("hadPregnancyTermination", e.target.checked)
-                          }
-                        />
-                        <span>Chấm dứt thai kỳ trong 12 tháng gần đây (sảy thai, phá thai, thai ngoài tử cung)</span>
-                      </label>
-                      <label className="checkbox-item">
-                        <input
-                          type="checkbox"
+                          onChange={(e) => handleCheckboxChange(
+                            "hadPregnancyTermination",
+                            e.target.checked,
+                            "womenQuestionsNone",
+                            ["isPregnantOrNursing", "hadPregnancyTermination"]
+                          )}
+                        >
+                          Chấm dứt thai kỳ trong 12 tháng gần đây (sảy thai, phá thai, thai ngoài tử cung)
+                        </Checkbox>
+                      </Col>
+                      <Col span={24}>
+                        <Checkbox
                           checked={healthSurvey.womenQuestionsNone}
-                          onChange={(e) =>
-                            handleHealthSurveyChange("womenQuestionsNone", e.target.checked)
-                          }
-                        />
-                        <span>Không</span>
-                      </label>
-                    </div>
-                  </div>
-                )}
+                          onChange={(e) => handleCheckboxChange(
+                            "womenQuestionsNone",
+                            e.target.checked,
+                            "womenQuestionsNone",
+                            ["isPregnantOrNursing", "hadPregnancyTermination"]
+                          )}
+                        >
+                          Không
+                        </Checkbox>
+                      </Col>
+                    </Row>
+                  </Form.Item>
 
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
+                  <Divider />
+                </>
+              )}
+
+              <div className="survey-submit-section">
+                <Space size="large">
+                  <Button
+                    size="large"
                     onClick={() => setStep(1)}
                   >
                     ⬅️ Quay lại
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="large"
                     onClick={handleHealthSurveySubmit}
                     disabled={loading || !healthSurvey.weight}
+                    loading={loading}
+                    icon={<RightOutlined />}
                   >
-                    {loading ? "⏳ Đang xử lý..." : "✅ Tiếp tục"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+                    {loading ? "Đang xử lý..." : "Tiếp tục đến đặt lịch"}
+                  </Button>
+                </Space>
+              </div>
+            </Form>
+          </Card>
         )}
 
         {step === 3 && (
-          <div className="appointment-section">
-            <div className="form-card">
-              <h2>📅 Đặt lịch hẹn hiến máu</h2>
-              <p>Chọn thời gian phù hợp để đến hiến máu</p>
+          <Card
+            title={
+              <Space>
+                <CalendarOutlined />
+                <span>Đặt lịch hẹn hiến máu</span>
+              </Space>
+            }
+            className="appointment-card"
+          >
+            <Text className="appointment-description">
+              Chọn thời gian phù hợp để đến hiến máu
+            </Text>
 
-              <form className="appointment-form">
-                <div className="form-section">
-                  <h3>Thời gian</h3>
-                  <div className="form-group">
-                    <label>
-                      Ngày mong muốn <span className="required">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={appointmentData.preferredDate}
+            {healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate && (
+              <Alert
+                message="Lưu ý về khoảng cách hiến máu"
+                description={
+                  <div>
+                    Lần hiến máu gần nhất của bạn: <strong>{dayjs(healthSurvey.lastDonationDate).format('DD/MM/YYYY')}</strong>
+                    <br />
+                    Bạn cần chờ ít nhất <strong>84 ngày</strong> từ lần hiến máu gần nhất.
+                    <br />
+                    Ngày sớm nhất có thể hiến máu: <strong>{dayjs(healthSurvey.lastDonationDate).add(84, 'day').format('DD/MM/YYYY')}</strong>
+                  </div>
+                }
+                type="info"
+                icon={<InfoCircleOutlined />}
+                className="appointment-alert"
+              />
+            )}
+
+            <Form layout="vertical">
+              <Title level={4}>⏰ Thời gian</Title>
+
+              <Row gutter={16}>
+                <Col xs={24} md={12}>
+                  <Form.Item label="Ngày mong muốn" required>
+                    <DatePicker
+                      value={appointmentData.preferredDate ? dayjs(appointmentData.preferredDate) : null}
+                      onChange={(date) => {
+                        if (date && date.isBefore(dayjs(), 'day')) {
+                          alert("Vui lòng chọn ngày từ hôm nay trở đi!");
+                          setAppointmentData((prev) => ({ ...prev, preferredDate: "" }));
+                        } else if (healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate) {
+                          // Kiểm tra khoảng cách 84 ngày từ lần hiến máu gần nhất
+                          const lastDonationDate = dayjs(healthSurvey.lastDonationDate);
+                          const daysDifference = date.diff(lastDonationDate, 'day');
+
+                          if (daysDifference < 84) {
+                            const earliestDate = lastDonationDate.add(84, 'day');
+                            alert(`Bạn cần chờ ít nhất 84 ngày từ lần hiến máu gần nhất (${lastDonationDate.format('DD/MM/YYYY')}). Ngày sớm nhất có thể hiến máu là: ${earliestDate.format('DD/MM/YYYY')}`);
+                            setAppointmentData((prev) => ({ ...prev, preferredDate: "" }));
+                          } else {
+                            setAppointmentData((prev) => ({
+                              ...prev,
+                              preferredDate: date ? date.format('YYYY-MM-DD') : "",
+                            }));
+                          }
+                        } else {
+                          setAppointmentData((prev) => ({
+                            ...prev,
+                            preferredDate: date ? date.format('YYYY-MM-DD') : "",
+                          }));
+                        }
+                      }}
+                      disabledDate={(current) => {
+                        if (!current) return false;
+
+                        // Không được chọn ngày trong quá khứ
+                        if (current < dayjs().startOf('day')) return true;
+
+                        // Nếu đã hiến máu trước đó, không được chọn ngày trong vòng 84 ngày
+                        if (healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate) {
+                          const lastDonationDate = dayjs(healthSurvey.lastDonationDate);
+                          const daysDifference = current.diff(lastDonationDate, 'day');
+                          return daysDifference < 84;
+                        }
+
+                        return false;
+                      }}
+                      className="datepicker-full"
+                      placeholder="Chọn ngày mong muốn"
+                      format="DD/MM/YYYY"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item label="Khung giờ" required>
+                    <Radio.Group
+                      value={appointmentData.timeSlot}
                       onChange={(e) =>
                         setAppointmentData((prev) => ({
                           ...prev,
-                          preferredDate: e.target.value,
+                          timeSlot: e.target.value,
                         }))
                       }
-                      min={new Date().toISOString().split("T")[0]}
-                      required
-                      onBlur={e => {
-                        const today = new Date().toISOString().split("T")[0];
-                        if (e.target.value && e.target.value < today) {
-                          alert("Vui lòng chọn đúng thời gian!");
-                          setAppointmentData((prev) => ({ ...prev, preferredDate: "" }));
-                        }
-                      }}
-                    />
-                  </div>
+                      className="time-radio-group"
+                    >
+                      <Radio.Button value="morning" className="time-radio-button">
+                        🌅 7:00 - 11:00<br />
+                        <Text type="secondary">Buổi sáng</Text>
+                      </Radio.Button>
+                      <Radio.Button value="afternoon" className="time-radio-button">
+                        🌇 13:00 - 17:00<br />
+                        <Text type="secondary">Buổi chiều</Text>
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+              </Row>
 
-                  <div className="form-group">
-                    <label>
-                      Khung giờ <span className="required">*</span>
-                    </label>
-                    <div className="time-slots">
-                      <label className="time-slot">
-                        <input
-                          type="radio"
-                          name="timeSlot"
-                          value="morning"
-                          checked={appointmentData.timeSlot === "morning"}
-                          onChange={(e) =>
-                            setAppointmentData((prev) => ({
-                              ...prev,
-                              timeSlot: e.target.value,
-                            }))
-                          }
-                        />
-                        <div className="slot-content">
-                          <div className="slot-time">🌅 7:00 - 11:00</div>
-                          <div className="slot-label">Buổi sáng</div>
-                        </div>
-                      </label>
+              <Divider />
 
-                      <label className="time-slot">
-                        <input
-                          type="radio"
-                          name="timeSlot"
-                          value="afternoon"
-                          checked={appointmentData.timeSlot === "afternoon"}
-                          onChange={(e) =>
-                            setAppointmentData((prev) => ({
-                              ...prev,
-                              timeSlot: e.target.value,
-                            }))
-                          }
-                        />
-                        <div className="slot-content">
-                          <div className="slot-time">🌇 13:00 - 17:00</div>
-                          <div className="slot-label">Buổi chiều</div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
+              {/* Location Information */}
+              <Title level={4}>📍 Thông tin địa điểm hiến máu</Title>
 
-                {/* Location Information */}
-                <div className="form-section">
-                  <h3>📍 Thông tin địa điểm hiến máu</h3>
-                  <div className="hospital-booking-summary">
-                    <div className="hospital-info-card">
-                      <div className="location-header">
-                        <span className="location-icon">🏥</span>
-                        <span className="location-title">
-                          Địa điểm hiến máu
-                        </span>
-                      </div>
-                      <div className="hospital-details">
-                        <div className="hospital-name">
-                          <strong>Bệnh viện Đa khoa Ánh Dương</strong>
-                        </div>
-                        <div className="hospital-address">
-                          <span role="img" aria-label="address">📍</span> Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
-                        </div>
-                        <div className="hospital-department">
-                          <span role="img" aria-label="department">🩸</span> Khoa Huyết học - Tầng 2
-                        </div>
-                        <div className="hospital-note" style={{ marginTop: '0.5rem', color: '#888', fontSize: '0.95em' }}>
-                          Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đến hiến máu.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <Card className="hospital-card">
+                <Row gutter={16} align="middle">
+                  <Col span={4} className="hospital-icon">
+                    <div className="icon">🏥</div>
+                  </Col>
+                  <Col span={20}>
+                    <Title level={5} className="hospital-title">
+                      Bệnh viện Đa khoa Ánh Dương
+                    </Title>
+                    <Text className="hospital-address">
+                      📍 Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
+                    </Text>
+                    <Text className="hospital-department">
+                      🩸 Khoa Huyết học - Tầng 2
+                    </Text>
+                    <Text type="secondary" className="hospital-note">
+                      Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đến hiến máu.
+                    </Text>
+                  </Col>
+                </Row>
+              </Card>
 
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
+              <div className="appointment-submit-section">
+                <Space size="large">
+                  <Button
+                    size="large"
                     onClick={() => setStep(2)}
                   >
                     ⬅️ Quay lại
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="large"
                     onClick={handleAppointmentSubmit}
                     disabled={
                       loading ||
                       !appointmentData.preferredDate ||
                       !appointmentData.timeSlot
                     }
+                    loading={loading}
+                    icon={<CalendarOutlined />}
                   >
-                    {loading ? "⏳ Đang xử lý..." : "📅 Đặt lịch hẹn"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+                    {loading ? "Đang xử lý..." : "Đặt lịch hẹn"}
+                  </Button>
+                </Space>
+              </div>
+            </Form>
+          </Card>
         )}
       </div>
+
+     <Footer />
     </div>
   );
 };

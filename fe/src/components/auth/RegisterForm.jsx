@@ -99,6 +99,7 @@ export default function RegisterForm() {
             isRegister: true,
           },
         });
+        // navigate("/member");
       } else {
         setErrors({
           submit: result.error || "Đăng ký không thành công. Vui lòng thử lại sau."

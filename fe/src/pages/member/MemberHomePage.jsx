@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import GuestHomePage from "../guest/GuestHomePage";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import authService from "../../services/authService";
@@ -10,6 +10,7 @@ import "../../styles/pages/MemberHomePage.scss";
 const MemberHomePage = () => {
   const user = authService.getCurrentUser();
   const userName = getUserName();
+
 
   // Lấy thông tin nhóm máu từ hồ sơ cá nhân
   const getBloodTypeInfo = () => {
