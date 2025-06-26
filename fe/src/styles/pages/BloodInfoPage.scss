@@ -569,19 +569,26 @@ $transition-duration: 0.3s;
           margin-top: 16px;
 
           .ant-tag {
-            background: #e6f7ff !important; // màu xanh nhạt, ưu tiên cao nhất
-            color: #1890ff;
-            border: none;
+            background: #f3f8fd !important; // pastel blue
+            color: #3578e5;
+            border: 1px solid #e3eaf3;
             font-weight: 500;
             font-size: 0.95rem;
-            padding: 4px 12px;
-            border-radius: 6px;
-            backdrop-clip: text;
-            -webkit-background-clip: text;
-            transition: all $transition-duration ease;
-
+            padding: 3px 14px;
+            border-radius: 16px;
+            box-shadow: none;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+            letter-spacing: 0.01em;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 2px;
+            margin-right: 2px;
+            font-family: inherit;
+            cursor: default;
             &:hover {
-              background: rgba(255, 255, 255, 0.25);
+              background: #e6f0fa !important;
+              color: #2456a6;
+              border-color: #d0d8e8;
             }
           }
         }

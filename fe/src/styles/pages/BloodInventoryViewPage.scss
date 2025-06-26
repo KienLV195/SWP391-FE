@@ -526,13 +526,30 @@
         }
 
         .blood-type-badge {
+          display: inline-block;
+          padding: 6px 25px;
+          border-radius: 20px;
+          font-weight: 700;
+          font-size: 20px;
+          text-align: center;
+          min-height: 40px;
+          min-width: 50px;
+          // Default style (fallback)
           background: linear-gradient(45deg, #17a2b8, #20c997);
           color: white;
-          padding: 0.5rem 0.75rem;
-          border-radius: 10px;
-          font-weight: 700;
-          font-size: 0.9rem;
           box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .blood-type-badge.positive {
+          background-color: vars.$background-box;
+          color: vars.$primary-color;
+          border: 1px solid #bbdefb;
+        }
+
+        .blood-type-badge.negative {
+          background-color: vars.$background-box-secondary;
+          color: vars.$secondary-color;
+          border: 1px solid #ffcdd2;
         }
 
         .rare-indicator {
@@ -790,4 +807,77 @@
       }
     }
   }
+}
+
+// Blood type badge styles
+.blood-type-badge {
+  display: inline-block;
+  padding: 6px 25px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  min-height: 40px;
+  min-width: 50px;
+
+  &.positive {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+  }
+
+  &.negative {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+}
+
+// Status badge styles
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  min-width: 80px;
+
+  &.normal {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  &.low {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  &.critical {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  &.expired {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+  }
+}
+
+// Rare badge styles
+.rare-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  background-color: #e2d9f3;
+  color: #6f42c1;
+  border: 1px solid #d1c7e6;
+  min-width: 60px;
 }

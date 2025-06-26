@@ -14,20 +14,11 @@ import {
   Typography,
 } from "antd";
 import { FaSearch, FaEye, FaCalendarAlt } from "react-icons/fa";
-import Highlighter from "react-highlight-words";
 import useRequest from "../../hooks/useFetchData";
 import useSearchAndFilter from "../../hooks/useSearchAndFilter";
 import usePagination from "../../hooks/usePagination";
 import { fetchAllNews } from "../../services/newsService";
-import { getHighlightedSnippet } from "../../utils/textUtils";
 import "../../styles/pages/BlogPage.scss";
-
-// Custom highlight style for BlogPage
-const highlightStyle = {
-  backgroundColor: "#ffe58f",
-  fontWeight: "normal", // Không in đậm chữ
-  padding: 0,
-};
 
 const { Meta } = Card;
 const { Title, Paragraph } = Typography;
@@ -42,7 +33,9 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
     return (
       item.title?.toLowerCase().includes(lower) ||
       item.summary?.toLowerCase().includes(lower) ||
-      item.content?.toLowerCase().includes(lower)
+      item.content?.toLowerCase().includes(lower) ||
+      (Array.isArray(item.tags) &&
+        item.tags.some((tag) => tag.toLowerCase().includes(lower)))
     );
   };
   const {
@@ -118,25 +111,7 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                       className="carousel-card"
                       onClick={() => handleKnowMore(post)}
                     >
-                      <Meta
-                        title={
-                          <Highlighter
-                            highlightClassName="highlight-text"
-                            searchWords={[searchTerm]}
-                            autoEscape={true}
-                            textToHighlight={post.title}
-                            highlightStyle={highlightStyle}
-                          />
-                        }
-                        description={
-                          <Highlighter
-                            highlightClassName="highlight-text"
-                            searchWords={[searchTerm]}
-                            autoEscape={true}
-                            textToHighlight={post.summary}
-                          />
-                        }
-                      />
+                      <Meta title={post.title} description={post.summary} />
                       <div className="carousel-meta">
                         <div className="views-badge">
                           <FaEye /> {post.views?.toLocaleString?.() || 0}
@@ -193,32 +168,15 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
                             <div className="date-tag">
                               <FaCalendarAlt />{" "}
                               {new Date(
-                                post.createdAt || post.date
+                                post.postedAt || post.createdAt || post.date
                               ).toLocaleDateString("vi-VN")}
                             </div>
                           </div>
 
-                          <h3 className="document-title">
-                            <Highlighter
-                              highlightClassName="highlight-text"
-                              searchWords={[searchTerm]}
-                              autoEscape={true}
-                              textToHighlight={post.title}
-                              highlightStyle={highlightStyle}
-                            />
-                          </h3>
+                          <h3 className="document-title">{post.title}</h3>
 
                           <p className="document-summary">
-                            <Highlighter
-                              highlightClassName="highlight-text"
-                              searchWords={[searchTerm]}
-                              autoEscape={true}
-                              textToHighlight={getHighlightedSnippet(
-                                post.content || post.summary || "",
-                                searchTerm
-                              )}
-                              highlightStyle={highlightStyle}
-                            />
+                            {post.summary || post.content}
                           </p>
                         </div>
                       </Card>

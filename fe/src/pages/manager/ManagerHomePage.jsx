@@ -1,5 +1,5 @@
 import React from "react";
-import ManagerNavbar from "../../components/manager/ManagerSidebar";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import Footer from "../../components/common/Footer";
 import ScrollToTop from "../../components/common/ScrollToTop";
 import "../../styles/pages/ManagerHomePage.scss";
@@ -13,8 +13,7 @@ const ManagerHomePage = () => {
   };
 
   return (
-    <>
-      <ManagerNavbar />
+    <ManagerLayout pageTitle="BẢNG ĐIỀU KHIỂN">
       <div className="manager-home-page">
         <section className="dashboard-section">
           <h1 className="dashboard-title">BẢNG ĐIỀU KHIỂN</h1>
@@ -42,7 +41,7 @@ const ManagerHomePage = () => {
         <Footer />
       </div>
       <ScrollToTop />
-    </>
+    </ManagerLayout>
   );
 };
 

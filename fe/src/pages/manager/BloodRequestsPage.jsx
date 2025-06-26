@@ -37,6 +37,8 @@ import {
 } from "@ant-design/icons";
 import ManagerSidebar from "../../components/manager/ManagerSidebar";
 import PageHeader from "../../components/manager/PageHeader";
+import ManagerBloodRequestsTable from "../../components/manager/blood-requests/ManagerBloodRequestsTable";
+import ManagerBloodRequestsFilters from "../../components/manager/blood-requests/ManagerBloodRequestsFilters";
 import {
   mockBloodRequests,
   REQUEST_STATUS,
@@ -419,11 +421,18 @@ const BloodRequestsPage = () => {
       width: 100,
       align: "center",
       sorter: (a, b) => a.bloodTypeDisplay.localeCompare(b.bloodTypeDisplay),
-      render: (bloodType) => (
-        <Tag color="#D93E4C" style={{ fontWeight: "bold" }}>
-          {bloodType}
-        </Tag>
-      ),
+      render: (bloodType) => {
+        const isPositive = bloodType.includes("+");
+        return (
+          <span
+            className={`blood-type-badge ${
+              isPositive ? "positive" : "negative"
+            }`}
+          >
+            {bloodType}
+          </span>
+        );
+      },
     },
     {
       title: "Số lượng",
@@ -432,7 +441,7 @@ const BloodRequestsPage = () => {
       width: 120,
       align: "center",
       sorter: (a, b) => a.quantity - b.quantity,
-      render: (quantity, record) => (
+      render: (quantity) => (
         <Text
           strong
           style={{
@@ -461,9 +470,19 @@ const BloodRequestsPage = () => {
       ],
       onFilter: (value, record) => record.status === value,
       render: (status) => (
-        <Tag color={getStatusColor(status)} style={{ fontWeight: "500" }}>
+        <span
+          className="status-badge"
+          style={{
+            backgroundColor: getStatusColor(status),
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "500",
+          }}
+        >
           {getStatusText(status)}
-        </Tag>
+        </span>
       ),
     },
     {
@@ -603,94 +622,22 @@ const BloodRequestsPage = () => {
 
         {/* Filters */}
         <Card className="filters-card" style={{ marginBottom: 16 }}>
-          <Row gutter={[16, 16]} align="middle">
-            <Col xs={24} sm={8} md={6}>
-              <div className="filter-group">
-                <Text
-                  strong
-                  style={{
-                    color: "#20374E",
-                    marginBottom: 8,
-                    display: "block",
-                  }}
-                >
-                  Tên bệnh nhân:
-                </Text>
-                <Search
-                  placeholder="Tìm theo tên hoặc mã yêu cầu..."
-                  value={filters.patientName}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      patientName: e.target.value,
-                    }))
-                  }
-                  style={{ width: "100%" }}
-                  allowClear
-                />
-              </div>
-            </Col>
-            <Col xs={24} sm={8} md={6}>
-              <div className="filter-group">
-                <Text
-                  strong
-                  style={{
-                    color: "#20374E",
-                    marginBottom: 8,
-                    display: "block",
-                  }}
-                >
-                  Nhóm máu:
-                </Text>
-                <Select
-                  value={filters.bloodType}
-                  onChange={(value) =>
-                    setFilters((prev) => ({ ...prev, bloodType: value }))
-                  }
-                  style={{ width: "100%" }}
-                  placeholder="Chọn nhóm máu"
-                >
-                  <Option value="all">Tất cả</Option>
-                  {BLOOD_TYPES.map((type) => (
-                    <Option key={type} value={type}>
-                      {type}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
-            </Col>
-            <Col xs={24} sm={8} md={6}>
-              <div className="filter-group">
-                <Text
-                  strong
-                  style={{
-                    color: "#20374E",
-                    marginBottom: 8,
-                    display: "block",
-                  }}
-                >
-                  Trạng thái:
-                </Text>
-                <Select
-                  value={filters.status}
-                  onChange={(value) =>
-                    setFilters((prev) => ({ ...prev, status: value }))
-                  }
-                  style={{ width: "100%" }}
-                  placeholder="Chọn trạng thái"
-                >
-                  <Option value="all">Tất cả</Option>
-                  <Option value={REQUEST_STATUS.PENDING}>Đang chờ xử lý</Option>
-                  <Option value={REQUEST_STATUS.ACCEPTED}>Đã chấp nhận</Option>
-                  <Option value={REQUEST_STATUS.PROCESSING}>Đang xử lý</Option>
-                  <Option value={REQUEST_STATUS.COMPLETED}>Hoàn thành</Option>
-                  <Option value={REQUEST_STATUS.EXPORTED}>Xuất kho</Option>
-                  <Option value={REQUEST_STATUS.REJECTED}>Từ chối</Option>
-                </Select>
-              </div>
-            </Col>
-            <Col xs={24} sm={24} md={6}>
-              <div style={{ textAlign: "right", paddingTop: 24 }}>
+          <ManagerBloodRequestsFilters
+            filters={filters}
+            setFilters={setFilters}
+            bloodTypes={BLOOD_TYPES}
+            statusOptions={[
+              { value: REQUEST_STATUS.PENDING, label: "Đang chờ xử lý" },
+              { value: REQUEST_STATUS.ACCEPTED, label: "Đã chấp nhận" },
+              { value: REQUEST_STATUS.PROCESSING, label: "Đang xử lý" },
+              { value: REQUEST_STATUS.COMPLETED, label: "Hoàn thành" },
+              { value: REQUEST_STATUS.EXPORTED, label: "Xuất kho" },
+              { value: REQUEST_STATUS.REJECTED, label: "Từ chối" },
+            ]}
+          />
+          <Row style={{ marginTop: 16 }}>
+            <Col span={24}>
+              <div style={{ textAlign: "right" }}>
                 <Text type="secondary">
                   Hiển thị {filteredRequests.length} / {allRequests.length} yêu
                   cầu
@@ -703,10 +650,9 @@ const BloodRequestsPage = () => {
         {/* Data Display */}
         {viewMode === "table" ? (
           <Card className="requests-table-card">
-            <Table
-              dataSource={filteredRequests}
+            <ManagerBloodRequestsTable
+              data={filteredRequests}
               columns={tableColumns}
-              rowKey="requestID"
               loading={loading}
               pagination={{
                 pageSize: 10,

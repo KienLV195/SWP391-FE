@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { message } from "antd";
 import useRequest from "./useFetchData";
 import {
@@ -7,28 +7,35 @@ import {
   updateBlog,
 } from "../services/bloodArticleService";
 import { fetchAllNews } from "../services/newsService";
+import { getActivityLogs } from "../services/activityLogService";
 import useSearchAndFilter from "./useSearchAndFilter";
 import { getUsers } from "../services/userApi";
+import dayjs from "dayjs";
 
 const CATEGORY_OPTIONS = [
   { value: "Tài liệu", label: "Tài liệu" },
   { value: "Tin tức", label: "Tin tức" },
+  { value: "Theo dõi hoạt động", label: "Theo dõi hoạt động" },
 ];
 
 export const useBlogApproval = () => {
-  // Fetch blogs (tài liệu)
   const {
     data: blogs = [],
     loading: blogsLoading,
     refetch: refetchBlogs,
   } = useRequest(getBloodArticles, []);
 
-  // Fetch news (tin tức)
   const {
     data: news = [],
     loading: newsLoading,
     refetch: refetchNews,
   } = useRequest(fetchAllNews, []);
+
+  const {
+    data: activityLogs = [],
+    loading: activityLogsLoading,
+    refetch: refetchActivityLogs,
+  } = useRequest(getActivityLogs, []);
 
   // State management
   const [activeTab, setActiveTab] = useState("Tài liệu");
@@ -39,30 +46,59 @@ export const useBlogApproval = () => {
   const [editImage, setEditImage] = useState(null);
   const [userMap, setUserMap] = useState({});
 
-  // Custom filter function để xử lý category undefined
-  const customFilterFn = useCallback(
-    (item, filterValue) => {
-      if (filterValue === "Tài liệu") {
-        // Cho blogs: hiển thị blogs không có category hoặc category là "Tài liệu"
-        return !item.category || item.category === "Tài liệu";
-      } else if (filterValue === "Tin tức") {
-        // Cho news: hiển thị tất cả news (không cần filter theo category)
-        // Thêm filter theo ngày nếu có
-        if (dateFilter) {
-          const itemDate = new Date(item.postedAt);
-          const filterDate = new Date(dateFilter);
-          return itemDate.toDateString() === filterDate.toDateString();
-        }
-        return true;
-      }
-      return true;
-    },
-    [dateFilter]
-  );
+  const customFilterFn = (item) => {
+    if (dateFilter) {
+      let itemDate;
 
-  // Sử dụng dữ liệu phù hợp với tab hiện tại
-  const currentData = activeTab === "Tài liệu" ? blogs : news;
-  const currentLoading = activeTab === "Tài liệu" ? blogsLoading : newsLoading;
+      if (activeTab === "Tài liệu") {
+        itemDate = item.createdAt;
+      } else if (activeTab === "Tin tức") {
+        itemDate = item.postedAt;
+      } else if (activeTab === "Theo dõi hoạt động") {
+        itemDate = item.createdAt;
+      }
+
+      if (!itemDate) return false;
+
+      const itemDay = dayjs(itemDate).startOf("day");
+      const filterDay = dateFilter.startOf("day");
+
+      if (!itemDay.isSame(filterDay)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const getCurrentData = () => {
+    switch (activeTab) {
+      case "Tài liệu":
+        return blogs;
+      case "Tin tức":
+        return news;
+      case "Theo dõi hoạt động":
+        return activityLogs;
+      default:
+        return blogs;
+    }
+  };
+
+  const getCurrentLoading = () => {
+    switch (activeTab) {
+      case "Tài liệu":
+        return blogsLoading;
+      case "Tin tức":
+        return newsLoading;
+      case "Theo dõi hoạt động":
+        return activityLogsLoading;
+      default:
+        return blogsLoading;
+    }
+  };
+
+  const currentData = getCurrentData();
+  const currentLoading = getCurrentLoading();
 
   const {
     searchTerm,
@@ -71,57 +107,83 @@ export const useBlogApproval = () => {
     setFilter: setActiveTabFilter,
     filteredData: filteredItems,
   } = useSearchAndFilter(currentData, {
-    searchFields: ["title", "content", "tags"],
-    filterField: "category",
+    searchFields:
+      activeTab === "Theo dõi hoạt động"
+        ? ["description", "activityType", "entityType"]
+        : ["title", "content", "tags"],
+    filterField: activeTab === "Theo dõi hoạt động" ? null : "category",
     filterFn: customFilterFn,
     searchFn: (item, term) => {
       if (!term) return true;
       const lowerTerm = term.toLowerCase();
 
-      // Search trong title, content, tags
-      const textMatch = ["title", "content", "tags"].some((field) => {
-        const value = item[field];
-        if (!value) return false;
+      if (activeTab === "Theo dõi hoạt động") {
+        const textMatch = ["description", "activityType", "entityType"].some(
+          (field) => {
+            const value = item[field];
+            if (!value) return false;
+            return value.toLowerCase().includes(lowerTerm);
+          }
+        );
 
-        if (Array.isArray(value)) {
-          return value.some((v) => v.toLowerCase().includes(lowerTerm));
-        }
+        const userMatch =
+          userMap[item.userID] &&
+          userMap[item.userID].toLowerCase().includes(lowerTerm);
 
-        return value.toLowerCase().includes(lowerTerm);
-      });
+        const dateMatch =
+          item.createdAt &&
+          new Date(item.createdAt)
+            .toLocaleDateString("vi-VN")
+            .includes(lowerTerm);
 
-      // Search trong postedAt (ngày đăng)
-      const dateMatch =
-        item.postedAt &&
-        new Date(item.postedAt).toLocaleDateString("vi-VN").includes(lowerTerm);
+        return textMatch || userMatch || dateMatch;
+      } else {
+        const textMatch = ["title", "content", "tags"].some((field) => {
+          const value = item[field];
+          if (!value) return false;
 
-      return textMatch || dateMatch;
+          if (Array.isArray(value)) {
+            return value.some((v) => v.toLowerCase().includes(lowerTerm));
+          }
+
+          return value.toLowerCase().includes(lowerTerm);
+        });
+
+        const dateMatch =
+          (activeTab === "Tài liệu" ? item.createdAt : item.postedAt) &&
+          new Date(activeTab === "Tài liệu" ? item.createdAt : item.postedAt)
+            .toLocaleDateString("vi-VN")
+            .includes(lowerTerm);
+
+        return textMatch || dateMatch;
+      }
     },
     debounceMs: 300,
   });
 
-  // Sync activeTab với filter
   useEffect(() => {
     if (!activeTabFilter) {
       setActiveTabFilter("Tài liệu");
     }
   }, [activeTabFilter, setActiveTabFilter]);
 
-  // Sync activeTab với filter khi tab thay đổi
   useEffect(() => {
     setActiveTabFilter(activeTab);
   }, [activeTab, setActiveTabFilter]);
 
-  // Fetch user map
   useEffect(() => {
-    getUsers().then((users) => {
-      const map = {};
-      users.forEach((u) => {
-        map[u.userId || u.userID || u.id] =
-          u.name || u.fullName || u.username || u.email;
+    getUsers()
+      .then((users) => {
+        const map = {};
+        users.forEach((u) => {
+          map[u.userId || u.userID || u.id] =
+            u.name || u.fullName || u.username || u.email;
+        });
+        setUserMap(map);
+      })
+      .catch(() => {
+        setUserMap({});
       });
-      setUserMap(map);
-    });
   }, []);
 
   // Handlers
@@ -138,7 +200,6 @@ export const useBlogApproval = () => {
         await deleteArticle(blogId);
         refetchBlogs();
       } else {
-        // TODO: Implement delete news when API is ready
         message.warning("Tính năng xóa tin tức chưa được implement");
         refetchNews();
       }
@@ -192,7 +253,6 @@ export const useBlogApproval = () => {
   };
 
   return {
-    // State
     activeTab,
     dateFilter,
     selectedBlog,
@@ -205,17 +265,17 @@ export const useBlogApproval = () => {
     currentLoading,
     CATEGORY_OPTIONS,
 
-    // Setters
     setActiveTab,
     setDateFilter,
     setEditImage,
 
-    // Handlers
     handleEditBlog,
     handleDeleteBlog,
     handleEditSubmit,
     handleViewBlog,
     handleCloseModal,
     setSearchTerm,
+
+    refetchActivityLogs,
   };
 };

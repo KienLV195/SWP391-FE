@@ -1,17 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import DoctorSidebar from "../../components/doctor/DoctorSidebar";
-import { useAuth } from "../../contexts/AuthContext";
+import { Form } from "antd";
+import DoctorLayout from "../../components/doctor/DoctorLayout";
 import blogService from "../../services/blogService";
 import "../../styles/pages/BlogManagement.scss";
+import {
+  Table,
+  Card,
+  Button,
+  Select,
+  Input,
+  Space,
+  Tag,
+  Modal,
+  message,
+  Tabs,
+} from "antd";
+import {
+  PlusOutlined,
+  EyeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
+import BlogEditModal from "../../components/admin/blogs/BlogEditModal";
+import BlogDetailModal from "../../components/admin/blogs/BlogDetailModal";
+import authService from "../../services/authService";
+import * as bloodArticleService from "../../services/bloodArticleService";
+
+const { Option } = Select;
 
 const BlogManagement = () => {
-  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [editImage, setEditImage] = useState(null);
+  const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState("Tài liệu");
+  const currentUser = authService.getCurrentUser();
+  const [articleLoading, setArticleLoading] = useState(false);
+  const [articles, setArticles] = useState([]);
 
   // Mock data - replace with API calls
   // API: GET /api/blogs?author_id={user_id}&role={user_role}
@@ -81,213 +111,409 @@ const BlogManagement = () => {
     }, 1000);
   }, []);
 
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch =
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || blog.status === statusFilter;
-    const matchesCategory =
-      categoryFilter === "all" || blog.category === categoryFilter;
+  // Fetch articles for 'Tài liệu' tab from API
+  useEffect(() => {
+    if (activeTab === "Tài liệu") {
+      setArticleLoading(true);
+      bloodArticleService
+        .getBloodArticles()
+        .then((data) => {
+          setArticles(Array.isArray(data) ? data : []);
+        })
+        .catch(() => {
+          message.error("Không thể tải danh sách tài liệu");
+        })
+        .finally(() => setArticleLoading(false));
+    }
+  }, [activeTab]);
 
-    return matchesSearch && matchesStatus && matchesCategory;
-  });
+  // Filter blogs by tab/category
+  const tabCategories = [
+    { key: "Tài liệu", label: "Tài liệu" },
+    { key: "Tin tức", label: "Tin tức" },
+  ];
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      published: { label: "Đã đăng", class: "status-published" },
-      draft: { label: "Bản nháp", class: "status-draft" },
-    };
-
-    const config = statusConfig[status] || statusConfig.draft;
-    return (
-      <span className={`status-badge ${config.class}`}>{config.label}</span>
+  const getFilteredBlogs = (category) =>
+    blogs.filter(
+      (blog) =>
+        blog.category === category &&
+        (searchTerm === "" ||
+          blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (statusFilter === "all" || blog.status === statusFilter)
     );
-  };
+
+  const getColumns = (category) => [
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
+      render: (text, record) => (
+        <a onClick={() => handleViewBlog(record)}>{text}</a>
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) =>
+        status === "published" ? (
+          <Tag color="green">Đã đăng</Tag>
+        ) : (
+          <Tag color="orange">Bản nháp</Tag>
+        ),
+      width: 100,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "author",
+      key: "author",
+      width: 140,
+    },
+    {
+      title: category === "Tin tức" ? "Ngày đăng" : "Ngày tạo",
+      dataIndex: category === "Tin tức" ? "postedAt" : "createdAt",
+      key: category === "Tin tức" ? "postedAt" : "createdAt",
+      render: (date) =>
+        date ? new Date(date).toLocaleDateString("vi-VN") : "",
+      width: 110,
+      sorter: (a, b) =>
+        new Date(a[category === "Tin tức" ? "postedAt" : "createdAt"]) -
+        new Date(b[category === "Tin tức" ? "postedAt" : "createdAt"]),
+    },
+    {
+      title: "Lượt xem",
+      dataIndex: "views",
+      key: "views",
+      width: 90,
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      width: 160,
+      render: (_, record) => {
+        const isOwner =
+          currentUser &&
+          (record.userId === currentUser.id ||
+            record.author === currentUser.name);
+        return (
+          <Space>
+            <Button
+              icon={<EyeOutlined />}
+              onClick={() => handleViewBlog(record)}
+              size="small"
+            />
+            {isOwner && (
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => handleEditBlog(record)}
+                size="small"
+              />
+            )}
+            {isOwner && (
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeleteBlog(record.id)}
+                danger
+                size="small"
+              />
+            )}
+          </Space>
+        );
+      },
+    },
+  ];
 
   const handleCreateBlog = () => {
-    navigate("/doctor/blog/create");
+    setSelectedBlog(null);
+    setEditImage(null);
+    setEditModalVisible(true);
   };
 
-  const handleEditBlog = (blogId) => {
-    navigate(`/doctor/blog/edit/${blogId}`);
+  const handleEditBlog = (blog) => {
+    setSelectedBlog(blog);
+    setEditImage(blog.imgUrl || null);
+    setEditModalVisible(true);
   };
 
-  const handleViewBlog = (blogId) => {
-    navigate(`/doctor/blog/view/${blogId}`);
+  const handleViewBlog = (blog) => {
+    setSelectedBlog(blog);
+    setDetailModalVisible(true);
   };
 
   const handleDeleteBlog = async (blogId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
-      try {
-        const response = await blogService.deleteBlog(blogId);
-        if (response.success) {
-          setBlogs(blogs.filter((blog) => blog.id !== blogId));
-          alert("Xóa bài viết thành công!");
-        } else {
-          alert("Lỗi: " + response.message);
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn xóa bài viết này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          const response = await blogService.deleteBlog(blogId);
+          if (response.success) {
+            setBlogs((prev) => prev.filter((b) => b.id !== blogId));
+            message.success("Xóa bài viết thành công!");
+          } else {
+            message.error("Lỗi: " + response.message);
+          }
+        } catch {
+          message.error("Có lỗi xảy ra khi xóa bài viết!");
         }
-      } catch (error) {
-        console.error("Error deleting blog:", error);
-        alert("Có lỗi xảy ra khi xóa bài viết!");
-      }
-    }
+      },
+    });
+  };
+
+  // For 'Tài liệu' tab, use articles from API
+  const getFilteredArticles = () =>
+    articles.filter(
+      (article) =>
+        (searchTerm === "" ||
+          article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (article.tags || [])
+            .join(" ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())) &&
+        (statusFilter === "all" || article.status === statusFilter)
+    );
+
+  const getArticleColumns = () => [
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
+      render: (text, record) => (
+        <a onClick={() => handleViewArticle(record)}>{text}</a>
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "Tác giả",
+      dataIndex: "userId",
+      key: "userId",
+      width: 100,
+      render: (userId) => userId,
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) =>
+        date ? new Date(date).toLocaleDateString("vi-VN") : "",
+      width: 110,
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+    },
+    {
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      render: (tags) => (tags || []).map((tag, i) => <Tag key={i}>{tag}</Tag>),
+      width: 180,
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      width: 160,
+      render: (_, record) => {
+        const isOwner = currentUser && record.userId === currentUser.id;
+        return (
+          <Space>
+            <Button
+              icon={<EyeOutlined />}
+              onClick={() => handleViewArticle(record)}
+              size="small"
+            />
+            {isOwner && (
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => handleEditArticle(record)}
+                size="small"
+              />
+            )}
+            {isOwner && (
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeleteArticle(record.articleId)}
+                danger
+                size="small"
+              />
+            )}
+          </Space>
+        );
+      },
+    },
+  ];
+
+  // Handlers for article actions
+  const handleCreateArticle = () => {
+    setSelectedBlog({});
+    setEditImage(null);
+    setEditModalVisible(true);
+  };
+  const handleEditArticle = (article) => {
+    setSelectedBlog(article);
+    setEditImage(article.imgUrl || null);
+    setEditModalVisible(true);
+  };
+  const handleViewArticle = (article) => {
+    setSelectedBlog(article);
+    setDetailModalVisible(true);
+  };
+  const handleDeleteArticle = async (articleId) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn xóa bài viết này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          await bloodArticleService.deleteArticle(articleId);
+          setArticles((prev) => prev.filter((a) => a.articleId !== articleId));
+          message.success("Xóa bài viết thành công!");
+        } catch {
+          message.error("Có lỗi xảy ra khi xóa bài viết!");
+        }
+      },
+    });
   };
 
   if (loading) {
     return (
-      <div className="doctor-layout">
-        <DoctorSidebar />
+      <DoctorLayout pageTitle="Quản lý Blog">
         <div className="doctor-content">
           <div className="loading-spinner">
             <div className="spinner"></div>
             <p>Đang tải dữ liệu...</p>
           </div>
         </div>
-      </div>
+      </DoctorLayout>
     );
   }
 
   return (
-    <div className="doctor-layout">
-      <DoctorSidebar />
-      <div className="doctor-content">
-        <div className="blog-management">
-          <div className="page-header">
-            <div className="header-content">
-              <h1>Quản lý Blog</h1>
-              <p>
-                Tạo và quản lý Tài liệu, Tin tức, Thông báo (tự động đăng không
-                cần duyệt)
-              </p>
-            </div>
-            <button className="btn-primary" onClick={handleCreateBlog}>
-              <i className="fas fa-plus"></i>
-              Tạo bài viết mới
-            </button>
-          </div>
-
-          <div className="filters-section">
-            <div className="search-box">
-              <i className="fas fa-search"></i>
-              <input
-                type="text"
-                placeholder="Tìm kiếm bài viết..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="filter-controls">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">Tất cả trạng thái</option>
-                <option value="published">Đã đăng</option>
-                <option value="draft">Bản nháp</option>
-              </select>
-
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">Tất cả danh mục</option>
-                <option value="Tài liệu">
-                  Tài liệu (Hiển thị trên Guest/Member)
-                </option>
-                <option value="Tin tức">
-                  Tin tức (Hiển thị trên Guest/Member)
-                </option>
-                <option value="Thông báo">Thông báo nội bộ</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="blogs-grid">
-            {filteredBlogs.length === 0 ? (
-              <div className="empty-state">
-                <i className="fas fa-blog"></i>
-                <h3>Chưa có bài viết nào</h3>
-                <p>Hãy tạo bài viết đầu tiên để chia sẻ kinh nghiệm của bạn</p>
-                <button className="btn-primary" onClick={handleCreateBlog}>
-                  Tạo bài viết mới
-                </button>
-              </div>
-            ) : (
-              filteredBlogs.map((blog) => (
-                <div key={blog.id} className="blog-card">
-                  <div className="blog-header">
-                    <div className="blog-meta">
-                      <span className="category">{blog.category}</span>
-                      {getStatusBadge(blog.status)}
-                    </div>
-                    <div className="blog-actions">
-                      <button
-                        className="action-btn view"
-                        onClick={() => handleViewBlog(blog.id)}
-                        title="Xem bài viết"
-                      >
-                        <i className="fas fa-eye"></i>
-                      </button>
-
-                      {/* Doctor can edit all blogs (draft and published) */}
-                      <button
-                        className="action-btn edit"
-                        onClick={() => handleEditBlog(blog.id)}
-                        title="Chỉnh sửa"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-
-                      <button
-                        className="action-btn delete"
-                        onClick={() => handleDeleteBlog(blog.id)}
-                        title="Xóa bài viết"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-
-                      {/* Show auto-publish badge for published blogs */}
-                      {blog.status === "published" && (
-                        <span className="auto-published-badge">
-                          <i className="fas fa-check-circle"></i>
-                          Tự động đăng
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="blog-content">
-                    <h3 className="blog-title">{blog.title}</h3>
-                    <p className="blog-excerpt">{blog.excerpt}</p>
-                  </div>
-
-                  <div className="blog-footer">
-                    <div className="blog-info">
-                      <span className="author">
-                        <i className="fas fa-user"></i>
-                        {blog.author}
-                      </span>
-                      <span className="date">
-                        <i className="fas fa-calendar"></i>
-                        {new Date(blog.createdAt).toLocaleDateString("vi-VN")}
-                      </span>
-                      <span className="views">
-                        <i className="fas fa-eye"></i>
-                        {blog.views} lượt xem
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <DoctorLayout
+      pageTitle="Quản lý Blog"
+      pageDescription="Tạo, chỉnh sửa và quản lý các bài viết tài liệu, tin tức, thông báo của khoa Huyết học."
+      pageActions={[
+        {
+          label: "Tạo bài viết mới",
+          icon: <PlusOutlined />,
+          type: "primary",
+          onClick:
+            activeTab === "Tài liệu" ? handleCreateArticle : handleCreateBlog,
+        },
+      ]}
+    >
+      <Card style={{ marginBottom: 24 }}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabCategories.map((tab) => ({
+            key: tab.key,
+            label: tab.label,
+            children:
+              tab.key === "Tài liệu" ? (
+                <>
+                  <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
+                    <Input.Search
+                      placeholder="Tìm kiếm bài viết..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{ width: 260 }}
+                      allowClear
+                    />
+                  </Space>
+                  <Table
+                    columns={getArticleColumns()}
+                    dataSource={getFilteredArticles()}
+                    rowKey="articleId"
+                    loading={articleLoading}
+                    pagination={{ pageSize: 8 }}
+                    bordered
+                  />
+                </>
+              ) : (
+                <>
+                  <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
+                    <Input.Search
+                      placeholder="Tìm kiếm bài viết..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{ width: 260 }}
+                      allowClear
+                    />
+                    <Select
+                      value={statusFilter}
+                      onChange={setStatusFilter}
+                      style={{ width: 150 }}
+                    >
+                      <Option value="all">Tất cả trạng thái</Option>
+                      <Option value="published">Đã đăng</Option>
+                      <Option value="draft">Bản nháp</Option>
+                    </Select>
+                  </Space>
+                  <Table
+                    columns={getColumns(tab.key)}
+                    dataSource={getFilteredBlogs(tab.key)}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{ pageSize: 8 }}
+                    bordered
+                  />
+                </>
+              ),
+          }))}
+        />
+      </Card>
+      <BlogEditModal
+        visible={editModalVisible}
+        selectedBlog={selectedBlog}
+        activeTab={activeTab}
+        editImage={editImage}
+        onCancel={() => setEditModalVisible(false)}
+        onSubmit={async () => {
+          try {
+            const values = await form.validateFields();
+            if (selectedBlog && selectedBlog.articleId) {
+              // Edit
+              await bloodArticleService.updateBlog(selectedBlog.articleId, {
+                ...values,
+                imgUrl: editImage,
+                userId: currentUser.id,
+              });
+              message.success("Cập nhật bài viết thành công!");
+            } else {
+              // Create
+              await bloodArticleService.updateBlog("", {
+                ...values,
+                imgUrl: editImage,
+                userId: currentUser.id,
+              });
+              message.success("Tạo bài viết thành công!");
+            }
+            setEditModalVisible(false);
+            // Refresh list
+            const data = await bloodArticleService.getBloodArticles();
+            setArticles(Array.isArray(data) ? data : []);
+          } catch {
+            message.error("Có lỗi xảy ra khi lưu bài viết!");
+          }
+        }}
+        onImageChange={setEditImage}
+        form={form}
+      />
+      <BlogDetailModal
+        visible={detailModalVisible}
+        selectedBlog={selectedBlog}
+        activeTab={activeTab}
+        userMap={{}}
+        onClose={() => setDetailModalVisible(false)}
+        onDelete={(id) => {
+          setDetailModalVisible(false);
+          handleDeleteArticle(id);
+        }}
+      />
+    </DoctorLayout>
   );
 };
 

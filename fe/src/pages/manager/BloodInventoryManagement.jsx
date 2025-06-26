@@ -31,7 +31,7 @@ import {
   StarOutlined,
   MinusOutlined,
 } from "@ant-design/icons";
-import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import PageHeader from "../../components/manager/PageHeader";
 import {
   fetchBloodInventory,
@@ -187,19 +187,18 @@ const BloodInventoryManagement = () => {
       key: "bloodType",
       width: 120,
       align: "center",
-      render: (bloodType) => (
-        <Tag
-          color="#D93E4C"
-          style={{
-            fontWeight: "bold",
-            fontSize: "14px",
-            padding: "4px 12px",
-            borderRadius: "6px",
-          }}
-        >
-          {bloodType}
-        </Tag>
-      ),
+      render: (bloodType) => {
+        const isPositive = bloodType.includes("+");
+        return (
+          <span
+            className={`blood-type-badge ${
+              isPositive ? "positive" : "negative"
+            }`}
+          >
+            {bloodType}
+          </span>
+        );
+      },
     },
     {
       title: "Thành phần",
@@ -234,13 +233,17 @@ const BloodInventoryManagement = () => {
       width: 150,
       align: "center",
       render: (status) => (
-        <Tag
-          icon={getStatusIcon(status)}
-          color={getStatusColor(status)}
-          style={{ fontWeight: "bold", padding: "4px 12px" }}
+        <span
+          className="status-badge"
+          style={{
+            backgroundColor: getStatusColor(status) + "20",
+            color: getStatusColor(status),
+            borderColor: getStatusColor(status) + "40",
+          }}
         >
-          {getStatusText(status)}
-        </Tag>
+          {getStatusIcon(status)}
+          <span style={{ marginLeft: "4px" }}>{getStatusText(status)}</span>
+        </span>
       ),
     },
     {
@@ -251,13 +254,10 @@ const BloodInventoryManagement = () => {
       align: "center",
       render: (isRare) =>
         isRare ? (
-          <Tag
-            icon={<StarOutlined />}
-            color="#D93E4C"
-            style={{ fontWeight: "bold" }}
-          >
+          <span className="rare-badge">
+            <StarOutlined style={{ marginRight: "4px" }} />
             Hiếm
-          </Tag>
+          </span>
         ) : (
           <span style={{ color: "#999" }}>Không</span>
         ),
@@ -501,15 +501,9 @@ const BloodInventoryManagement = () => {
   };
 
   return (
-    <div className="blood-inventory-management">
-      <ManagerSidebar />
-
-      <div className="blood-inventory-content">
-        <PageHeader
-          title="Quản lý Kho Máu"
-          description="Theo dõi và quản lý tồn kho máu theo nhóm máu và thành phần"
-          icon={DatabaseOutlined}
-        />
+    <ManagerLayout pageTitle="Quản lý kho máu">
+      <div className="blood-inventory-management-page">
+        <PageHeader title="Quản lý kho máu" icon={DatabaseOutlined} />
 
         {/* Tabs + 2 nút nhập/xuất kho */}
         <div
@@ -836,7 +830,7 @@ const BloodInventoryManagement = () => {
         form={checkOutForm}
         setForm={setCheckOutForm}
       />
-    </div>
+    </ManagerLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Space } from "antd";
 import { BellOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
-import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import PageHeader from "../../components/manager/PageHeader";
 import { mockUsers } from "../../services/mockData";
 import "../../styles/pages/NotificationsManagement.scss";
@@ -282,21 +282,17 @@ const NotificationsManagement = () => {
   };
 
   return (
-    <div className="notifications-management">
-      <ManagerSidebar />
-
-      <div className="notifications-content">
+    <ManagerLayout pageTitle="Quản lý thông báo">
+      <div className="notifications-management-page">
         <PageHeader
-          title="Quản lý Thông báo"
-          description="Tạo và gửi thông báo đến người dùng hệ thống"
+          title="Quản lý thông báo"
           icon={BellOutlined}
           actions={[
             {
-              label: "Tạo thông báo",
-              type: "primary",
+              label: "Tạo thông báo mới",
               icon: <PlusOutlined />,
               onClick: () => setShowCreateModal(true),
-              style: { backgroundColor: "#D93E4C", borderColor: "#D93E4C" },
+              type: "primary",
             },
             {
               label: "Làm mới",
@@ -642,7 +638,7 @@ const NotificationsManagement = () => {
           </div>
         </div>
       )}
-    </div>
+    </ManagerLayout>
   );
 };
 

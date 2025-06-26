@@ -17,7 +17,7 @@ const GuestNavbar = () => {
 
   return (
     <NavbarBase
-      logoSrc="/assets/images/blood1.jpg"
+      logoSrc="src/assets/images/logo.jpg"
       logoAlt="Blood Donation Logo"
       navItems={navItems}
       actionItems={actionItems}

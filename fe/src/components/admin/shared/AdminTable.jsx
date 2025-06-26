@@ -14,6 +14,7 @@ const AdminTable = ({
     borderRadius: 12,
     boxShadow: "0 2px 8px #f0f1f2",
   },
+  scroll = { x: 1000 },
   ...props
 }) => (
   <Spin spinning={loading} tip="Đang tải dữ liệu...">
@@ -25,6 +26,7 @@ const AdminTable = ({
       bordered={bordered}
       size={size}
       style={style}
+      scroll={scroll}
       {...props}
     />
   </Spin>

@@ -30,14 +30,14 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import ManagerSidebar from "../../components/manager/ManagerSidebar";
-import PageHeader from "../../components/manager/PageHeader";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import ProcessWorkflowModal, {
   DONATION_STATUSES,
 } from "../../components/shared/ProcessWorkflowModal";
 import authService from "../../services/authService";
 import "../../styles/pages/DonationSchedulePage.scss";
 import "../../styles/components/PageHeader.scss";
+import PageHeader from "../../components/manager/PageHeader";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -529,27 +529,10 @@ const DonationSchedulePageNew = () => {
   };
 
   return (
-    <div className="donation-schedule-page">
-      <ManagerSidebar />
-      <div className="schedule-content">
-        {/* Page Header */}
-        <PageHeader
-          title="Lịch & Quy trình hiến máu"
-          description="Quản lý lịch hẹn và theo dõi quy trình hiến máu"
-          icon={CalendarOutlined}
-          actions={[
-            {
-              label: "Làm mới",
-              type: "primary",
-              icon: <ReloadOutlined />,
-              onClick: loadAllDonations,
-              loading: loading,
-            },
-          ]}
-        />
-
-        {/* Main Content with Tabs */}
-        <div className="main-content">
+    <ManagerLayout pageTitle="Quản lý lịch hiến máu">
+      <div className="main-content">
+        <PageHeader title="Quản lý lịch hiến máu" icon={CalendarOutlined} />
+        <div className="schedule-content">
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
@@ -1197,7 +1180,7 @@ const DonationSchedulePageNew = () => {
           )}
         </Modal>
       </div>
-    </div>
+    </ManagerLayout>
   );
 };
 

@@ -3,6 +3,7 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import { SettingOutlined } from "@ant-design/icons";
 import "../../styles/pages/SystemSettings.scss";
+import AdminCard from "../../components/admin/shared/AdminCard";
 
 const SystemSettings = () => {
   const [settings, setSettings] = useState({

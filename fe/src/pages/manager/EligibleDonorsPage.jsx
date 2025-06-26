@@ -31,13 +31,12 @@ import {
   ClockCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import ManagerSidebar from "../../components/manager/ManagerSidebar";
+import ManagerLayout from "../../components/manager/ManagerLayout";
 import PageHeader from "../../components/manager/PageHeader";
 import ProcessWorkflowModal, {
   DONATION_STATUSES,
 } from "../../components/shared/ProcessWorkflowModal";
 import GeolibService from "../../services/geolibService";
-import authService from "../../services/authService";
 import "../../styles/pages/EligibleDonorsPage.scss";
 import "../../styles/components/PageHeader.scss";
 
@@ -59,8 +58,6 @@ const EligibleDonorsPage = () => {
     sortBy: "distance",
     status: "all",
   });
-
-  const currentUser = authService.getCurrentUser();
 
   // Hàm kiểm tra eligibility (84 ngày)
   const isEligibleToDonate = (lastDonationDate) => {
@@ -500,39 +497,9 @@ const EligibleDonorsPage = () => {
   ];
 
   return (
-    <div className="eligible-donors-page">
-      <ManagerSidebar />
-
+    <ManagerLayout pageTitle="Người hiến đủ điều kiện">
       <div className="donors-content">
-        <PageHeader
-          title="Người hiến đủ điều kiện"
-          description="Danh sách người hiến máu đã đủ 84 ngày kể từ lần hiến cuối"
-          icon={UserOutlined}
-          actions={[
-            {
-              label: (
-                <div className="view-mode-toggle">
-                  <span>Chế độ xem:</span>
-                  <Switch
-                    checkedChildren={<AppstoreOutlined />}
-                    unCheckedChildren={<TableOutlined />}
-                    checked={viewMode === "card"}
-                    onChange={(checked) =>
-                      setViewMode(checked ? "card" : "table")
-                    }
-                  />
-                </div>
-              ),
-            },
-            {
-              label: "Làm mới",
-              type: "primary",
-              icon: <ReloadOutlined />,
-              onClick: loadEligibleDonors,
-              loading: loading,
-            },
-          ]}
-        />
+        <PageHeader title="Người hiến đủ điều kiện" icon={UserOutlined} />
 
         {/* Filters */}
         <div className="filters-section">
@@ -868,7 +835,7 @@ const EligibleDonorsPage = () => {
           title="Quy trình hiến máu"
         />
       </div>
-    </div>
+    </ManagerLayout>
   );
 };
 

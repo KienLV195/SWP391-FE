@@ -90,7 +90,7 @@ const BlogDetailPage = () => {
                 <ClockCircleOutlined />
                 <Text>
                   {new Date(
-                    article.createdAt || article.date
+                    article.postedAt || article.createdAt || article.date
                   ).toLocaleDateString("vi-VN", {
                     year: "numeric",
                     month: "long",

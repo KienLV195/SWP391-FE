@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { message } from "antd";
 import {
   getUsers as fetchUsersFromApi,
   createUser as postUserToApi,
   deleteUser as deleteUserFromApi,
-  getUsersForce as fetchUsersFromApiForce,
   updateUser as updateUserToApi,
 } from "../services/userApi";
 
@@ -41,7 +40,6 @@ export const useUserManagement = () => {
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  // Map user data from API to component format
   const mapUserData = (userData) => {
     return (Array.isArray(userData) ? userData : []).map((u) => {
       const roleObj = ROLE_MAP[u.roleID] || ROLE_MAP[1];
@@ -79,8 +77,7 @@ export const useUserManagement = () => {
     });
   };
 
-  // Load users
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchUsersFromApi();
@@ -91,9 +88,8 @@ export const useUserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Filter users
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,7 +100,6 @@ export const useUserManagement = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  // CRUD handlers
   const handleEditUser = (user) => {
     setEditingUser(user);
     setShowModal(true);
@@ -122,13 +117,11 @@ export const useUserManagement = () => {
     try {
       setLoading(true);
       await deleteUserFromApi(deleteUserId);
-      const data = await fetchUsersFromApiForce();
-      const mapped = mapUserData(data);
-      setUsers(mapped);
+      await loadUsers();
       message.success("Đã xóa người dùng!");
-    } catch (error) {
+    } catch {
       message.error("Lỗi khi xóa người dùng!");
-      } finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -162,27 +155,10 @@ export const useUserManagement = () => {
         setShowModal(false);
         form.resetFields();
         message.success("Cập nhật thành công!");
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.id === editingUser.id
-              ? {
-                  ...u,
-                  ...values,
-                  name: values.name,
-                  email: values.email,
-                  phone: values.phone,
-                  roleID: Number(values.roleID),
-                  status: values.status,
-                  statusLabel: statusObj.label,
-                  bloodType: values.bloodType || u.bloodType,
-                  department: values.department || u.department,
-                }
-              : u
-          )
-        );
-      } catch (error) {
+        await loadUsers();
+      } catch {
         message.error("Lỗi khi cập nhật người dùng!");
-        } finally {
+      } finally {
         setLoading(false);
       }
     } else {
@@ -211,13 +187,11 @@ export const useUserManagement = () => {
         };
         await postUserToApi(userData);
         message.success("Thêm mới thành công!");
-        const data = await fetchUsersFromApi();
-        const mapped = mapUserData(data);
-        setUsers(mapped);
+        await loadUsers();
         setShowModal(false);
-      } catch (error) {
+      } catch {
         message.error("Lỗi khi thêm người dùng!");
-        } finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -228,13 +202,11 @@ export const useUserManagement = () => {
     setDeleteModalVisible(true);
   };
 
-  // Load users on mount
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   return {
-    // State
     users: filteredUsers,
     loading,
     searchTerm,
@@ -248,14 +220,12 @@ export const useUserManagement = () => {
     STATUS_OPTIONS,
     DEPARTMENTS,
 
-    // Setters
     setSearchTerm,
     setRoleFilter,
     setStatusFilter,
     setShowModal,
     setDeleteModalVisible,
 
-    // Handlers
     handleEditUser,
     handleCreateUser,
     handleDeleteUser,

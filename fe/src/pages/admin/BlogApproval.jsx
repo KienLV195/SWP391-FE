@@ -9,7 +9,11 @@ import BlogDetailModal from "../../components/admin/blogs/BlogDetailModal";
 import BlogEditModal from "../../components/admin/blogs/BlogEditModal";
 import { useBlogApproval } from "../../hooks/useBlogApproval";
 import { Tabs } from "antd";
-import { FileTextOutlined, NotificationOutlined } from "@ant-design/icons";
+import {
+  FileTextOutlined,
+  NotificationOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const BlogApproval = () => {
@@ -68,8 +72,10 @@ const BlogApproval = () => {
               <span>
                 {cat.value === "Tài liệu" ? (
                   <FileTextOutlined />
-                ) : (
+                ) : cat.value === "Tin tức" ? (
                   <NotificationOutlined />
+                ) : (
+                  <HistoryOutlined />
                 )}{" "}
                 {cat.label}
               </span>
@@ -80,7 +86,11 @@ const BlogApproval = () => {
         <div style={{ marginBottom: 16 }}>
           <input
             type="text"
-            placeholder="Tìm kiếm bài viết..."
+            placeholder={
+              activeTab === "Theo dõi hoạt động"
+                ? "Tìm kiếm hoạt động..."
+                : "Tìm kiếm bài viết..."
+            }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -91,7 +101,9 @@ const BlogApproval = () => {
               marginBottom: 8,
             }}
           />
-          {activeTab === "Tin tức" && (
+          {(activeTab === "Tin tức" ||
+            activeTab === "Tài liệu" ||
+            activeTab === "Theo dõi hoạt động") && (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <input
                 type="date"
@@ -131,7 +143,13 @@ const BlogApproval = () => {
           columns={columns}
           data={filteredItems}
           loading={currentLoading}
-          rowKey={activeTab === "Tài liệu" ? "articleId" : "postId"}
+          rowKey={
+            activeTab === "Tài liệu"
+              ? "articleId"
+              : activeTab === "Tin tức"
+              ? "postId"
+              : "id"
+          }
         />
       </AdminCard>
 

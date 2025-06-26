@@ -1,19 +1,11 @@
 import React, { useState } from "react";
 import { Layout } from "antd";
 import ManagerSidebar from "./ManagerSidebar";
-import PageHeader from "./PageHeader";
 import "../../styles/base/manager-design-system.scss";
 
 const { Content } = Layout;
 
-const ManagerLayout = ({
-  children,
-  pageTitle,
-  pageDescription,
-  pageIcon,
-  pageActions = [],
-  className = "",
-}) => {
+const ManagerLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -34,16 +26,6 @@ const ManagerLayout = ({
             background: "#f5f5f5",
           }}
         >
-          {(pageTitle || pageDescription || pageActions.length > 0) && (
-            <PageHeader
-              title={pageTitle}
-              description={pageDescription}
-              icon={pageIcon}
-              actions={pageActions}
-              style={{ marginBottom: 24 }}
-            />
-          )}
-
           <div className="manager-page-content">{children}</div>
         </Content>
       </Layout>

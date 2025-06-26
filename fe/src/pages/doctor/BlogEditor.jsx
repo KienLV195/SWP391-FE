@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import DoctorSidebar from "../../components/doctor/DoctorSidebar";
+import DoctorLayout from "../../components/doctor/DoctorLayout";
 import "../../styles/pages/BlogEditor.scss";
 
 const BlogEditor = () => {
@@ -160,22 +160,20 @@ const BlogEditor = () => {
 
   if (loading) {
     return (
-      <div className="doctor-layout">
-        <DoctorSidebar />
+      <DoctorLayout pageTitle="Chỉnh sửa Blog">
         <div className="doctor-content">
           <div className="loading-spinner">
             <div className="spinner"></div>
             <p>Đang tải dữ liệu...</p>
           </div>
         </div>
-      </div>
+      </DoctorLayout>
     );
   }
 
   return (
-    <div className="doctor-layout">
-      <DoctorSidebar />
-      <div className="doctor-content">
+    <DoctorLayout pageTitle="Chỉnh sửa Blog">
+      <div className="doctor-blog-editor-content">
         <div className="blog-editor">
           <div className="editor-header">
             <div className="header-content">
@@ -419,7 +417,7 @@ const BlogEditor = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DoctorLayout>
   );
 };
 

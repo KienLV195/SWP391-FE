@@ -26,14 +26,15 @@
   }
 
   .admin-content {
-    padding: vars.$spacing-lg;
+    padding: 0;
     min-height: 100vh;
     background: vars.$manager-bg;
 
     .admin-page-content {
-      max-width: 1600px;
-      margin: 0 auto;
+      max-width: 100%;
+      margin: 0;
       width: 100%;
+      padding: 8px;
 
       .page-header {
         background: vars.$manager-bg;

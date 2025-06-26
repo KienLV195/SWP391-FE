@@ -221,3 +221,53 @@
     }
   }
 }
+
+// Blood type badge styles
+.blood-type-badge {
+  display: inline-block;
+  padding: 6px 25px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  min-height: 40px;
+  min-width: 50px;
+
+  &.positive {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+  }
+
+  &.negative {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+}
+
+// Rare badge styles
+.rare-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  background-color: #ffebee;
+  color: #d93e4c;
+  border: 1px solid #ffcdd2;
+  white-space: nowrap;
+}
+
+// Status badge styles
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid;
+  white-space: nowrap;
+}

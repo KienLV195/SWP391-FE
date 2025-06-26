@@ -213,19 +213,19 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
           data
             .sort(
               (a, b) =>
-                new Date(b.createdAt || b.date) -
-                new Date(a.createdAt || a.date)
+                new Date(b.postedAt || b.createdAt || b.date) -
+                new Date(a.postedAt || a.createdAt || a.date)
             )
             .slice(0, 6)
             .map((item) => ({
               postId: item.postId,
-              date: new Date(item.createdAt || item.date)
-                .toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-                })
-                .toUpperCase(),
+              date: new Date(
+                item.postedAt || item.createdAt || item.date
+              ).toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              }),
               title: item.title,
               image: item.image || item.imgUrl || "placeholder.jpg",
               link: `/blog/${item.postId}`,
@@ -234,10 +234,6 @@ const GuestHomePage = ({ CustomNavbar, hideNavbar, CustomHeroSection }) => {
       }
     });
   }, []);
-
-  const newsDataSorted = newsData
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 6);
 
   const achievementData = [
     {

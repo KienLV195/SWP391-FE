@@ -1,11 +1,11 @@
 import React from "react";
 import { Typography, Card, Tag, Pagination } from "antd";
 import { Link } from "react-router-dom";
-import Highlighter from "react-highlight-words";
+import { FaTag } from "react-icons/fa";
 
 const { Title, Paragraph } = Typography;
 
-const ArticleGroup = ({ title, articles = [], gradient, keyword = "" }) => {
+const ArticleGroup = ({ title, articles = [], gradient }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const pageSize = 3;
   const startIndex = (currentPage - 1) * pageSize;
@@ -51,47 +51,29 @@ const ArticleGroup = ({ title, articles = [], gradient, keyword = "" }) => {
               <Link to={`/blood-info/${article.id}`}>
                 <div className="article-content">
                   <Title level={4} className="article-title">
-                    <Highlighter
-                      highlightClassName="highlight-text"
-                      searchWords={keyword ? [keyword] : []}
-                      autoEscape={true}
-                      textToHighlight={article.title || ""}
-                      caseSensitive={false}
-                    />
+                    {article.title || ""}
                   </Title>
                   {article.summary && (
                     <Paragraph className="article-summary">
-                      <Highlighter
-                        highlightClassName="highlight-text"
-                        searchWords={keyword ? [keyword] : []}
-                        autoEscape={true}
-                        textToHighlight={article.summary}
-                        caseSensitive={false}
-                      />
+                      {article.summary}
                     </Paragraph>
                   )}
                   <Paragraph className="article-description">
-                    <Highlighter
-                      highlightClassName="highlight-text"
-                      searchWords={keyword ? [keyword] : []}
-                      autoEscape={true}
-                      textToHighlight={
-                        article.shortContent || article.description || ""
-                      }
-                      caseSensitive={false}
-                    />
+                    {article.shortContent || article.description || ""}
                   </Paragraph>
                   <div className="article-tags">
                     {article.tags &&
                       article.tags.map((tag) => (
                         <Tag key={tag}>
-                          <Highlighter
-                            highlightClassName="highlight-text"
-                            searchWords={keyword ? [keyword] : []}
-                            autoEscape={true}
-                            textToHighlight={tag}
-                            caseSensitive={false}
+                          <FaTag
+                            style={{
+                              opacity: 0.7,
+                              marginRight: 4,
+                              fontSize: "13px",
+                              verticalAlign: "-2px",
+                            }}
                           />
+                          {tag}
                         </Tag>
                       ))}
                   </div>

@@ -30,14 +30,21 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
   } = useRequest(getBloodArticles, []);
 
   // Search/filter logic
+  const normalize = (str) =>
+    (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}|[\u0300-\u036f]/gu, "")
+      .trim();
+
   const searchFn = (article, keyword) => {
-    const lower = keyword.toLowerCase();
+    const keywordNorm = normalize(keyword);
     return (
-      article.title?.toLowerCase().includes(lower) ||
-      article.summary?.toLowerCase().includes(lower) ||
-      article.content?.toLowerCase().includes(lower) ||
+      normalize(article.title).includes(keywordNorm) ||
+      normalize(article.summary).includes(keywordNorm) ||
+      normalize(article.content).includes(keywordNorm) ||
       (Array.isArray(article.tags) &&
-        article.tags.some((tag) => tag.toLowerCase().includes(lower)))
+        article.tags.some((tag) => normalize(tag).includes(keywordNorm)))
     );
   };
   const filterFn = (article, tag) =>
@@ -49,7 +56,7 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     filter: selectedTag,
     setFilter: setSelectedTag,
     filteredData: filteredArticles,
-  } = useSearchAndFilter(articles, searchFn, filterFn);
+  } = useSearchAndFilter(articles, { searchFn, filterFn });
 
   // Nhóm lại bài viết theo yêu cầu mới
   const groupedArticles = React.useMemo(() => {
@@ -167,7 +174,6 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
                 tagColor={group.color}
                 gradient={group.gradient}
                 icon={group.icon}
-                keyword={searchTerm}
               />
             ))
           ) : (
@@ -177,7 +183,6 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
               tagColor={TAG_GROUPS.find((g) => g.key === selectedTag)?.color}
               gradient={TAG_GROUPS.find((g) => g.key === selectedTag)?.gradient}
               icon={TAG_GROUPS.find((g) => g.key === selectedTag)?.icon}
-              keyword={searchTerm}
             />
           )}
 

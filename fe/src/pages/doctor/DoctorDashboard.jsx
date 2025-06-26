@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DoctorSidebar from "../../components/doctor/DoctorSidebar";
+import DoctorLayout from "../../components/doctor/DoctorLayout";
 import authService from "../../services/authService";
 import {
   BLOOD_GROUPS,
@@ -7,6 +7,10 @@ import {
   DOCTOR_TYPES,
 } from "../../services/mockData";
 import "../../styles/pages/DoctorDashboard.scss";
+import WelcomeBanner from "../../components/doctor/dashboard/WelcomeBanner";
+import StatisticsCards from "../../components/doctor/dashboard/StatisticsCards";
+import ChartsSection from "../../components/doctor/dashboard/ChartsSection";
+import NotificationsPanel from "../../components/doctor/dashboard/NotificationsPanel";
 
 const DoctorDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -166,207 +170,45 @@ const DoctorDashboard = () => {
   };
 
   return (
-    <div className="doctor-dashboard">
-      <DoctorSidebar />
-
+    <DoctorLayout pageTitle="🏥 Dashboard Bác sĩ">
       <div className="doctor-dashboard-content">
-        <div className="page-header">
-          <div>
-            <h1>🏥 Dashboard Bác sĩ</h1>
-            <p>Chào mừng, BS. {currentUser?.name}</p>
-            <div className="doctor-type-badge">
-              {isBloodDepartment ? "🩸 Khoa Huyết học" : "🏥 Khoa khác"}
-            </div>
-          </div>
-        </div>
+        {/* Welcome Banner */}
+        <WelcomeBanner doctorName={currentUser?.name || "Bác sĩ"} />
 
-        {/* Quick Stats */}
-        <div className="quick-stats">
-          <div className="stat-card">
-            <div className="stat-icon">📋</div>
-            <div className="stat-info">
-              <h3>Yêu cầu của tôi</h3>
-              <p className="stat-number">{dashboardData.myRequests.length}</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">⏳</div>
-            <div className="stat-info">
-              <h3>Chờ duyệt</h3>
-              <p className="stat-number warning">
-                {
-                  dashboardData.myRequests.filter((r) => r.status === "pending")
-                    .length
-                }
-              </p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">✅</div>
-            <div className="stat-info">
-              <h3>Đã duyệt</h3>
-              <p className="stat-number success">
-                {
-                  dashboardData.myRequests.filter(
-                    (r) => r.status === "approved"
-                  ).length
-                }
-              </p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🔔</div>
-            <div className="stat-info">
-              <h3>Thông báo mới</h3>
-              <p className="stat-number info">
-                {dashboardData.notifications.filter((n) => !n.isRead).length}
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* Statistics Cards */}
+        <StatisticsCards
+          statistics={{
+            myRequests: dashboardData.myRequests.length,
+            pendingRequests: dashboardData.myRequests.filter(
+              (r) => r.status === "pending"
+            ).length,
+            urgentNotifications: dashboardData.notifications.filter(
+              (n) => n.type === "emergency" && !n.isRead
+            ).length,
+          }}
+        />
 
-        <div className="dashboard-grid">
-          {/* My Recent Requests */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h2>📋 Yêu cầu máu gần đây</h2>
-              <a href="/doctor/blood-requests" className="view-all-link">
-                Xem tất cả
-              </a>
-            </div>
-            <div className="card-body">
-              {dashboardData.myRequests.length > 0 ? (
-                <div className="requests-list">
-                  {dashboardData.myRequests.slice(0, 3).map((request) => (
-                    <div key={request.requestID} className="request-item">
-                      <div className="request-info">
-                        <div className="blood-type">{request.bloodType}</div>
-                        <div className="request-details">
-                          <div className="quantity">
-                            {request.quantity} đơn vị
-                          </div>
-                          <div className="reason">{request.reason}</div>
-                        </div>
-                      </div>
-                      <div className="request-status">
-                        <span
-                          className={`status-badge status-${getStatusColor(
-                            request.status
-                          )}`}
-                        >
-                          {getStatusText(request.status)}
-                        </span>
-                        <small>
-                          {new Date(request.createdTime).toLocaleDateString(
-                            "vi-VN"
-                          )}
-                        </small>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="empty-state">
-                  <p>Chưa có yêu cầu máu nào</p>
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Charts Section */}
+        <ChartsSection
+          bloodGroupData={dashboardData.bloodInventory.map((item) => ({
+            name: item.bloodType,
+            value: item.quantity,
+            status: item.status,
+          }))}
+          monthlyRequestsData={[
+            { month: "T7", requests: 12 },
+            { month: "T8", requests: 15 },
+            { month: "T9", requests: 10 },
+            { month: "T10", requests: 18 },
+            { month: "T11", requests: 14 },
+            { month: "T12", requests: 20 },
+          ]}
+        />
 
-          {/* Blood Inventory Overview */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h2>🏦 Tình trạng kho máu</h2>
-              <a href="/doctor/blood-inventory" className="view-all-link">
-                Xem chi tiết
-              </a>
-            </div>
-            <div className="card-body">
-              <div className="inventory-grid">
-                {dashboardData.bloodInventory.map((item) => (
-                  <div
-                    key={item.bloodType}
-                    className={`inventory-item ${getInventoryStatusColor(
-                      item.status
-                    )}`}
-                  >
-                    <div className="blood-type">{item.bloodType}</div>
-                    <div className="quantity">{item.quantity}</div>
-                    <div className={`status ${item.status}`}>
-                      {item.status === "normal"
-                        ? "Bình thường"
-                        : item.status === "low"
-                        ? "Thấp"
-                        : "Cực thấp"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h2>📊 Hoạt động gần đây</h2>
-            </div>
-            <div className="card-body">
-              <div className="activity-list">
-                {dashboardData.recentActivity.map((activity) => (
-                  <div key={activity.id} className="activity-item">
-                    <div className="activity-icon">
-                      {getActivityIcon(activity.type)}
-                    </div>
-                    <div className="activity-content">
-                      <div className="activity-message">{activity.message}</div>
-                      <div className="activity-time">
-                        {new Date(activity.timestamp).toLocaleString("vi-VN")}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Notifications */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h2>🔔 Thông báo</h2>
-            </div>
-            <div className="card-body">
-              <div className="notifications-list">
-                {dashboardData.notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`notification-item ${
-                      notification.isRead ? "read" : "unread"
-                    }`}
-                  >
-                    <div className="notification-icon">
-                      {getNotificationIcon(notification.type)}
-                    </div>
-                    <div className="notification-content">
-                      <div className="notification-title">
-                        {notification.title}
-                      </div>
-                      <div className="notification-message">
-                        {notification.message}
-                      </div>
-                      <div className="notification-time">
-                        {new Date(notification.timestamp).toLocaleString(
-                          "vi-VN"
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Notifications Panel */}
+        <NotificationsPanel notifications={dashboardData.notifications} />
       </div>
-    </div>
+    </DoctorLayout>
   );
 };
 

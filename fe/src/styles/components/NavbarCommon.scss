@@ -1,5 +1,5 @@
-@use '../base/variables' as *;
-@use '../base/mixin' as *;
+@use "../base/variables" as *;
+@use "../base/mixin" as *;
 
 .navbar {
   @include flex-align(space-between, center);
@@ -15,6 +15,16 @@
     font-weight: bold;
     font-size: 1.2rem;
     color: $text-color;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    .logo-img {
+      max-height: 48px;
+      max-width: 160px;
+      object-fit: contain;
+      display: block;
+    }
   }
 
   .navbar-nav {
@@ -35,7 +45,7 @@
         color: $secondary-color;
 
         &::after {
-          content: '';
+          content: "";
           position: absolute;
           bottom: 15px;
           left: 0;

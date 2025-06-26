@@ -438,12 +438,37 @@
         }
 
         .blood-type-badge {
-          background: vars.$primary-color;
-          color: white;
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          display: inline-block;
+          padding: 6px 25px;
+          border-radius: 20px;
+          font-weight: 700;
+          font-size: 20px;
+          text-align: center;
+          min-height: 40px;
+          min-width: 50px;
+
+          &.positive {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+          }
+
+          &.negative {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+          }
+        }
+
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 12px;
+          border-radius: 20px;
           font-weight: 600;
-          font-size: 0.8rem;
+          font-size: 14px;
+          border: 1px solid;
+          white-space: nowrap;
         }
 
         .status-badge,

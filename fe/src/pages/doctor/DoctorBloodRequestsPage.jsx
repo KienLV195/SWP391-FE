@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DoctorSidebar from "../../components/doctor/DoctorSidebar";
+import DoctorLayout from "../../components/doctor/DoctorLayout";
 import BloodRequestDetailModal from "../../components/doctor/BloodRequestDetailModal";
 import authService from "../../services/authService";
 import {
@@ -16,6 +16,9 @@ import {
   URGENCY_ICONS,
 } from "../../constants/systemConstants";
 import "../../styles/pages/DoctorBloodRequestsPage.scss";
+import DoctorBloodRequestsTable from "../../components/doctor/blood-requests/DoctorBloodRequestsTable";
+import DoctorBloodRequestsFilters from "../../components/doctor/blood-requests/DoctorBloodRequestsFilters";
+import { Card, Descriptions, Row, Col, Statistic, Tabs } from "antd";
 
 const DoctorBloodRequestsPage = () => {
   const [requests, setRequests] = useState([]);
@@ -34,6 +37,11 @@ const DoctorBloodRequestsPage = () => {
     neededTime: "",
     patientCode: "",
     notes: "",
+  });
+  const [filters, setFilters] = useState({
+    bloodType: "all",
+    componentType: "all",
+    status: "all",
   });
 
   const currentUser = authService.getCurrentUser();
@@ -301,223 +309,220 @@ const DoctorBloodRequestsPage = () => {
 
   const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-  return (
-    <div className="doctor-blood-requests">
-      <DoctorSidebar />
+  // Lọc dữ liệu theo filter
+  const filteredRequests = (
+    isBloodDepartment && activeTab === "external" ? externalRequests : requests
+  ).filter((req) => {
+    const matchBloodType =
+      filters.bloodType === "all" || req.bloodType === filters.bloodType;
+    const matchComponent =
+      filters.componentType === "all" ||
+      req.componentType === filters.componentType;
+    const matchStatus =
+      filters.status === "all" || req.status === filters.status;
+    return matchBloodType && matchComponent && matchStatus;
+  });
 
-      <div className="doctor-blood-requests-content">
-        <div className="page-header">
-          <div>
-            <h1>📋 Yêu cầu Máu</h1>
-            <p>Tạo và quản lý yêu cầu máu cho bệnh nhân</p>
-            {isBloodDepartment && (
-              <div className="auto-approve-notice">
-                ✅ Yêu cầu từ khoa máu được tự động duyệt
-              </div>
-            )}
-          </div>
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
+  const statusOptions = [
+    { value: "all", label: "Tất cả" },
+    { value: "pending", label: "Chờ duyệt" },
+    { value: "approved", label: "Đã duyệt" },
+    { value: "processing", label: "Đang xử lý" },
+    { value: "completed", label: "Hoàn thành" },
+    { value: "rejected", label: "Từ chối" },
+  ];
+
+  // Định nghĩa columns cho table
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "requestID",
+      key: "requestID",
+      render: (id) => `#${id}`,
+    },
+    {
+      title: "Nhóm máu",
+      dataIndex: "bloodType",
+      key: "bloodType",
+      render: (bloodType) => {
+        const isPositive = bloodType.includes("+");
+        return (
+          <span
+            className={`blood-type-badge ${
+              isPositive ? "positive" : "negative"
+            }`}
           >
-            + Tạo yêu cầu máu
+            {bloodType}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Thành phần",
+      dataIndex: "componentType",
+      key: "componentType",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (q) => `${q} đơn vị`,
+    },
+    {
+      title: "Mức độ",
+      dataIndex: "urgencyLevel",
+      key: "urgencyLevel",
+      render: (urgency) => (
+        <span className={`urgency-badge urgency-${getUrgencyColor(urgency)}`}>
+          {getUrgencyText(urgency)}
+        </span>
+      ),
+    },
+    {
+      title: "Thời gian cần",
+      dataIndex: "neededTime",
+      key: "neededTime",
+      render: (t) => new Date(t).toLocaleString("vi-VN"),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <span className={`status-badge status-${getStatusColor(status)}`}>
+          {getStatusText(status)}
+        </span>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (_, request) => (
+        <div className="action-buttons">
+          <button
+            className="btn btn-info btn-sm"
+            onClick={() => handleViewDetails(request)}
+          >
+            Chi tiết
           </button>
+          {isBloodDepartment &&
+            activeTab === "external" &&
+            request.status === "pending" && (
+              <>
+                <button
+                  className="btn btn-success btn-sm"
+                  onClick={() => handleApproveExternal(request.id)}
+                >
+                  ✅ Duyệt
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() =>
+                    handleRejectExternal(request.id, "Không đủ điều kiện")
+                  }
+                >
+                  ❌ Từ chối
+                </button>
+              </>
+            )}
         </div>
+      ),
+    },
+  ];
 
-        {/* Doctor Info */}
-        <div className="doctor-info-card">
-          <div className="doctor-details">
-            <h3>Thông tin bác sĩ</h3>
-            <div className="info-row">
-              <span className="label">Họ tên:</span>
-              <span className="value">{currentUser?.name}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">Khoa:</span>
-              <span className="value">{currentUser?.department}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">Loại bác sĩ:</span>
-              <span
-                className={`value ${
-                  isBloodDepartment ? "blood-dept" : "other-dept"
-                }`}
-              >
-                {isBloodDepartment ? "Khoa Huyết học" : "Khoa khác"}
-              </span>
-            </div>
-          </div>
-        </div>
+  // Tabs items cho Ant Design
+  const tabItems = isBloodDepartment
+    ? [
+        {
+          key: "internal",
+          label: `🏥 Yêu cầu nội bộ (${requests.length})`,
+        },
+        {
+          key: "external",
+          label: `🌐 Yêu cầu bên ngoài (${externalRequests.length})`,
+        },
+      ]
+    : [];
 
-        {/* Tabs for Blood Department */}
+  // Thống kê
+  const currentRequests =
+    isBloodDepartment && activeTab === "external" ? externalRequests : requests;
+  const stats = [
+    {
+      title: "Tổng yêu cầu",
+      value: currentRequests.length,
+      color: "#1677ff",
+    },
+    {
+      title: "Chờ duyệt",
+      value: currentRequests.filter((r) => r.status === "pending").length,
+      color: "#faad14",
+    },
+    {
+      title: "Đã duyệt",
+      value: currentRequests.filter((r) => r.status === "approved").length,
+      color: "#52c41a",
+    },
+    {
+      title: "Khẩn cấp",
+      value: currentRequests.filter(
+        (r) => r.urgencyLevel >= URGENCY_LEVELS.URGENT
+      ).length,
+      color: "#ff4d4f",
+    },
+  ];
+
+  return (
+    <DoctorLayout pageTitle="📋 Yêu cầu Máu">
+      <div className="doctor-blood-requests-content">
+        {/* Tabs cho khoa máu */}
         {isBloodDepartment && (
-          <div className="tabs-section">
-            <div className="tabs-header">
-              <button
-                className={`tab-btn ${
-                  activeTab === "internal" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("internal")}
-              >
-                🏥 Yêu cầu nội bộ ({requests.length})
-              </button>
-              <button
-                className={`tab-btn ${
-                  activeTab === "external" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("external")}
-              >
-                🌐 Yêu cầu bên ngoài (
-                {externalRequests.filter((r) => r.status === "pending").length})
-              </button>
-            </div>
-          </div>
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={tabItems}
+            style={{ marginBottom: 24 }}
+          />
         )}
+
+        {/* Thống kê hiện đại */}
+        <Row gutter={16} style={{ marginBottom: 24 }}>
+          {stats.map((stat) => (
+            <Col xs={24} sm={12} md={6} key={stat.title}>
+              <Card>
+                <Statistic
+                  title={stat.title}
+                  value={stat.value}
+                  valueStyle={{ color: stat.color, fontWeight: 600 }}
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
 
         {/* Requests List */}
         <div className="requests-section">
-          <h2>
+          <h2 style={{ marginBottom: 16 }}>
             {isBloodDepartment
               ? activeTab === "internal"
                 ? "Yêu cầu máu nội bộ"
                 : "Yêu cầu máu từ bên ngoài"
               : "Danh sách yêu cầu máu"}
           </h2>
-          <div className="requests-table-container">
-            <table className="requests-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nhóm máu</th>
-                  <th>Thành phần</th>
-                  <th>Số lượng</th>
-                  <th>Mức độ</th>
-                  <th>Thời gian cần</th>
-                  <th>Trạng thái</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(isBloodDepartment && activeTab === "external"
-                  ? externalRequests
-                  : requests
-                ).map((request) => (
-                  <tr key={request.requestID}>
-                    <td>#{request.requestID}</td>
-                    <td>
-                      <span className="blood-type-badge">
-                        {request.bloodType}
-                      </span>
-                    </td>
-                    <td>{request.componentType}</td>
-                    <td>{request.quantity} đơn vị</td>
-                    <td>
-                      <span
-                        className={`urgency-badge urgency-${getUrgencyColor(
-                          request.urgencyLevel
-                        )}`}
-                      >
-                        {getUrgencyText(request.urgencyLevel)}
-                      </span>
-                    </td>
-                    <td>
-                      {new Date(request.neededTime).toLocaleString("vi-VN")}
-                    </td>
-                    <td>
-                      <span
-                        className={`status-badge status-${getStatusColor(
-                          request.status
-                        )}`}
-                      >
-                        {getStatusText(request.status)}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="btn btn-info btn-sm"
-                          onClick={() => handleViewDetails(request)}
-                        >
-                          Chi tiết
-                        </button>
-                        {isBloodDepartment &&
-                          activeTab === "external" &&
-                          request.status === "pending" && (
-                            <>
-                              <button
-                                className="btn btn-success btn-sm"
-                                onClick={() =>
-                                  handleApproveExternal(request.id)
-                                }
-                              >
-                                ✅ Duyệt
-                              </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() =>
-                                  handleRejectExternal(
-                                    request.id,
-                                    "Không đủ điều kiện"
-                                  )
-                                }
-                              >
-                                ❌ Từ chối
-                              </button>
-                            </>
-                          )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <DoctorBloodRequestsFilters
+            filters={filters}
+            setFilters={setFilters}
+            bloodTypes={bloodTypes}
+            componentTypes={Object.values(COMPONENT_TYPES)}
+            statusOptions={statusOptions}
+          />
+          <div className="requests-table-container" style={{ marginTop: 16 }}>
+            <DoctorBloodRequestsTable
+              data={filteredRequests}
+              columns={columns}
+              pagination={{ pageSize: 8 }}
+            />
           </div>
-        </div>
-
-        {/* Statistics */}
-        <div className="statistics-section">
-          {(() => {
-            const currentRequests =
-              isBloodDepartment && activeTab === "external"
-                ? externalRequests
-                : requests;
-            return (
-              <>
-                <div className="stat-card">
-                  <h3>Tổng yêu cầu</h3>
-                  <p className="stat-number">{currentRequests.length}</p>
-                </div>
-                <div className="stat-card">
-                  <h3>Chờ duyệt</h3>
-                  <p className="stat-number warning">
-                    {
-                      currentRequests.filter((r) => r.status === "pending")
-                        .length
-                    }
-                  </p>
-                </div>
-                <div className="stat-card">
-                  <h3>Đã duyệt</h3>
-                  <p className="stat-number success">
-                    {
-                      currentRequests.filter((r) => r.status === "approved")
-                        .length
-                    }
-                  </p>
-                </div>
-                <div className="stat-card">
-                  <h3>Khẩn cấp</h3>
-                  <p className="stat-number danger">
-                    {
-                      currentRequests.filter(
-                        (r) => r.urgencyLevel >= URGENCY_LEVELS.URGENT
-                      ).length
-                    }
-                  </p>
-                </div>
-              </>
-            );
-          })()}
         </div>
       </div>
 
@@ -734,7 +739,7 @@ const DoctorBloodRequestsPage = () => {
         onClose={() => setShowDetailModal(false)}
         onUpdate={handleUpdateRequest}
       />
-    </div>
+    </DoctorLayout>
   );
 };
 
