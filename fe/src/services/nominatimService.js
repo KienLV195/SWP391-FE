@@ -37,7 +37,8 @@ class NominatimService {
     const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+         "Accept": "application/json",
+        "Accept-Language": "vi,en;q=0.9",
       },
     });
     const data = response.data;
@@ -75,7 +76,8 @@ class NominatimService {
     const url = `${this.BASE_URL}/reverse?${searchParams.toString()}`;
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+         "Accept": "application/json",
+        "Accept-Language": "vi,en;q=0.9",
       },
     });
     const data = response.data;
@@ -110,7 +112,8 @@ class NominatimService {
     const url = `${this.BASE_URL}/search?${searchParams.toString()}`;
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+         "Accept": "application/json",
+        "Accept-Language": "vi,en;q=0.9",
       },
     });
     const data = response.data;
@@ -140,7 +143,8 @@ class NominatimService {
     const url = `${this.BASE_URL}/details?${searchParams.toString()}`;
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+         "Accept": "application/json",
+        "Accept-Language": "vi,en;q=0.9",
       },
     });
     return response.data;
@@ -154,7 +158,8 @@ class NominatimService {
     const url = `${this.BASE_URL}/status`;
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "BloodDonationApp/1.0 (Contact: admin@blooddonation.com)",
+         "Accept": "application/json",
+        "Accept-Language": "vi,en;q=0.9",
       },
     });
     return response.data;

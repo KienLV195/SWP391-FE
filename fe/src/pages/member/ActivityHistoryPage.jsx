@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import SimpleStatusTracker from "../../components/common/SimpleStatusTracker";
 import authService from "../../services/authService";
+import bloodDonationService from "../../services/bloodDonationService";
+import { DONATION_STATUS, REQUEST_STATUS } from "../../constants/systemConstants";
 import "../../styles/pages/ActivityHistoryPage.scss";
 
 const ActivityHistoryPage = () => {
@@ -13,6 +15,100 @@ const ActivityHistoryPage = () => {
 
   const currentUser = authService.getCurrentUser();
 
+  // Helper function to safely format date
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "Chưa xác định";
+
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return "Chưa xác định";
+
+    return date.toLocaleDateString("vi-VN");
+  };
+
+  // Helper function to map API status to display status
+  const mapApiStatusToDisplayStatus = (apiStatus) => {
+    // Map API status values to our constants
+    const statusMap = {
+      'registered': DONATION_STATUS.REGISTERED,
+      'health_checked': DONATION_STATUS.HEALTH_CHECKED,
+      'not_eligible_health': DONATION_STATUS.NOT_ELIGIBLE_HEALTH,
+      'donated': DONATION_STATUS.DONATED,
+      'blood_tested': DONATION_STATUS.BLOOD_TESTED,
+      'not_eligible_test': DONATION_STATUS.NOT_ELIGIBLE_TEST,
+      'completed': DONATION_STATUS.COMPLETED,
+      'stored': DONATION_STATUS.STORED,
+      'pending': REQUEST_STATUS.PENDING,
+      'approved': REQUEST_STATUS.APPROVED,
+      'rejected': REQUEST_STATUS.REJECTED,
+      'fulfilled': REQUEST_STATUS.FULFILLED,
+    };
+
+    return statusMap[apiStatus] || DONATION_STATUS.REGISTERED;
+  };
+
+  // Helper function to get status info for display
+  const getStatusInfo = (status, type) => {
+    const donationStatusMap = {
+      [DONATION_STATUS.REGISTERED]: { text: "Đã đăng ký", color: "#1890ff" },
+      [DONATION_STATUS.HEALTH_CHECKED]: { text: "Đã khám sức khỏe", color: "#52c41a" },
+      [DONATION_STATUS.NOT_ELIGIBLE_HEALTH]: { text: "Không đủ điều kiện", color: "#ff4d4f" },
+      [DONATION_STATUS.DONATED]: { text: "Đã hiến máu", color: "#722ed1" },
+      [DONATION_STATUS.BLOOD_TESTED]: { text: "Đã xét nghiệm", color: "#fa8c16" },
+      [DONATION_STATUS.NOT_ELIGIBLE_TEST]: { text: "Không đủ điều kiện", color: "#ff4d4f" },
+      [DONATION_STATUS.COMPLETED]: { text: "Hoàn thành", color: "#52c41a" },
+      [DONATION_STATUS.STORED]: { text: "Đã nhập kho", color: "#13c2c2" },
+    };
+
+    const requestStatusMap = {
+      [REQUEST_STATUS.PENDING]: { text: "Đang chờ xử lý", color: "#fa8c16" },
+      [REQUEST_STATUS.APPROVED]: { text: "Đã duyệt", color: "#52c41a" },
+      [REQUEST_STATUS.REJECTED]: { text: "Từ chối", color: "#ff4d4f" },
+      [REQUEST_STATUS.FULFILLED]: { text: "Đã xuất kho", color: "#13c2c2" },
+      [REQUEST_STATUS.COMPLETED]: { text: "Hoàn thành", color: "#52c41a" },
+    };
+
+    if (type === "donation") {
+      return donationStatusMap[status] || { text: "Không xác định", color: "#d9d9d9" };
+    } else {
+      return requestStatusMap[status] || { text: "Không xác định", color: "#d9d9d9" };
+    }
+  };
+
+  // Delete appointment
+  const handleDeleteAppointment = async (appointmentId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn hủy lịch hẹn này không?")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await bloodDonationService.deleteAppointment(appointmentId);
+
+      // Remove from local state
+      setActivities(prev => prev.filter(activity => activity.id !== appointmentId));
+
+      alert("Đã hủy lịch hẹn thành công!");
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      alert("Có lỗi xảy ra khi hủy lịch hẹn. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // View appointment details
+  const handleViewDetails = async (appointmentId) => {
+    try {
+      const details = await bloodDonationService.getAppointmentDetails(appointmentId);
+      console.log("Appointment details:", details);
+      // You can show details in a modal or navigate to details page
+      alert(`Chi tiết lịch hẹn: ${JSON.stringify(details, null, 2)}`);
+    } catch (error) {
+      console.error("Error fetching appointment details:", error);
+      alert("Không thể tải chi tiết lịch hẹn.");
+    }
+  };
+
   useEffect(() => {
     loadActivityHistory();
   }, []);
@@ -20,27 +116,79 @@ const ActivityHistoryPage = () => {
   const loadActivityHistory = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call - GET /api/member/activity-history
+      // Lấy thông tin đặt lịch hiến máu từ API
+      const appointmentsData = await bloodDonationService.getAppointmentsByUser(currentUser.id);
+
+      // Kiểm tra nếu không có dữ liệu
+      if (!appointmentsData || appointmentsData.length === 0) {
+        setActivities([]);
+        return;
+      }
+
+      // Chuyển đổi dữ liệu từ API thành format hiển thị
+      const donationActivities = appointmentsData.map((appointment, index) => {
+        // Debug: Log appointment data để kiểm tra fields
+        console.log(`Appointment ${index + 1} data:`, appointment);
+        console.log(`Available date fields:`, {
+          requestedDonationDate: appointment.requestedDonationDate,
+          AppointmentDate: appointment.AppointmentDate,
+          appointmentDate: appointment.appointmentDate,
+          createdAt: appointment.createdAt
+        });
+
+        // Xác định ngày hẹn hiến máu từ đăng ký
+        const donationDate = appointment.requestedDonationDate || appointment.AppointmentDate;
+        console.log(`Selected donation date:`, donationDate);
+
+        return {
+          id: appointment.appointmentId || appointment.id || `temp-${index}`,
+          type: "donation",
+          title: "Đặt lịch hiến máu",
+          status: mapApiStatusToDisplayStatus(appointment.status),
+          bloodType: appointment.bloodType || "Chưa xác định",
+          quantity: appointment.quantity || "450ml",
+          appointmentDate: donationDate,
+          timeSlot: appointment.timeSlot,
+          location: appointment.location || "Bệnh viện Đa khoa Ánh Dương - Khoa Huyết học, Tầng 2",
+          notes: appointment.notes || "",
+          weight: appointment.weight,
+          height: appointment.height,
+          hasDonated: appointment.hasDonated,
+          lastDonationDate: appointment.lastDonationDate,
+          createdAt: appointment.createdAt || appointment.requestedDonationDate,
+          completedAt: appointment.completedAt || null,
+        };
+      });
+
+      setActivities(donationActivities);
+    } catch (error) {
+      console.error("Error loading activity history:", error);
+
+      // Fallback to mock data if API fails
       const mockActivities = [
         {
           id: 1,
           type: "donation",
-          title: "Hiến máu tình nguyện",
-          status: StatusWorkflowService.DONATION_STATUSES.COMPLETED,
+          title: "Hiến máu tình nguyện (Demo)",
+          status: DONATION_STATUS.COMPLETED,
           bloodType: "O+",
           quantity: "450ml",
           appointmentDate: "2024-12-10",
-          timeSlot: "morning",
+          timeSlot: "Sáng (7:00-12:00)",
           location: "Bệnh viện XYZ - Tầng 2",
           notes: "Hiến máu thành công, sức khỏe tốt",
+          weight: 65,
+          height: 170,
+          hasDonated: true,
+          lastDonationDate: "2024-08-15",
           createdAt: "2024-12-05T08:00:00Z",
           completedAt: "2024-12-10T10:30:00Z",
         },
         {
           id: 2,
           type: "request",
-          title: "Yêu cầu máu cho gia đình",
-          status: StatusWorkflowService.REQUEST_STATUSES.FULFILLED,
+          title: "Yêu cầu máu cho gia đình (Demo)",
+          status: REQUEST_STATUS.FULFILLED,
           bloodType: "A+",
           quantity: "2 đơn vị",
           urgency: "urgent",
@@ -53,50 +201,24 @@ const ActivityHistoryPage = () => {
         {
           id: 3,
           type: "donation",
-          title: "Hiến máu khẩn cấp",
-          status: StatusWorkflowService.DONATION_STATUSES.DONATED,
+          title: "Hiến máu khẩn cấp (Demo)",
+          status: DONATION_STATUS.DONATED,
           bloodType: "O+",
           quantity: "450ml",
           appointmentDate: "2024-11-15",
-          timeSlot: "afternoon",
+          timeSlot: "Chiều (13:00-17:00)",
           location: "Bệnh viện XYZ - Tầng 2",
           notes: "Đang chờ xét nghiệm",
+          weight: 70,
+          height: 175,
+          hasDonated: false,
+          lastDonationDate: null,
           createdAt: "2024-11-14T16:00:00Z",
-          completedAt: null,
-        },
-        {
-          id: 4,
-          type: "donation",
-          title: "Hiến máu định kỳ",
-          status: StatusWorkflowService.DONATION_STATUSES.NOT_ELIGIBLE,
-          bloodType: "O+",
-          quantity: "450ml",
-          appointmentDate: "2024-10-20",
-          timeSlot: "morning",
-          location: "Bệnh viện XYZ - Tầng 2",
-          notes: "Huyết áp cao, không đủ điều kiện",
-          createdAt: "2024-10-18T10:00:00Z",
-          completedAt: "2024-10-20T09:45:00Z",
-        },
-        {
-          id: 5,
-          type: "request",
-          title: "Yêu cầu máu khẩn cấp",
-          status: StatusWorkflowService.REQUEST_STATUSES.PENDING,
-          bloodType: "AB-",
-          quantity: "1 đơn vị",
-          urgency: "emergency",
-          patientName: "Trần Văn C",
-          hospitalName: "Bệnh viện DEF",
-          notes: "Đang chờ duyệt",
-          createdAt: "2024-12-15T20:00:00Z",
           completedAt: null,
         },
       ];
 
       setActivities(mockActivities);
-    } catch (error) {
-      console.error("Error loading activity history:", error);
     } finally {
       setLoading(false);
     }
@@ -123,7 +245,7 @@ const ActivityHistoryPage = () => {
   };
 
   const getStatusColor = (status, type) => {
-    const statusInfo = StatusWorkflowService.getStatusInfo(status, type);
+    const statusInfo = getStatusInfo(status, type);
     return statusInfo.color;
   };
 
@@ -154,8 +276,8 @@ const ActivityHistoryPage = () => {
   const requestCount = activities.filter((a) => a.type === "request").length;
   const completedCount = activities.filter((a) =>
     [
-      StatusWorkflowService.DONATION_STATUSES.COMPLETED,
-      StatusWorkflowService.REQUEST_STATUSES.COMPLETED,
+      DONATION_STATUS.COMPLETED,
+      REQUEST_STATUS.COMPLETED,
     ].includes(a.status)
   ).length;
 
@@ -242,16 +364,26 @@ const ActivityHistoryPage = () => {
                         {getActivityIcon(activity.type)} {activity.title}
                       </div>
                       <div className="activity-date">
-                        {new Date(activity.createdAt).toLocaleDateString(
-                          "vi-VN"
-                        )}
-                        {activity.completedAt && (
-                          <span className="completed-date">
-                            →{" "}
-                            {new Date(activity.completedAt).toLocaleDateString(
-                              "vi-VN"
+                        {activity.type === "donation" ? (
+                          <>
+                            
+                            {activity.completedAt && (
+                              <span className="completed-date">
+                                → Hoàn thành:{" "}
+                                {formatDate(activity.completedAt)}
+                              </span>
                             )}
-                          </span>
+                          </>
+                        ) : (
+                          <>
+                            {formatDate(activity.createdAt)}
+                            {activity.completedAt && (
+                              <span className="completed-date">
+                                →{" "}
+                                {formatDate(activity.completedAt)}
+                              </span>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -267,7 +399,7 @@ const ActivityHistoryPage = () => {
                         }}
                       >
                         {
-                          StatusWorkflowService.getStatusInfo(
+                          getStatusInfo(
                             activity.status,
                             activity.type
                           ).text
@@ -277,47 +409,40 @@ const ActivityHistoryPage = () => {
                   </div>
 
                   <div className="activity-details">
-                    <div className="detail-section">
-                      <h4>Thông tin máu</h4>
-                      <div className="blood-info">
-                        <span className="blood-type-badge">
-                          {activity.bloodType}
-                        </span>
-                        <span className="quantity-info">
-                          {activity.quantity}
-                        </span>
-                        {activity.urgency && (
-                          <span
-                            className="urgency-badge"
-                            style={{
-                              backgroundColor: getUrgencyColor(
-                                activity.urgency
-                              ),
-                            }}
-                          >
-                            {getUrgencyText(activity.urgency)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
 
                     {activity.type === "donation" && (
                       <div className="detail-section">
                         <h4>Thông tin lịch hẹn</h4>
                         <div className="appointment-info">
                           <span>
-                            Ngày:{" "}
-                            {new Date(
-                              activity.appointmentDate
-                            ).toLocaleDateString("vi-VN")}
+                            Ngày tạo lịch hẹn:{" "}
+                            {formatDate(activity.createdAt)}
+                          </span>
+                          <span>
+                            Ngày hẹn hiến máu:{" "}
+                            {formatDate(activity.appointmentDate)}
                           </span>
                           <span>
                             Khung giờ:{" "}
-                            {activity.timeSlot === "morning"
-                              ? "7:00-11:00"
-                              : "13:00-17:00"}
+                            {activity.timeSlot || "Chưa xác định"}
                           </span>
                           <span>Địa điểm: {activity.location}</span>
+                          {activity.weight && (
+                            <span className="health-info-badge">
+                              Cân nặng: {activity.weight} kg
+                            </span>
+                          )}
+                          {activity.height && (
+                            <span className="health-info-badge">
+                              Chiều cao: {activity.height} cm
+                            </span>
+                          )}
+                          {activity.lastDonationDate && (
+                            <span className="donation-history-badge">
+                              Lần hiến máu cuối:{" "}
+                              {formatDate(activity.lastDonationDate)}
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}
@@ -348,9 +473,25 @@ const ActivityHistoryPage = () => {
                       Xem tiến trình
                     </button>
 
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => handleViewDetails(activity.id)}
+                    >
+                      Chi tiết
+                    </button>
+
+                    {activity.type === "donation" && (
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteAppointment(activity.id)}
+                        disabled={activity.status === DONATION_STATUS.COMPLETED}
+                      >
+                        Hủy lịch
+                      </button>
+                    )}
+
                     {activity.type === "donation" &&
-                      activity.status ===
-                        StatusWorkflowService.DONATION_STATUSES.COMPLETED && (
+                      activity.status === DONATION_STATUS.COMPLETED && (
                         <button className="btn btn-success">
                           Giấy chứng nhận
                         </button>

@@ -23,7 +23,11 @@ import {
   UserOutlined,
   HeartOutlined,
   CalendarOutlined,
-  RightOutlined
+  RightOutlined,
+  CheckOutlined,
+  ArrowLeftOutlined,
+  ClockCircleOutlined,
+  CloseOutlined
 } from "@ant-design/icons";
 import MemberNavbar from "../../components/member/MemberNavbar";
 import AddressForm from "../../components/member/AddressForm";
@@ -34,6 +38,7 @@ import { DONATION_STATUS, BLOOD_TYPES } from "../../constants/systemConstants";
 import { getUserName } from "../../utils/userUtils";
 import dayjs from "dayjs";
 import Footer from "../../components/common/Footer";
+import axios from "axios";
 import "../../styles/pages/BloodDonationFormPage.scss";
 
 const { Title, Text } = Typography;
@@ -480,6 +485,11 @@ const BloodDonationFormPage = () => {
       alert("Vui lòng chọn khung giờ đặt lịch!");
       return;
     }
+    if (!healthSurvey.weight) {
+      setLoading(false);
+      alert("Vui lòng nhập cân nặng!");
+      return;
+    }
 
     // Validate 84-day gap if user has donated before
     if (healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate) {
@@ -496,73 +506,106 @@ const BloodDonationFormPage = () => {
     }
 
     try {
-      // TODO_API_REPLACE: Replace with actual API call
-      // const response = await fetch(`${config.api.baseUrl}/donations/schedule`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      //   },
-      //   body: JSON.stringify({
-      //     donorId: currentUser.id,
-      //     healthSurvey: healthAnswers,
-      //     appointmentDate: selectedDate,
-      //     timeSlot: selectedTimeSlot,
-      //     address: formData.address,
-      //     coordinates: coordinates,
-      //     distance: distance
-      //   })
-      // });
-      // const data = await response.json();
-      // if (response.ok) {
-      //   setRegistrationResult({
-      //     status: "scheduled",
-      //     message: "ĐẶT LỊCH THÀNH CÔNG",
-      //     description: "Lịch hẹn hiến máu đã được gửi đến Manager. Bạn sẽ nhận được xác nhận sớm."
-      //   });
-      // } else {
-      //   alert(`Lỗi: ${data.message}`);
-      // }
+      // Prepare API payload according to the schema
+      // Fix timezone issue by using local date format or setting specific time
+      const requestedDate = dayjs(appointmentData.preferredDate).format('YYYY-MM-DD') + 'T12:00:00.000Z';
+      const lastDonationDateFormatted = healthSurvey.hasDonatedBefore && healthSurvey.lastDonationDate
+        ? dayjs(healthSurvey.lastDonationDate).format('YYYY-MM-DD') + 'T12:00:00.000Z'
+        : null;
 
-      // MOCK_DATA: Remove this section when implementing real API
-      const appointmentRequest = {
-        userId: currentUser.id,
-        personalInfo,
-        healthSurvey,
-        appointment: {
-          ...appointmentData,
-          location: personalInfo.location, // Use location from personal info
-        },
-        status: "registered",
-        createdAt: new Date().toISOString(),
+      const apiPayload = {
+        userId: parseInt(currentUser.id),
+        requestedDonationDate: requestedDate,
+        timeSlot: appointmentData.timeSlot === "morning" ? "Sáng (7:00-12:00)" : "Chiều (13:00-17:00)",
+        weight: parseFloat(healthSurvey.weight),
+        height: healthSurvey.height ? parseFloat(healthSurvey.height) : null,
+        hasDonated: healthSurvey.hasDonatedBefore === true,
+        lastDonationDate: lastDonationDateFormatted
       };
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Sending blood donation appointment request:", apiPayload);
+      console.log("API URL:", import.meta.env.VITE_BLOOD_DONATION_API);
+      console.log("Auth token:", localStorage.getItem('authToken') ? 'Present' : 'Missing');
+
+      // Call the blood donation API
+      const BLOOD_DONATION_API = import.meta.env.VITE_BLOOD_DONATION_API;
+      const response = await axios.post(BLOOD_DONATION_API, apiPayload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+
+      console.log("Blood donation appointment response:", response.data);
 
       // Send notification
       await NotificationService.sendAppointmentReminder(currentUser.id, {
         id: Date.now(),
-        appointmentDate: `${appointmentData.preferredDate}T${appointmentData.timeSlot === "morning" ? "09:00:00" : "15:00:00"
-          }`,
-        location: "Bệnh viện XYZ - Tầng 2",
+        appointmentDate: `${appointmentData.preferredDate}T${appointmentData.timeSlot === "morning" ? "09:00:00" : "15:00:00"}`,
+        location: "Bệnh viện Đa khoa Ánh Dương - Khoa Huyết học, Tầng 2",
       });
 
       setRegistrationResult({
         status: "scheduled",
         message: "ĐẶT LỊCH THÀNH CÔNG",
-        description:
-          "Lịch hẹn hiến máu đã được gửi đến Manager. Bạn sẽ nhận được xác nhận sớm.",
+        description: "Lịch hẹn hiến máu đã được gửi đến Manager. Bạn sẽ nhận được xác nhận sớm.",
       });
     } catch (error) {
       console.error("Error scheduling appointment:", error);
-      alert("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+
+      // Handle different types of API errors
+      let errorMessage = "Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.";
+
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status;
+        const data = error.response.data;
+
+        console.log("Server error details:", data);
+
+        if (status === 400) {
+          // Try to extract detailed error message from server response
+          if (typeof data === 'string') {
+            errorMessage = data;
+          } else if (data?.message) {
+            errorMessage = data.message;
+          } else if (data?.errors) {
+            // Handle validation errors
+            const validationErrors = Object.values(data.errors).flat();
+            errorMessage = validationErrors.join(', ');
+          } else if (data?.title) {
+            errorMessage = data.title;
+          } else {
+            errorMessage = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.";
+          }
+        } else if (status === 401) {
+          errorMessage = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        } else if (status === 409) {
+          errorMessage = data?.message || "Lịch hẹn bị trùng. Vui lòng chọn thời gian khác.";
+        } else if (status >= 500) {
+          errorMessage = "Lỗi hệ thống. Vui lòng thử lại sau.";
+        } else {
+          errorMessage = data?.message || errorMessage;
+        }
+      } else if (error.request) {
+        // Network error
+        errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.";
+      }
+
+      setRegistrationResult({
+        status: "error",
+        message: "LỖI ĐẶT LỊCH",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const getTimeSlotText = (slot) => {
-    return slot === "morning" ? "7:00 - 11:00 (Sáng)" : "13:00 - 17:00 (Chiều)";
+    return slot === "morning" ? "7:00 - 12:00 (Sáng)" : "13:00 - 17:00 (Chiều)";
   };
 
   useEffect(() => {
@@ -751,7 +794,8 @@ const BloodDonationFormPage = () => {
   if (
     registrationResult &&
     (registrationResult.status === "failed" ||
-      registrationResult.status === "scheduled")
+      registrationResult.status === "scheduled" ||
+      registrationResult.status === "error")
   ) {
     return (
       <div className="blood-donation-form-page">
@@ -761,7 +805,7 @@ const BloodDonationFormPage = () => {
           <div className="result-section">
             <div className={`result-card ${registrationResult.status}`}>
               <div className="result-icon">
-                {registrationResult.status === "failed" ? "❌" : "✅"}
+                {registrationResult.status === "failed" || registrationResult.status === "error" ? <CloseOutlined /> : <CheckOutlined />}
               </div>
               <div className="result-content">
                 <h2>{registrationResult.message}</h2>
@@ -801,50 +845,56 @@ const BloodDonationFormPage = () => {
                     Về trang chủ
                   </button>
 
-                  {registrationResult.status === "failed" && (
+                  {(registrationResult.status === "failed" || registrationResult.status === "error") && (
                     <button
                       className="btn btn-secondary"
                       onClick={() => {
                         setRegistrationResult(null);
-                        setStep(1);
-                        setHealthSurvey({
-                          weight: "",
-                          height: "",
-                          bloodPressure: "",
-                          heartRate: "",
-                          bloodType: "",
-                          hasDonatedBefore: null,
-                          hasCurrentMedicalConditions: null,
-                          hasPreviousSeriousConditions: null,
-                          otherPreviousConditions: "",
-                          hadMalariaSyphilisTuberculosis: false,
-                          hadBloodTransfusion: false,
-                          hadVaccination: false,
-                          last12MonthsNone: false,
-                          hadTyphoidSepsis: false,
-                          unexplainedWeightLoss: false,
-                          persistentLymphNodes: false,
-                          invasiveMedicalProcedures: false,
-                          tattoosPiercings: false,
-                          drugUse: false,
-                          bloodExposure: false,
-                          livedWithHepatitisB: false,
-                          sexualContactWithInfected: false,
-                          sameSexContact: false,
-                          last6MonthsNone: false,
-                          hadUrinaryInfection: false,
-                          visitedEpidemicArea: false,
-                          last1MonthNone: false,
-                          hadFluSymptoms: false,
-                          last14DaysNone: false,
-                          otherSymptoms: "",
-                          tookAntibiotics: false,
-                          last7DaysNone: false,
-                          otherMedications: "",
-                          isPregnantOrNursing: false,
-                          hadPregnancyTermination: false,
-                          womenQuestionsNone: false,
-                        });
+                        // For error status, go back to appointment step (step 3)
+                        // For failed status, go back to beginning (step 1)
+                        if (registrationResult.status === "error") {
+                          setStep(3);
+                        } else {
+                          setStep(1);
+                          setHealthSurvey({
+                            weight: "",
+                            height: "",
+                            bloodPressure: "",
+                            heartRate: "",
+                            bloodType: "",
+                            hasDonatedBefore: null,
+                            hasCurrentMedicalConditions: null,
+                            hasPreviousSeriousConditions: null,
+                            otherPreviousConditions: "",
+                            hadMalariaSyphilisTuberculosis: false,
+                            hadBloodTransfusion: false,
+                            hadVaccination: false,
+                            last12MonthsNone: false,
+                            hadTyphoidSepsis: false,
+                            unexplainedWeightLoss: false,
+                            persistentLymphNodes: false,
+                            invasiveMedicalProcedures: false,
+                            tattoosPiercings: false,
+                            drugUse: false,
+                            bloodExposure: false,
+                            livedWithHepatitisB: false,
+                            sexualContactWithInfected: false,
+                            sameSexContact: false,
+                            last6MonthsNone: false,
+                            hadUrinaryInfection: false,
+                            visitedEpidemicArea: false,
+                            last1MonthNone: false,
+                            hadFluSymptoms: false,
+                            last14DaysNone: false,
+                            otherSymptoms: "",
+                            tookAntibiotics: false,
+                            last7DaysNone: false,
+                            otherMedications: "",
+                            isPregnantOrNursing: false,
+                            hadPregnancyTermination: false,
+                            womenQuestionsNone: false,
+                          });
+                        }
                       }}
                     >
                       Thử lại
@@ -872,7 +922,7 @@ const BloodDonationFormPage = () => {
             <div className="hero-decoration-2" />
 
             <div className="hero-content">
-              <Title level={1} className="hero-title">
+              <Title level={1} className="hero-title " >
                 🩸 Đăng ký hiến máu
               </Title>
               <Text className="hero-subtitle">
@@ -928,25 +978,25 @@ const BloodDonationFormPage = () => {
           >
             <div className="info-section">
               <Text className="info-text">
-                📋 Vui lòng kiểm tra và xác nhận thông tin cá nhân của bạn
+                <CheckOutlined/> Vui lòng kiểm tra và xác nhận thông tin cá nhân của bạn
               </Text>
 
               <Alert
                 message={
                   <span className="alert-title">
-                    ✅ Thông tin đã được điền sẵn từ hồ sơ cá nhân
+                     Thông tin đã được điền sẵn từ hồ sơ cá nhân
                   </span>
                 }
                 description={
                   <div className="alert-description">
                     <Text>
-                      🔒 Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn và
+                       Các thông tin dưới đây được lấy từ hồ sơ cá nhân của bạn và
                       <Text type="danger" strong> không thể chỉnh sửa tại đây</Text>.
                     </Text>
                     <br />
                     <Text type="secondary">
-                      💡 Nếu cần thay đổi, vui lòng cập nhật tại trang
-                      <Text strong className="alert-link"> Hồ sơ cá nhân</Text>.
+                       Nếu cần thay đổi, vui lòng cập nhật tại trang
+                      <Text strong className="alert-link" onClick={() => navigate("/member/profile")}> Hồ sơ cá nhân</Text>.
                     </Text>
                   </div>
                 }
@@ -959,7 +1009,7 @@ const BloodDonationFormPage = () => {
             <Form layout="vertical">
               <div className="personal-info-header">
                 <Title level={4} className="header-title">
-                  👤 Thông tin cơ bản
+                   Thông tin cơ bản
                 </Title>
               </div>
 
@@ -1050,7 +1100,7 @@ const BloodDonationFormPage = () => {
                   icon={<RightOutlined />}
                   className="submit-button"
                 >
-                  ➡️ Tiếp tục đến khảo sát sức khỏe
+                   Tiếp tục đến khảo sát sức khỏe
                 </Button>
               </div>
             </Form>
@@ -1679,7 +1729,7 @@ const BloodDonationFormPage = () => {
                     size="large"
                     onClick={() => setStep(1)}
                   >
-                    ⬅️ Quay lại
+                    <ArrowLeftOutlined /> Quay lại
                   </Button>
                   <Button
                     type="primary"
@@ -1730,7 +1780,7 @@ const BloodDonationFormPage = () => {
             )}
 
             <Form layout="vertical">
-              <Title level={4}>⏰ Thời gian</Title>
+              <Title level={4}><ClockCircleOutlined /> Thời gian</Title>
 
               <Row gutter={16}>
                 <Col xs={24} md={12}>
@@ -1748,7 +1798,8 @@ const BloodDonationFormPage = () => {
 
                           if (daysDifference < 84) {
                             const earliestDate = lastDonationDate.add(84, 'day');
-                            alert(`Bạn cần chờ ít nhất 84 ngày từ lần hiến máu gần nhất (${lastDonationDate.format('DD/MM/YYYY')}). Ngày sớm nhất có thể hiến máu là: ${earliestDate.format('DD/MM/YYYY')}`);
+                            alert(`Bạn cần chờ ít nhất 84 ngày từ lần hiến máu gần nhất (${lastDonationDate.format('DD/MM/YYYY')}). 
+                            Sau ngày ${earliestDate.format('DD/MM/YYYY')} bạn đủ điều kiện để tiếp tục hiến máu.`);
                             setAppointmentData((prev) => ({ ...prev, preferredDate: "" }));
                           } else {
                             setAppointmentData((prev) => ({
@@ -1797,11 +1848,11 @@ const BloodDonationFormPage = () => {
                       className="time-radio-group"
                     >
                       <Radio.Button value="morning" className="time-radio-button">
-                        🌅 7:00 - 11:00<br />
+                        7:00 - 11:00<br />
                         <Text type="secondary">Buổi sáng</Text>
                       </Radio.Button>
                       <Radio.Button value="afternoon" className="time-radio-button">
-                        🌇 13:00 - 17:00<br />
+                        13:00 - 17:00<br />
                         <Text type="secondary">Buổi chiều</Text>
                       </Radio.Button>
                     </Radio.Group>
@@ -1812,7 +1863,7 @@ const BloodDonationFormPage = () => {
               <Divider />
 
               {/* Location Information */}
-              <Title level={4}>📍 Thông tin địa điểm hiến máu</Title>
+              <Title level={4}> Thông tin địa điểm hiến máu</Title>
 
               <Card className="hospital-card">
                 <Row gutter={16} align="middle">
@@ -1824,10 +1875,10 @@ const BloodDonationFormPage = () => {
                       Bệnh viện Đa khoa Ánh Dương
                     </Title>
                     <Text className="hospital-address">
-                      📍 Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
+                       Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
                     </Text>
                     <Text className="hospital-department">
-                      🩸 Khoa Huyết học - Tầng 2
+                       Khoa Huyết học - Tầng 2
                     </Text>
                     <Text type="secondary" className="hospital-note">
                       Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đến hiến máu.
@@ -1842,7 +1893,7 @@ const BloodDonationFormPage = () => {
                     size="large"
                     onClick={() => setStep(2)}
                   >
-                    ⬅️ Quay lại
+                    <ArrowLeftOutlined /> Quay lại
                   </Button>
                   <Button
                     type="primary"
