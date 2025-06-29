@@ -374,97 +374,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
   return (
     <div className="address-form">
       <div className="address-fields">
-        {/* <div className="field-row">
-          <div className="form-group">
-            <label>
-              Số nhà <span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              value={addressData.houseNumber}
-              onChange={(e) => handleFieldChange("houseNumber", e.target.value)}
-              placeholder="Số 123"
-              disabled={disabled}
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Tên đường <span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              value={addressData.street}
-              onChange={(e) => handleFieldChange("street", e.target.value)}
-              placeholder="Đường Nguyễn Huệ"
-              disabled={disabled}
-              className="form-input"
-            />
-          </div>
-        </div> */}
-
-        {/* <div className="field-row">
-          <div className="form-group">
-            <label>
-              Tỉnh/Thành phố <span className="required">*</span>
-            </label>
-            <select
-              value={addressData.province}
-              onChange={(e) => handleFieldChange("province", e.target.value)}
-              disabled={disabled}
-              className="form-select"
-            >
-              <option value="">Chọn tỉnh/thành phố</option>
-              {cityList.map((city) => (
-                <option key={city.Id} value={city.Id}>
-                  {city.Name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>
-              Quận/Huyện <span className="required">*</span>
-            </label>
-            <select
-              value={addressData.district}
-              onChange={(e) => handleFieldChange("district", e.target.value)}
-              disabled={disabled || !addressData.province}
-              className="form-select"
-            >
-              <option value="">Chọn quận/huyện</option>
-              {districtList.map((district) => (
-                <option key={district.Id} value={district.Id}>
-                  {district.Name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="field-row">
-          <div className="form-group full-width">
-            <label>
-              Phường/Xã <span className="required">*</span>
-            </label>
-            <select
-              value={addressData.ward}
-              onChange={(e) => handleFieldChange("ward", e.target.value)}
-              disabled={disabled || !addressData.district}
-              className="form-select"
-            >
-              <option value="">Chọn phường/xã</option>
-              {wardList.map((ward) => (
-                <option key={ward.Id} value={ward.Id}>
-                  {ward.Name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div> */}
-
+        
         <div className="full-address-preview">
           <label>Địa chỉ đầy đủ:</label>
           <div className={`address-display ${geocoding ? "geocoding" : ""}`}>
@@ -478,14 +388,14 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
             )}
           </div>
 
-          {/* {addressData.fullAddress && addressData.fullAddress.length > 10 && (
+          {addressData.fullAddress && addressData.fullAddress.length > 10 && (
             <div className="address-help">
               <small>
                 💡 Hệ thống sẽ tự động tính khoảng cách khi bạn điền đầy đủ
                 thông tin địa chỉ
               </small>
             </div>
-          )} */}
+          )}
         </div>
 
         {error && (
@@ -504,9 +414,9 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
       {/* Distance Information */}
       {distance && (
         <div className="distance-info-section">
-          {/* <h4>📏 Thông tin khoảng cách</h4> */}
+          <h4> Thông tin khoảng cách</h4>
 
-          {/* <div className="distance-details">
+          <div className="distance-details">
             <div className="distance-item">
               <span className="distance-label">Khoảng cách đến bệnh viện:</span>
               <span
@@ -516,7 +426,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                 {GeolibService.formatDistance(distance)} ({getDistanceText()})
               </span>
             </div>
-          </div> */}
+          </div>
 
           <div className="hospital-info">
             <h5>🏥 Địa điểm hiến máu</h5>
@@ -525,7 +435,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                 <strong>Bệnh viện Đa khoa Ánh Dương</strong>
               </div>
               <div className="hospital-item">
-                📍 Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
+               Đường Cách Mạng Tháng 8, Quận 3, TP.HCM, Vietnam
               </div>
             </div>
 
@@ -537,7 +447,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                   rel="noopener noreferrer"
                   className="directions-link osm-link"
                 >
-                  🗺️ Xem đường đi trên OpenStreetMap
+                   Xem đường đi trên OpenStreetMap
                 </a>
                 <a
                   href={GeolibService.getDirectionsUrl(coordinates)}
@@ -545,7 +455,7 @@ const AddressForm = ({ onAddressChange, initialAddress, disabled = false }) => {
                   rel="noopener noreferrer"
                   className="directions-link google-link"
                 >
-                  📍 Xem trên Google Maps
+                   Xem trên Google Maps
                 </a>
               </div>
             )}

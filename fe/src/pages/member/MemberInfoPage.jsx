@@ -154,15 +154,12 @@ const MemberInfoPage = () => {
         if (!/^\d{12}$/.test(form.documentNumber)) {
           newErrors.documentNumber = "Căn cước công dân phải gồm đúng 12 số.";
         }
-      } else if (form.documentType === "cmnd") {
-        if (
-          !/^\d{9}$/.test(form.documentNumber) &&
-          !/^\d{12}$/.test(form.documentNumber)
-        ) {
-          newErrors.documentNumber = "CMND phải gồm đúng 9 hoặc 12 số.";
+      } else if (form.documentType === "passport") {
+        if (!/^[A-Z]\d{7}$/.test(form.documentNumber)) {
+          newErrors.documentNumber =
+            "Hộ chiếu phải gồm đúng một chữ cái in hoa (đại diện cho loại hộ chiếu) theo sau là 7 chữ số. .";
         }
       }
-      // Hộ chiếu không kiểm tra độ dài
     }
     if (!form.fullName) newErrors.fullName = "Vui lòng nhập họ và tên.";
 
@@ -271,6 +268,7 @@ const MemberInfoPage = () => {
           createdAt: new Date().toISOString(),
           password: currentUser.password || "",
         };
+        //
 
         console.log("Data being sent:", dataToSave);
 
@@ -289,7 +287,7 @@ const MemberInfoPage = () => {
           }
         );
 
-        if (response.status === 200) {
+        if (response.status === 204 || response.status === 200) {
           // Cập nhật profile của user hiện tại với thông tin từ database
           if (currentUser) {
             // Cập nhật profile với thông tin mới, đảm bảo có trường name
@@ -309,6 +307,7 @@ const MemberInfoPage = () => {
           }
 
           // Lấy thông tin mới nhất từ database sau khi lưu thành công
+
           await fetchUserInfo();
           setNotification({
             message: "Lưu thông tin thành công!",
@@ -378,27 +377,6 @@ const MemberInfoPage = () => {
           </div>
         </div>
         <div className="member-info-form-box">
-          {notification.message && (
-            <div
-              style={{
-                marginBottom: 16,
-                padding: 12,
-                borderRadius: 6,
-                color: notification.type === "success" ? "#155724" : "#721c24",
-                background:
-                  notification.type === "success" ? "#d4edda" : "#f8d7da",
-                border: `1px solid ${
-                  notification.type === "success" ? "#c3e6cb" : "#f5c6cb"
-                }`,
-                fontWeight: 500,
-                fontSize: "1.08rem",
-                textAlign: "center",
-                transition: "all 0.3s",
-              }}
-            >
-              {notification.message}
-            </div>
-          )}
           <form
             className="member-info-form"
             onSubmit={handleSubmit}
@@ -662,6 +640,27 @@ const MemberInfoPage = () => {
               </div>
             </div>
           </form>
+          {notification.message && (
+            <div
+              style={{
+                marginBottom: 16,
+                padding: 12,
+                borderRadius: 6,
+                color: notification.type === "success" ? "#155724" : "#721c24",
+                background:
+                  notification.type === "success" ? "#d4edda" : "#f8d7da",
+                border: `1px solid ${
+                  notification.type === "success" ? "#c3e6cb" : "#f5c6cb"
+                }`,
+                fontWeight: 500,
+                fontSize: "1.08rem",
+                textAlign: "center",
+                transition: "all 0.3s",
+              }}
+            >
+              {notification.message}
+            </div>
+          )}
           <div className="member-info-actions">
             <button
               type="submit"

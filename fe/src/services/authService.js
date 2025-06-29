@@ -410,6 +410,11 @@ class AuthService {
     return this.currentUser;
   }
 
+  // Get authentication token
+  getToken() {
+    return localStorage.getItem("authToken");
+  }	
+
   // Check if user is authenticated
   isUserAuthenticated() {
     return this.isAuthenticated && this.currentUser !== null;
