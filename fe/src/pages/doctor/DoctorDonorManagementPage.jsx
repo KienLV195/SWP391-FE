@@ -3,10 +3,129 @@ import DoctorLayout from "../../components/doctor/DoctorLayout";
 import SimpleStatusTracker from "../../components/common/SimpleStatusTracker";
 import NotificationService from "../../services/notificationService";
 import authService from "../../services/authService";
+import bloodDonationService from "../../services/bloodDonationService";
 import { DOCTOR_TYPES } from "../../services/mockData";
-import { DONATION_STATUS } from "../../constants/systemConstants";
+import {
+  DONATION_STATUS,
+  STATUS_TRANSITIONS,
+  USER_ROLES,
+  WORKFLOW_PERMISSIONS
+} from "../../constants/systemConstants";
 import "../../styles/pages/DoctorDonorManagementPage.scss";
-import { Card, Row, Col, Statistic, Select, Table, Tag, Button } from "antd";
+import {
+  Card, Row, Col, Statistic, Select, Table, Tag, Button, message,
+  Modal, Input, InputNumber, Divider, Space, Avatar,
+  Descriptions, Badge, Steps
+} from "antd";
+
+const { TextArea } = Input;
+import {
+  EditOutlined, UserOutlined, PhoneOutlined, MailOutlined,
+  CheckCircleOutlined
+} from "@ant-design/icons";
+
+// StatusWorkflowService helper
+const StatusWorkflowService = {
+  // New status constants based on database TINYINT values
+  DONATION_STATUSES: {
+    PENDING: 0,        // Đang chờ duyệt
+    REJECTED: 1,       // Không chấp nhận
+    APPROVED: 2,       // Chấp nhận
+    CANCELLED: 3,      // Hủy
+    // Keep old constants for backward compatibility
+    ...DONATION_STATUS
+  },
+  USER_ROLES: USER_ROLES,
+  DOCTOR_TYPES: DOCTOR_TYPES,
+
+  getStatusInfo: (status, type = 'donation') => {
+    // Handle both numeric and string status values
+    const numericStatus = typeof status === 'string' ? parseInt(status) : status;
+
+    const statusMap = {
+      // New numeric statuses
+      0: {
+        text: "Đang chờ duyệt",
+        color: "#faad14"
+      },
+      1: {
+        text: "Không chấp nhận",
+        color: "#ff4d4f"
+      },
+      2: {
+        text: "Chấp nhận",
+        color: "#52c41a"
+      },
+      3: {
+        text: "Hủy",
+        color: "#d9d9d9"
+      },
+      // Legacy string statuses for backward compatibility
+      [DONATION_STATUS.REGISTERED]: {
+        text: "Đã đăng ký",
+        color: "#1890ff"
+      },
+      [DONATION_STATUS.HEALTH_CHECKED]: {
+        text: "Đã khám sức khỏe",
+        color: "#52c41a"
+      },
+      [DONATION_STATUS.NOT_ELIGIBLE_HEALTH]: {
+        text: "Không đủ điều kiện (sau khám)",
+        color: "#ff4d4f"
+      },
+      [DONATION_STATUS.DONATED]: {
+        text: "Đã hiến máu",
+        color: "#722ed1"
+      },
+      [DONATION_STATUS.BLOOD_TESTED]: {
+        text: "Đã xét nghiệm",
+        color: "#13c2c2"
+      },
+      [DONATION_STATUS.NOT_ELIGIBLE_TEST]: {
+        text: "Không đủ điều kiện (sau xét nghiệm)",
+        color: "#ff4d4f"
+      },
+      [DONATION_STATUS.COMPLETED]: {
+        text: "Hoàn thành",
+        color: "#52c41a"
+      },
+      [DONATION_STATUS.STORED]: {
+        text: "Đã nhập kho",
+        color: "#389e0d"
+      }
+    };
+
+    return statusMap[numericStatus] || statusMap[status] || { text: status?.toString() || "N/A", color: "#666" };
+  },
+
+  getDonationStatusTransitions: (currentStatus, userRole, doctorType) => {
+    // Handle numeric status transitions
+    const numericStatus = typeof currentStatus === 'string' ? parseInt(currentStatus) : currentStatus;
+
+    // Define allowed transitions for numeric statuses
+    const numericTransitions = {
+      0: [1, 2, 3], // Pending -> Rejected, Approved, Cancelled
+      1: [0],       // Rejected -> Pending (re-review)
+      2: [3],       // Approved -> Cancelled
+      3: [0]        // Cancelled -> Pending (re-activate)
+    };
+
+    // Check if it's a numeric status
+    if (typeof numericStatus === 'number' && numericTransitions[numericStatus]) {
+      return numericTransitions[numericStatus];
+    }
+
+    // Fallback to legacy string-based transitions
+    const transitions = STATUS_TRANSITIONS.DONATION[currentStatus] || [];
+    const permissions = WORKFLOW_PERMISSIONS.DONATION[userRole];
+
+    if (!permissions) return [];
+
+    return transitions.filter(status =>
+      permissions.allowedStatuses.includes(status)
+    );
+  }
+};
 
 const DoctorDonorManagementPage = () => {
   const [donors, setDonors] = useState([]);
@@ -54,139 +173,94 @@ const DoctorDonorManagementPage = () => {
   const loadDonors = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call - GET /api/doctor/donors
-      const mockDonors = [
-        {
-          id: 1,
-          name: "Nguyễn Văn A",
-          phone: "0123456789",
-          email: "nguyenvana@email.com",
-          bloodType: "O+",
-          age: 28,
-          gender: "male",
-          weight: 65,
-          height: 170,
-          appointmentDate: "2024-12-15",
-          timeSlot: "morning",
-          status: StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED,
-          healthSurvey: {
-            chronicDiseases: [],
-            recentIllness: false,
-            medications: "",
-            allergies: "",
-          },
-          testResults: {
-            hemoglobin: "14.5",
-            bloodPressure: "120/80",
-            heartRate: "72",
-            temperature: "36.5",
-            weight: "65",
-          },
-          healthStatus: "excellent",
-          bloodRelatedDiseases: [],
-          lastDonationDate: "2024-10-15",
-          totalDonations: 8,
-          notes: "",
-          createdAt: "2024-12-10T08:00:00Z",
-        },
-        {
-          id: 2,
-          name: "Trần Thị B",
-          phone: "0987654321",
-          email: "tranthib@email.com",
-          bloodType: "A+",
-          age: 32,
-          gender: "female",
-          weight: 55,
-          height: 160,
-          appointmentDate: "2024-12-15",
-          timeSlot: "afternoon",
-          status: StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED,
-          healthSurvey: {
-            chronicDiseases: [],
-            recentIllness: false,
-            medications: "",
-            allergies: "",
-          },
-          testResults: {
-            hemoglobin: "12.8",
-            bloodPressure: "110/70",
-            heartRate: "68",
-            temperature: "36.3",
-            weight: "55",
-          },
-          healthStatus: "good",
-          bloodRelatedDiseases: [],
-          lastDonationDate: "2024-09-20",
-          totalDonations: 12,
-          notes: "Đã hiến máu thành công, chờ xét nghiệm",
-          createdAt: "2024-12-09T14:30:00Z",
-        },
-        {
-          id: 3,
-          name: "Lê Văn C",
-          phone: "0345678901",
-          email: "levanc@email.com",
-          bloodType: "O-",
-          age: 35,
-          gender: "male",
-          weight: 70,
-          height: 175,
-          appointmentDate: "2024-12-16",
-          timeSlot: "morning",
-          status: StatusWorkflowService.DONATION_STATUSES.REGISTERED,
-          healthSurvey: {
-            chronicDiseases: [],
-            recentIllness: false,
-            medications: "",
-            allergies: "",
-          },
-          testResults: {
-            hemoglobin: "",
-            bloodPressure: "",
-            heartRate: "",
-            temperature: "",
-            weight: "",
-          },
-          healthStatus: "unknown",
-          bloodRelatedDiseases: [],
-          lastDonationDate: "2024-08-30",
-          totalDonations: 15,
-          notes: "",
-          createdAt: "2024-12-08T10:15:00Z",
-        },
-        {
-          id: 4,
-          name: "Phạm Thị D",
-          bloodType: "AB+",
-          phone: "0912345678",
-          email: "donor4@test.com",
-          age: 32,
-          gender: "female",
-          address: "456 Đường DEF, Quận 3, TP.HCM",
-          registrationDate: "2024-12-18",
-          lastDonation: null,
-          donationCount: 0,
-          status: StatusWorkflowService.DONATION_STATUSES.DONATED,
-          healthStatus: "good",
-          chronicDiseases: [],
-          bloodRelatedDiseases: [],
-          notes: "Đã hiến máu thành công, chờ xét nghiệm",
-          testResults: {
-            hemoglobin: "12.8",
-            bloodPressure: "110/70",
-            heartRate: "75",
-            temperature: "36.4",
-            weight: "55",
-          },
-          eligibilityDate: "2024-12-18",
-          distance: 2.1,
-        },
-      ];
+      // Get all blood donation appointments
+      const response = await bloodDonationService.getAllAppointments();
+      console.log("Blood donation appointments response:", response);
 
-      setDonors(mockDonors);
+      let appointmentsData = [];
+
+      // Handle different response formats
+      if (Array.isArray(response)) {
+        appointmentsData = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        appointmentsData = response.data;
+      } else if (response.appointments && Array.isArray(response.appointments)) {
+        appointmentsData = response.appointments;
+      }
+
+      // Transform API data to match component structure
+      const transformedDonors = await Promise.all(
+        appointmentsData.map(async (appointment) => {
+          try {
+            // Get user info for each appointment
+            let userInfo = {};
+            if (appointment.UserId || appointment.userId) {
+              try {
+                const userResponse = await bloodDonationService.getUserInfo(
+                  appointment.UserId || appointment.userId
+                );
+                userInfo = userResponse.data || userResponse;
+              } catch (userError) {
+                console.warn("Could not fetch user info:", userError);
+              }
+            }
+
+            return {
+              id: appointment.AppointmentId || appointment.appointmentId || appointment.id,
+              name: userInfo.Name || userInfo.name || appointment.Name || "N/A",
+              phone: userInfo.Phone || userInfo.phone || appointment.Phone || "N/A",
+              email: userInfo.Email || userInfo.email || appointment.Email || "N/A",
+              bloodType: userInfo.BloodGroup || userInfo.bloodGroup || appointment.BloodGroup || "N/A",
+              age: userInfo.Age || userInfo.age || appointment.Age || 0,
+              gender: userInfo.Gender || userInfo.gender || appointment.Gender || "unknown",
+              weight: userInfo.Weight || userInfo.weight || appointment.Weight || 0,
+              height: userInfo.Height || userInfo.height || appointment.Height || 0,
+              appointmentDate: appointment.AppointmentDate || appointment.appointmentDate || appointment.RequestedDonationDate,
+              timeSlot: appointment.TimeSlot || appointment.timeSlot || "morning",
+              status: appointment.Status !== undefined ? appointment.Status :
+                     appointment.status !== undefined ? appointment.status : 0, // Default to "Đang chờ duyệt"
+              lastDonationDate: appointment.LastDonationDate || appointment.lastDonationDate || userInfo.LastDonationDate,
+              notes: appointment.Notes || appointment.notes || "",
+              createdAt: appointment.CreatedAt || appointment.createdAt || new Date().toISOString(),
+              // Default values for fields not in API
+              healthSurvey: {
+                chronicDiseases: [],
+                recentIllness: false,
+                medications: "",
+                allergies: "",
+              },
+              testResults: {
+                hemoglobin: "",
+                bloodPressure: "",
+                heartRate: "",
+                temperature: "",
+                weight: (userInfo.Weight || userInfo.weight || appointment.Weight || "").toString(),
+              },
+              healthStatus: "unknown",
+              bloodRelatedDiseases: [],
+              totalDonations: 0,
+            };
+          } catch (transformError) {
+            console.error("Error transforming appointment data:", transformError);
+            return null;
+          }
+        })
+      );
+
+      // Filter out null values and set donors
+      const validDonors = transformedDonors.filter(donor => donor !== null);
+      setDonors(validDonors);
+
+      if (validDonors.length === 0) {
+        message.info("Không có dữ liệu người hiến máu");
+      }
+
     } catch (error) {
       console.error("Error loading donors:", error);
+      message.error("Có lỗi xảy ra khi tải dữ liệu người hiến máu");
+
+      // Fallback to empty array instead of mock data
+      setDonors([]);
     } finally {
       setLoading(false);
     }
@@ -199,19 +273,25 @@ const DoctorDonorManagementPage = () => {
       case "today":
         return donors.filter((d) => d.appointmentDate === today);
       case "pending":
-        return donors.filter((d) =>
-          [
-            StatusWorkflowService.DONATION_STATUSES.REGISTERED,
-            StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED,
-          ].includes(d.status)
-        );
-      case "completed":
-        return donors.filter((d) =>
-          [
-            StatusWorkflowService.DONATION_STATUSES.COMPLETED,
-            StatusWorkflowService.DONATION_STATUSES.NOT_ELIGIBLE,
-          ].includes(d.status)
-        );
+        return donors.filter((d) => {
+          const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+          return status === 0 || status === StatusWorkflowService.DONATION_STATUSES.PENDING;
+        });
+      case "approved":
+        return donors.filter((d) => {
+          const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+          return status === 2 || status === StatusWorkflowService.DONATION_STATUSES.APPROVED;
+        });
+      case "rejected":
+        return donors.filter((d) => {
+          const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+          return status === 1 || status === StatusWorkflowService.DONATION_STATUSES.REJECTED;
+        });
+      case "cancelled":
+        return donors.filter((d) => {
+          const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+          return status === 3 || status === StatusWorkflowService.DONATION_STATUSES.CANCELLED;
+        });
       default:
         return donors;
     }
@@ -240,7 +320,9 @@ const DoctorDonorManagementPage = () => {
     if (!selectedDonor) return;
 
     try {
-      // TODO: Replace with actual API call - PUT /api/doctor/donors/:id
+      // Note: API doesn't have specific endpoint for updating donor info
+      // This updates local state only - in real implementation,
+      // you might need to call a different API endpoint
       const updatedDonor = {
         ...selectedDonor,
         bloodType: updateData.bloodType,
@@ -253,7 +335,7 @@ const DoctorDonorManagementPage = () => {
           chronicDiseases: updateData.chronicDiseases,
         },
         updatedAt: new Date().toISOString(),
-        updatedBy: currentUser.name,
+        updatedBy: currentUser?.name,
       };
 
       setDonors((prev) =>
@@ -263,10 +345,10 @@ const DoctorDonorManagementPage = () => {
       setShowUpdateModal(false);
       setSelectedDonor(null);
 
-      alert("Cập nhật thông tin thành công!");
+      message.success("Cập nhật thông tin thành công!");
     } catch (error) {
       console.error("Error updating donor:", error);
-      alert("Có lỗi xảy ra khi cập nhật thông tin!");
+      message.error("Có lỗi xảy ra khi cập nhật thông tin!");
     }
   };
 
@@ -286,23 +368,52 @@ const DoctorDonorManagementPage = () => {
     setShowStatusModal(true);
   };
 
-  const handleSaveStatusUpdate = async () => {
+  const handleDeleteAppointment = async (appointmentId) => {
     try {
-      // TODO: Replace with actual API call - PUT /api/doctor/donors/:id/status
+      // Call delete API
+      await bloodDonationService.deleteAppointment(appointmentId);
+
+      // Remove from local state
+      setDonors(prev => prev.filter(donor => donor.id !== appointmentId));
+
+      message.success("Xóa lịch hẹn thành công!");
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      message.error("Có lỗi xảy ra khi xóa lịch hẹn!");
+    }
+  };
+
+  const handleSaveStatusUpdate = async () => {
+    if (!selectedDonor) return;
+
+    try {
+      // Convert status to appropriate format for API
+      const statusToSend = typeof statusUpdateData.status === 'string' ?
+        parseInt(statusUpdateData.status) : statusUpdateData.status;
+
+      // Update appointment status via API
+      await bloodDonationService.updateAppointmentStatus(
+        selectedDonor.id,
+        statusToSend
+      );
+
+      // Update local state
       const updatedDonor = {
         ...selectedDonor,
-        status: statusUpdateData.status,
+        status: statusToSend,
         notes: statusUpdateData.notes,
         testResults: statusUpdateData.healthCheck,
         updatedBy: currentUser?.name,
         updatedAt: new Date().toISOString(),
-        ...(statusUpdateData.status ===
-          StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED && {
-          healthCheckedAt: new Date().toISOString(),
+        // Add timestamps based on status
+        ...(statusToSend === 2 && {
+          approvedAt: new Date().toISOString(),
         }),
-        ...(statusUpdateData.status ===
-          StatusWorkflowService.DONATION_STATUSES.DONATED && {
-          donatedAt: new Date().toISOString(),
+        ...(statusToSend === 1 && {
+          rejectedAt: new Date().toISOString(),
+        }),
+        ...(statusToSend === 3 && {
+          cancelledAt: new Date().toISOString(),
         }),
       };
 
@@ -315,26 +426,45 @@ const DoctorDonorManagementPage = () => {
       setShowStatusModal(false);
       setSelectedDonor(null);
 
+      message.success("Cập nhật trạng thái thành công!");
+
       // Send notifications based on status
-      if (
-        statusUpdateData.status ===
-        StatusWorkflowService.DONATION_STATUSES.NOT_ELIGIBLE_AFTER_HEALTH_CHECK
-      ) {
-        await NotificationService.createNotification({
-          userId: selectedDonor.id,
-          type: "donation_update",
-          title: "💝 Cảm ơn bạn",
-          message:
-            "Cảm ơn bạn đã đến hiến máu. Mặc dù lần này chưa phù hợp nhưng chúng tôi rất trân trọng tinh thần của bạn.",
-          data: {
-            donationDate: new Date().toISOString().split("T")[0],
-            reason: "Không đủ điều kiện sau khám",
-          },
-        });
+      if (statusToSend === 1) { // Rejected
+        try {
+          await NotificationService.createNotification({
+            userId: selectedDonor.id,
+            type: "donation_update",
+            title: "💝 Cảm ơn bạn",
+            message:
+              "Cảm ơn bạn đã đăng ký hiến máu. Mặc dù lần này chưa phù hợp nhưng chúng tôi rất trân trọng tinh thần của bạn.",
+            data: {
+              donationDate: new Date().toISOString().split("T")[0],
+              reason: "Không chấp nhận",
+            },
+          });
+        } catch (notificationError) {
+          console.warn("Could not send notification:", notificationError);
+        }
+      } else if (statusToSend === 2) { // Approved
+        try {
+          await NotificationService.createNotification({
+            userId: selectedDonor.id,
+            type: "donation_update",
+            title: "🎉 Chúc mừng!",
+            message:
+              "Đăng ký hiến máu của bạn đã được chấp nhận. Vui lòng đến đúng giờ hẹn.",
+            data: {
+              donationDate: new Date().toISOString().split("T")[0],
+              status: "Chấp nhận",
+            },
+          });
+        } catch (notificationError) {
+          console.warn("Could not send notification:", notificationError);
+        }
       }
     } catch (error) {
       console.error("Error updating donor status:", error);
-      alert("Có lỗi xảy ra khi cập nhật trạng thái!");
+      message.error("Có lỗi xảy ra khi cập nhật trạng thái!");
     }
   };
 
@@ -377,7 +507,12 @@ const DoctorDonorManagementPage = () => {
   };
 
   const getTimeSlotText = (slot) => {
-    return slot === "morning" ? "7:00 - 11:00" : "13:00 - 17:00";
+    if (slot === "morning" || slot === "Sáng (7:00-12:00)") {
+      return "7:00 - 12:00";
+    } else if (slot === "afternoon" || slot === "Chiều (13:00-17:00)") {
+      return "13:00 - 17:00";
+    }
+    return slot || "N/A";
   };
 
   if (!isBloodDepartment) {
@@ -397,18 +532,26 @@ const DoctorDonorManagementPage = () => {
   const todayCount = donors.filter(
     (d) => d.appointmentDate === new Date().toISOString().split("T")[0]
   ).length;
-  const pendingCount = donors.filter((d) =>
-    [
-      StatusWorkflowService.DONATION_STATUSES.REGISTERED,
-      StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED,
-    ].includes(d.status)
-  ).length;
-  const completedCount = donors.filter((d) =>
-    [
-      StatusWorkflowService.DONATION_STATUSES.COMPLETED,
-      StatusWorkflowService.DONATION_STATUSES.NOT_ELIGIBLE,
-    ].includes(d.status)
-  ).length;
+
+  const pendingCount = donors.filter((d) => {
+    const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+    return status === 0;
+  }).length;
+
+  const approvedCount = donors.filter((d) => {
+    const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+    return status === 2;
+  }).length;
+
+  const rejectedCount = donors.filter((d) => {
+    const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+    return status === 1;
+  }).length;
+
+  const cancelledCount = donors.filter((d) => {
+    const status = typeof d.status === 'string' ? parseInt(d.status) : d.status;
+    return status === 3;
+  }).length;
 
   const columns = [
     { title: "Tên", dataIndex: "name", key: "name" },
@@ -423,7 +566,7 @@ const DoctorDonorManagementPage = () => {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
-      render: (g) => (g === "male" ? "Nam" : "Nữ"),
+      render: (g) => (g === "male" ? "Nam" : g === "female" ? "Nữ" : "N/A"),
     },
     { title: "Điện thoại", dataIndex: "phone", key: "phone" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -431,13 +574,16 @@ const DoctorDonorManagementPage = () => {
       title: "Ngày hẹn",
       dataIndex: "appointmentDate",
       key: "appointmentDate",
-      render: (d) => (d ? new Date(d).toLocaleDateString("vi-VN") : ""),
+      render: (d) => (d ? new Date(d).toLocaleDateString("vi-VN") : "N/A"),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (s) => <Tag>{s}</Tag>,
+      render: (s) => {
+        const statusInfo = StatusWorkflowService.getStatusInfo(s);
+        return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>;
+      },
     },
     {
       title: "Sức khỏe",
@@ -456,9 +602,26 @@ const DoctorDonorManagementPage = () => {
       title: "Hành động",
       key: "actions",
       render: (_, donor) => (
-        <Button type="link" onClick={() => handleUpdateDonor(donor)}>
-          Cập nhật
-        </Button>
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          <Button type="link" size="small" onClick={() => handleUpdateDonor(donor)}>
+            Thông tin
+          </Button>
+          <Button type="link" size="small" onClick={() => handleUpdateStatus(donor)}>
+            Trạng thái
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            danger
+            onClick={() => {
+              if (window.confirm('Bạn có chắc chắn muốn xóa lịch hẹn này?')) {
+                handleDeleteAppointment(donor.id);
+              }
+            }}
+          >
+            Xóa
+          </Button>
+        </div>
       ),
     },
   ];
@@ -475,14 +638,14 @@ const DoctorDonorManagementPage = () => {
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
-              <Statistic title="Đang xử lý" value={pendingCount} prefix="⏳" />
+              <Statistic title="Chờ duyệt" value={pendingCount} prefix="⏳" />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title="Hoàn thành"
-                value={completedCount}
+                title="Chấp nhận"
+                value={approvedCount}
                 prefix="✅"
               />
             </Card>
@@ -494,18 +657,34 @@ const DoctorDonorManagementPage = () => {
           </Col>
         </Row>
 
+        {/* Thống kê bổ sung */}
+        <Row gutter={16} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic title="Không chấp nhận" value={rejectedCount} prefix="❌" />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic title="Đã hủy" value={cancelledCount} prefix="🚫" />
+            </Card>
+          </Col>
+        </Row>
+
         {/* Filter hiện đại */}
         <div style={{ marginBottom: 16 }}>
           <span style={{ marginRight: 8 }}>Lọc theo:</span>
           <Select
             value={filter}
             onChange={setFilter}
-            style={{ width: 200 }}
+            style={{ width: 250 }}
             options={[
               { value: "all", label: "Tất cả" },
               { value: "today", label: `Hôm nay (${todayCount})` },
-              { value: "pending", label: `Đang xử lý (${pendingCount})` },
-              { value: "completed", label: `Hoàn thành (${completedCount})` },
+              { value: "pending", label: `Chờ duyệt (${pendingCount})` },
+              { value: "approved", label: `Chấp nhận (${approvedCount})` },
+              { value: "rejected", label: `Không chấp nhận (${rejectedCount})` },
+              { value: "cancelled", label: `Đã hủy (${cancelledCount})` },
             ]}
           />
           <Button
@@ -527,421 +706,437 @@ const DoctorDonorManagementPage = () => {
           pagination={{ pageSize: 8 }}
         />
 
-        {/* Update Modal */}
-        {showUpdateModal && selectedDonor && (
-          <div
-            className="modal-overlay"
-            onClick={() => setShowUpdateModal(false)}
-          >
-            <div className="update-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3>✏️ Cập nhật thông tin người hiến</h3>
-                <button
-                  className="close-btn"
-                  onClick={() => setShowUpdateModal(false)}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="modal-body">
-                <div className="donor-summary">
-                  <h4>👤 {selectedDonor.name}</h4>
-                  <p>
-                    📅{" "}
-                    {new Date(selectedDonor.appointmentDate).toLocaleDateString(
-                      "vi-VN"
-                    )}{" "}
-                    - {getTimeSlotText(selectedDonor.timeSlot)}
-                  </p>
+        {/* Update Modal - Modern Ant Design */}
+        <Modal
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <EditOutlined style={{ color: '#1890ff' }} />
+              <span>Cập nhật thông tin người hiến máu</span>
+            </div>
+          }
+          open={showUpdateModal}
+          onCancel={() => setShowUpdateModal(false)}
+          width={800}
+          footer={[
+            <Button key="cancel" onClick={() => setShowUpdateModal(false)}>
+              Hủy
+            </Button>,
+            <Button key="save" type="primary" onClick={handleSaveUpdate}>
+              <EditOutlined /> Lưu thay đổi
+            </Button>
+          ]}
+        >
+          {selectedDonor && (
+            <div>
+              {/* Donor Summary Card */}
+              <Card
+                size="small"
+                style={{ marginBottom: 16, backgroundColor: '#f8f9fa' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <Avatar size={64} icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
+                  <div>
+                    <h3 style={{ margin: 0, color: '#1890ff' }}>{selectedDonor.name}</h3>
+                    <Space direction="vertical" size={4}>
+                      <div><PhoneOutlined /> {selectedDonor.phone}</div>
+                      <div><MailOutlined /> {selectedDonor.email}</div>
+                      <div>
+                        📅 {new Date(selectedDonor.appointmentDate).toLocaleDateString("vi-VN")}
+                        - {getTimeSlotText(selectedDonor.timeSlot)}
+                      </div>
+                    </Space>
+                  </div>
                 </div>
+              </Card>
 
-                <form className="update-form">
-                  <div className="form-section">
-                    <h4>🩸 Thông tin máu</h4>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Nhóm máu:</label>
-                        <select
-                          value={updateData.bloodType}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              bloodType: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">Chọn nhóm máu</option>
-                          <option value="O+">O+</option>
-                          <option value="O-">O-</option>
-                          <option value="A+">A+</option>
-                          <option value="A-">A-</option>
-                          <option value="B+">B+</option>
-                          <option value="B-">B-</option>
-                          <option value="AB+">AB+</option>
-                          <option value="AB-">AB-</option>
-                        </select>
-                      </div>
-
-                      <div className="form-group">
-                        <label>Tình trạng sức khỏe:</label>
-                        <select
-                          value={updateData.healthStatus}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              healthStatus: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">Chọn tình trạng</option>
-                          <option value="excellent">Xuất sắc</option>
-                          <option value="good">Tốt</option>
-                          <option value="fair">Khá</option>
-                          <option value="poor">Kém</option>
-                        </select>
-                      </div>
-                    </div>
+              <Divider orientation="left">🩸 Thông tin máu</Divider>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Nhóm máu:
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      value={updateData.bloodType}
+                      onChange={(value) =>
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          bloodType: value,
+                        }))
+                      }
+                      placeholder="Chọn nhóm máu"
+                    >
+                      <Select.Option value="O+">O+</Select.Option>
+                      <Select.Option value="O-">O-</Select.Option>
+                      <Select.Option value="A+">A+</Select.Option>
+                      <Select.Option value="A-">A-</Select.Option>
+                      <Select.Option value="B+">B+</Select.Option>
+                      <Select.Option value="B-">B-</Select.Option>
+                      <Select.Option value="AB+">AB+</Select.Option>
+                      <Select.Option value="AB-">AB-</Select.Option>
+                    </Select>
                   </div>
-
-                  <div className="form-section">
-                    <h4>🔬 Kết quả xét nghiệm</h4>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Hemoglobin (g/dL):</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          value={updateData.testResults.hemoglobin}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              testResults: {
-                                ...prev.testResults,
-                                hemoglobin: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder="VD: 14.5"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label>Huyết áp (mmHg):</label>
-                        <input
-                          type="text"
-                          value={updateData.testResults.bloodPressure}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              testResults: {
-                                ...prev.testResults,
-                                bloodPressure: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder="VD: 120/80"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Nhịp tim (bpm):</label>
-                        <input
-                          type="number"
-                          value={updateData.testResults.heartRate}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              testResults: {
-                                ...prev.testResults,
-                                heartRate: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder="VD: 72"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label>Nhiệt độ (°C):</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          value={updateData.testResults.temperature}
-                          onChange={(e) =>
-                            setUpdateData((prev) => ({
-                              ...prev,
-                              testResults: {
-                                ...prev.testResults,
-                                temperature: e.target.value,
-                              },
-                            }))
-                          }
-                          placeholder="VD: 36.5"
-                        />
-                      </div>
-                    </div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Tình trạng sức khỏe:
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      value={updateData.healthStatus}
+                      onChange={(value) =>
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          healthStatus: value,
+                        }))
+                      }
+                      placeholder="Chọn tình trạng"
+                    >
+                      <Select.Option value="excellent">Xuất sắc</Select.Option>
+                      <Select.Option value="good">Tốt</Select.Option>
+                      <Select.Option value="fair">Khá</Select.Option>
+                      <Select.Option value="poor">Kém</Select.Option>
+                    </Select>
                   </div>
+                </Col>
+              </Row>
 
-                  <div className="form-section">
-                    <h4>📝 Ghi chú</h4>
-                    <textarea
-                      value={updateData.notes}
+              <Divider orientation="left">🔬 Kết quả xét nghiệm</Divider>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Hemoglobin (g/dL):
+                    </label>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={0.1}
+                      value={updateData.testResults.hemoglobin}
+                      onChange={(value) =>
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          testResults: {
+                            ...prev.testResults,
+                            hemoglobin: value,
+                          },
+                        }))
+                      }
+                      placeholder="VD: 14.5"
+                    />
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Huyết áp (mmHg):
+                    </label>
+                    <Input
+                      value={updateData.testResults.bloodPressure}
                       onChange={(e) =>
                         setUpdateData((prev) => ({
                           ...prev,
-                          notes: e.target.value,
+                          testResults: {
+                            ...prev.testResults,
+                            bloodPressure: e.target.value,
+                          },
                         }))
                       }
-                      placeholder="Nhập ghi chú về tình trạng sức khỏe, kết quả khám..."
-                      rows="4"
+                      placeholder="VD: 120/80"
                     />
                   </div>
-                </form>
-              </div>
+                </Col>
+              </Row>
 
-              <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowUpdateModal(false)}
-                >
-                  Hủy
-                </button>
-                <button className="btn btn-primary" onClick={handleSaveUpdate}>
-                  💾 Lưu thay đổi
-                </button>
-              </div>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Nhịp tim (bpm):
+                    </label>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      value={updateData.testResults.heartRate}
+                      onChange={(value) =>
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          testResults: {
+                            ...prev.testResults,
+                            heartRate: value,
+                          },
+                        }))
+                      }
+                      placeholder="VD: 72"
+                    />
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Nhiệt độ (°C):
+                    </label>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={0.1}
+                      value={updateData.testResults.temperature}
+                      onChange={(value) =>
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          testResults: {
+                            ...prev.testResults,
+                            temperature: value,
+                          },
+                        }))
+                      }
+                      placeholder="VD: 36.5"
+                    />
+                  </div>
+                </Col>
+              </Row>
+
+              <Divider orientation="left">📝 Ghi chú</Divider>
+              <Input.TextArea
+                rows={4}
+                value={updateData.notes}
+                onChange={(e) =>
+                  setUpdateData((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                placeholder="Nhập ghi chú về tình trạng sức khỏe, kết quả khám..."
+              />
             </div>
-          </div>
-        )}
+          )}
+        </Modal>
 
-        {/* Status Update Modal */}
-        {showStatusModal && selectedDonor && (
-          <div
-            className="modal-overlay"
-            onClick={() => setShowStatusModal(false)}
-          >
-            <div className="status-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3>🩺 Cập nhật trạng thái hiến máu</h3>
-                <button
-                  className="close-btn"
-                  onClick={() => setShowStatusModal(false)}
+        {/* Status Update Modal - Modern Ant Design */}
+        <Modal
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <EditOutlined style={{ color: '#1890ff' }} />
+              <span>Cập nhật trạng thái hiến máu</span>
+            </div>
+          }
+          open={showStatusModal}
+          onCancel={() => setShowStatusModal(false)}
+          width={700}
+          footer={[
+            <Button key="cancel" onClick={() => setShowStatusModal(false)}>
+              Hủy
+            </Button>,
+            <Button key="save" type="primary" onClick={handleSaveStatusUpdate}>
+              <CheckCircleOutlined /> Lưu cập nhật
+            </Button>
+          ]}
+        >
+          {selectedDonor && (
+            <div>
+              {/* Donor Summary */}
+              <Card
+                size="small"
+                style={{ marginBottom: 16, backgroundColor: '#f8f9fa' }}
+              >
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <div style={{ textAlign: 'center' }}>
+                      <Avatar size={64} icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
+                      <div style={{ marginTop: 8, fontWeight: 'bold', color: '#1890ff' }}>
+                        {selectedDonor.name}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col span={16}>
+                    <Descriptions column={1} size="small">
+                      <Descriptions.Item label="Nhóm máu">
+                        <Tag color="red" style={{ fontSize: '14px' }}>
+                          {selectedDonor.bloodType}
+                        </Tag>
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Trạng thái hiện tại">
+                        <Badge
+                          color={StatusWorkflowService.getStatusInfo(selectedDonor.status).color}
+                          text={StatusWorkflowService.getStatusInfo(selectedDonor.status).text}
+                        />
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Ngày hẹn">
+                        {new Date(selectedDonor.appointmentDate).toLocaleDateString("vi-VN")} - {getTimeSlotText(selectedDonor.timeSlot)}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Col>
+                </Row>
+              </Card>
+
+              {/* Status Update Section */}
+              <Divider orientation="left">🔄 Cập nhật trạng thái</Divider>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+                  Chọn trạng thái mới:
+                </label>
+                <Select
+                  style={{ width: '100%' }}
+                  value={statusUpdateData.status}
+                  onChange={(value) =>
+                    setStatusUpdateData((prev) => ({
+                      ...prev,
+                      status: value,
+                    }))
+                  }
+                  placeholder="Chọn trạng thái"
                 >
-                  ×
-                </button>
+                  <Select.Option value={selectedDonor.status}>
+                    Giữ nguyên - {StatusWorkflowService.getStatusInfo(selectedDonor.status).text}
+                  </Select.Option>
+                  <Select.OptGroup label="Trạng thái cơ bản">
+                    <Select.Option value="0">
+                      <Badge color="#faad14" text="Đang chờ duyệt" />
+                    </Select.Option>
+                    <Select.Option value="1">
+                      <Badge color="#ff4d4f" text="Không chấp nhận" />
+                    </Select.Option>
+                    <Select.Option value="2">
+                      <Badge color="#52c41a" text="Chấp nhận" />
+                    </Select.Option>
+                    <Select.Option value="3">
+                      <Badge color="#d9d9d9" text="Hủy" />
+                    </Select.Option>
+                  </Select.OptGroup>
+                </Select>
               </div>
 
-              <div className="modal-body">
-                <div className="donor-summary">
-                  <div className="summary-item">
-                    <label>Người hiến:</label>
-                    <span>{selectedDonor.name}</span>
-                  </div>
-                  <div className="summary-item">
-                    <label>Nhóm máu:</label>
-                    <span
-                      className={`blood-type-badge ${
-                        selectedDonor.bloodType.includes("+")
-                          ? "positive"
-                          : "negative"
-                      }`}
-                    >
-                      {selectedDonor.bloodType}
-                    </span>
-                  </div>
-                  <div className="summary-item">
-                    <label>Trạng thái hiện tại:</label>
-                    <span
-                      className="status-badge"
-                      style={{
-                        backgroundColor: StatusWorkflowService.getStatusInfo(
-                          selectedDonor.status,
-                          "donation"
-                        ).color,
-                      }}
-                    >
-                      {
-                        StatusWorkflowService.getStatusInfo(
-                          selectedDonor.status,
-                          "donation"
-                        ).text
-                      }
-                    </span>
-                  </div>
-                </div>
-
-                <div className="form-section">
-                  <label>Cập nhật trạng thái:</label>
-                  <select
-                    value={statusUpdateData.status}
-                    onChange={(e) =>
-                      setStatusUpdateData((prev) => ({
-                        ...prev,
-                        status: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value={selectedDonor.status}>
-                      Giữ nguyên -{" "}
-                      {
-                        StatusWorkflowService.getStatusInfo(
-                          selectedDonor.status,
-                          "donation"
-                        ).text
-                      }
-                    </option>
-                    {getNextPossibleStatuses(selectedDonor.status).map(
-                      (status) => (
-                        <option key={status} value={status}>
-                          {
-                            StatusWorkflowService.getStatusInfo(
-                              status,
-                              "donation"
-                            ).text
-                          }
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-
-                {/* Health Check Form */}
-                {(statusUpdateData.status ===
-                  StatusWorkflowService.DONATION_STATUSES.HEALTH_CHECKED ||
-                  statusUpdateData.status ===
-                    StatusWorkflowService.DONATION_STATUSES.DONATED) && (
-                  <div className="health-check-section">
-                    <h4>Thông số sức khỏe</h4>
-                    <div className="health-form">
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Huyết áp:</label>
-                          <input
-                            type="text"
-                            value={statusUpdateData.healthCheck.bloodPressure}
-                            onChange={(e) =>
-                              setStatusUpdateData((prev) => ({
-                                ...prev,
-                                healthCheck: {
-                                  ...prev.healthCheck,
-                                  bloodPressure: e.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="120/80"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Nhịp tim:</label>
-                          <input
-                            type="text"
-                            value={statusUpdateData.healthCheck.heartRate}
-                            onChange={(e) =>
-                              setStatusUpdateData((prev) => ({
-                                ...prev,
-                                healthCheck: {
-                                  ...prev.healthCheck,
-                                  heartRate: e.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="72"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Cân nặng (kg):</label>
-                          <input
-                            type="text"
-                            value={statusUpdateData.healthCheck.weight}
-                            onChange={(e) =>
-                              setStatusUpdateData((prev) => ({
-                                ...prev,
-                                healthCheck: {
-                                  ...prev.healthCheck,
-                                  weight: e.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="65"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Hemoglobin (g/dL):</label>
-                          <input
-                            type="text"
-                            value={statusUpdateData.healthCheck.hemoglobin}
-                            onChange={(e) =>
-                              setStatusUpdateData((prev) => ({
-                                ...prev,
-                                healthCheck: {
-                                  ...prev.healthCheck,
-                                  hemoglobin: e.target.value,
-                                },
-                              }))
-                            }
-                            placeholder="13.5"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label>Nhiệt độ (°C):</label>
-                        <input
-                          type="text"
-                          value={statusUpdateData.healthCheck.temperature}
+              {/* Health Check Form - Show when status is approved */}
+              {(statusUpdateData.status === "2" || statusUpdateData.status === 2) && (
+                <div>
+                  <Divider orientation="left">🩺 Thông số sức khỏe</Divider>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                          Huyết áp (mmHg):
+                        </label>
+                        <Input
+                          value={statusUpdateData.healthCheck.bloodPressure}
                           onChange={(e) =>
                             setStatusUpdateData((prev) => ({
                               ...prev,
                               healthCheck: {
                                 ...prev.healthCheck,
-                                temperature: e.target.value,
+                                bloodPressure: e.target.value,
                               },
                             }))
                           }
-                          placeholder="36.5"
+                          placeholder="120/80"
                         />
                       </div>
-                    </div>
+                    </Col>
+                    <Col span={12}>
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                          Nhịp tim (bpm):
+                        </label>
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          value={statusUpdateData.healthCheck.heartRate}
+                          onChange={(value) =>
+                            setStatusUpdateData((prev) => ({
+                              ...prev,
+                              healthCheck: {
+                                ...prev.healthCheck,
+                                heartRate: value,
+                              },
+                            }))
+                          }
+                          placeholder="72"
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                          Cân nặng (kg):
+                        </label>
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          value={statusUpdateData.healthCheck.weight}
+                          onChange={(value) =>
+                            setStatusUpdateData((prev) => ({
+                              ...prev,
+                              healthCheck: {
+                                ...prev.healthCheck,
+                                weight: value,
+                              },
+                            }))
+                          }
+                          placeholder="65"
+                        />
+                      </div>
+                    </Col>
+                    <Col span={12}>
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                          Hemoglobin (g/dL):
+                        </label>
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          step={0.1}
+                          value={statusUpdateData.healthCheck.hemoglobin}
+                          onChange={(value) =>
+                            setStatusUpdateData((prev) => ({
+                              ...prev,
+                              healthCheck: {
+                                ...prev.healthCheck,
+                                hemoglobin: value,
+                              },
+                            }))
+                          }
+                          placeholder="13.5"
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 4, fontWeight: 'bold' }}>
+                      Nhiệt độ (°C):
+                    </label>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={0.1}
+                      value={statusUpdateData.healthCheck.temperature}
+                      onChange={(value) =>
+                        setStatusUpdateData((prev) => ({
+                          ...prev,
+                          healthCheck: {
+                            ...prev.healthCheck,
+                            temperature: value,
+                          },
+                        }))
+                      }
+                      placeholder="36.5"
+                    />
                   </div>
-                )}
-
-                <div className="form-section">
-                  <label>Ghi chú:</label>
-                  <textarea
-                    value={statusUpdateData.notes}
-                    onChange={(e) =>
-                      setStatusUpdateData((prev) => ({
-                        ...prev,
-                        notes: e.target.value,
-                      }))
-                    }
-                    placeholder="Nhập ghi chú về tình trạng sức khỏe hoặc quá trình hiến máu..."
-                    rows="3"
-                  />
                 </div>
-              </div>
+              )}
 
-              <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowStatusModal(false)}
-                >
-                  Hủy
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSaveStatusUpdate}
-                >
-                  💾 Lưu cập nhật
-                </button>
-              </div>
+              {/* Notes Section */}
+              <Divider orientation="left">📝 Ghi chú</Divider>
+              <TextArea
+                value={statusUpdateData.notes}
+                onChange={(e) =>
+                  setStatusUpdateData((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                placeholder="Nhập ghi chú về tình trạng sức khỏe hoặc quá trình hiến máu..."
+                rows={4}
+                style={{ marginBottom: 16 }}
+              />
             </div>
-          </div>
-        )}
+          )}
+        </Modal>
       </div>
     </DoctorLayout>
   );

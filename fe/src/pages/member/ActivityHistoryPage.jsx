@@ -136,8 +136,8 @@ const ActivityHistoryPage = () => {
           createdAt: appointment.createdAt
         });
 
-        // Xác định ngày hẹn hiến máu từ đăng ký
-        const donationDate = appointment.requestedDonationDate || appointment.AppointmentDate;
+        // Xác định ngày hẹn hiến máu từ database
+        const donationDate = appointment.AppointmentDate || appointment.requestedDonationDate || appointment.appointmentDate;
         console.log(`Selected donation date:`, donationDate);
 
         return {
@@ -148,14 +148,14 @@ const ActivityHistoryPage = () => {
           bloodType: appointment.bloodType || "Chưa xác định",
           quantity: appointment.quantity || "450ml",
           appointmentDate: donationDate,
-          timeSlot: appointment.timeSlot,
+          timeSlot: appointment.TimeSlot || appointment.timeSlot || "Chưa xác định",
           location: appointment.location || "Bệnh viện Đa khoa Ánh Dương - Khoa Huyết học, Tầng 2",
-          notes: appointment.notes || "",
-          weight: appointment.weight,
-          height: appointment.height,
+          notes: appointment.Notes || appointment.notes || "",
+          weight: appointment.Weight || appointment.weight || 0,
+          height: appointment.Height || appointment.height || 0,
           hasDonated: appointment.hasDonated,
-          lastDonationDate: appointment.lastDonationDate,
-          createdAt: appointment.createdAt || appointment.requestedDonationDate,
+          lastDonationDate: appointment.LastDonationDate || appointment.lastDonationDate,
+          createdAt: appointment.CreatedAt || appointment.createdAt || appointment.requestedDonationDate,
           completedAt: appointment.completedAt || null,
         };
       });
@@ -363,29 +363,7 @@ const ActivityHistoryPage = () => {
                       <div className="activity-title">
                         {getActivityIcon(activity.type)} {activity.title}
                       </div>
-                      <div className="activity-date">
-                        {activity.type === "donation" ? (
-                          <>
-                            
-                            {activity.completedAt && (
-                              <span className="completed-date">
-                                → Hoàn thành:{" "}
-                                {formatDate(activity.completedAt)}
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {formatDate(activity.createdAt)}
-                            {activity.completedAt && (
-                              <span className="completed-date">
-                                →{" "}
-                                {formatDate(activity.completedAt)}
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </div>
+                      
                     </div>
 
                     <div className="activity-status">
@@ -419,7 +397,7 @@ const ActivityHistoryPage = () => {
                             {formatDate(activity.createdAt)}
                           </span>
                           <span>
-                            Ngày hẹn hiến máu:{" "}
+                             Ngày hẹn hiến máu:{" "}
                             {formatDate(activity.appointmentDate)}
                           </span>
                           <span>

@@ -197,6 +197,26 @@ class BloodDonationService {
       throw error;
     }
   }
+
+  /**
+   * Delete appointment
+   * @param {number} appointmentId - Appointment ID
+   * @returns {Promise} API response
+   */
+  async deleteAppointment(appointmentId) {
+    try {
+      const response = await axios.delete(`${BLOOD_DONATION_API}/${appointmentId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      throw error;
+    }
+  }
 }
 
 // Create singleton instance
