@@ -14,7 +14,7 @@ const usePagination = (data, pageSize = 10) => {
     currentPage,
     setCurrentPage,
     pageSize,
-    setPageSize: () => {}, // Optional: implement if needed
+    setPageSize: () => {},
     paginatedData,
     total,
   };

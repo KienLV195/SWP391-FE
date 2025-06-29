@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
-export const ActivityLogTableColumns = ({ userMap }) => {
+export const ActivityLogTableColumns = () => {
   const getActivityTypeIcon = (type) => {
     switch (type) {
       case "Create":
@@ -64,14 +64,14 @@ export const ActivityLogTableColumns = ({ userMap }) => {
   const columns = [
     {
       title: "Người dùng",
-      dataIndex: "userID",
-      key: "userID",
+      dataIndex: "userName",
+      key: "userName",
       width: 120,
-      render: (userID) => (
+      render: (userName) => (
         <Space>
           <UserOutlined style={{ color: "#1890ff", fontSize: "14px" }} />
           <span style={{ fontWeight: "500" }}>
-            {userMap[userID] || `User ${userID}`}
+            {userName || "Unknown User"}
           </span>
         </Space>
       ),

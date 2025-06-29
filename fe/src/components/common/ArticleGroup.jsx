@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, Card, Tag, Pagination } from "antd";
 import { Link } from "react-router-dom";
 import { FaTag } from "react-icons/fa";
+import ArticleTags from "./ArticleTags";
 
 const { Title, Paragraph } = Typography;
 
@@ -62,20 +63,7 @@ const ArticleGroup = ({ title, articles = [], gradient }) => {
                     {article.shortContent || article.description || ""}
                   </Paragraph>
                   <div className="article-tags">
-                    {article.tags &&
-                      article.tags.map((tag) => (
-                        <Tag key={tag}>
-                          <FaTag
-                            style={{
-                              opacity: 0.7,
-                              marginRight: 4,
-                              fontSize: "13px",
-                              verticalAlign: "-2px",
-                            }}
-                          />
-                          {tag}
-                        </Tag>
-                      ))}
+                    <ArticleTags tags={article.tags} />
                   </div>
                 </div>
               </Link>

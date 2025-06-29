@@ -44,12 +44,22 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
       normalize(article.summary).includes(keywordNorm) ||
       normalize(article.content).includes(keywordNorm) ||
       (Array.isArray(article.tags) &&
-        article.tags.some((tag) => normalize(tag).includes(keywordNorm)))
+        article.tags.some((tag) => {
+          // Xử lý cả string và object tags
+          const tagText =
+            typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+          return normalize(tagText).includes(keywordNorm);
+        }))
     );
   };
   const filterFn = (article, tag) =>
     tag === "all" ||
-    (Array.isArray(article.tags) && article.tags.includes(tag));
+    (Array.isArray(article.tags) &&
+      article.tags.some((t) => {
+        // Xử lý cả string và object tags
+        const tagText = typeof t === "object" && t.tagName ? t.tagName : t;
+        return tagText === tag;
+      }));
   const {
     searchTerm,
     setSearchTerm,
@@ -63,19 +73,35 @@ const BloodInfoPage = ({ CustomNavbar, hideNavbar }) => {
     const hienMau = filteredArticles.filter(
       (a) =>
         Array.isArray(a.tags) &&
-        a.tags.some((tag) => tag.toLowerCase().includes("hiến máu"))
+        a.tags.some((tag) => {
+          const tagText =
+            typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+          return tagText.toLowerCase().includes("hiến máu");
+        })
     );
     const truyenMau = filteredArticles.filter(
       (a) =>
         Array.isArray(a.tags) &&
-        a.tags.some((tag) => tag.toLowerCase().includes("truyền máu"))
+        a.tags.some((tag) => {
+          const tagText =
+            typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+          return tagText.toLowerCase().includes("truyền máu");
+        })
     );
     const nhomMau = filteredArticles.filter(
       (a) =>
         !(
           Array.isArray(a.tags) &&
-          (a.tags.some((tag) => tag.toLowerCase().includes("hiến máu")) ||
-            a.tags.some((tag) => tag.toLowerCase().includes("truyền máu")))
+          (a.tags.some((tag) => {
+            const tagText =
+              typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+            return tagText.toLowerCase().includes("hiến máu");
+          }) ||
+            a.tags.some((tag) => {
+              const tagText =
+                typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+              return tagText.toLowerCase().includes("truyền máu");
+            }))
         )
     );
     return {

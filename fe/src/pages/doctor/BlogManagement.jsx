@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form } from "antd";
 import DoctorLayout from "../../components/doctor/DoctorLayout";
-import blogService from "../../services/blogService";
-import "../../styles/pages/BlogManagement.scss";
+import "../../styles/pages/BlogManagementNew.scss";
+import "../../styles/pages/admin/BlogManagement.module.scss";
 import {
   Table,
   Card,
@@ -10,26 +10,25 @@ import {
   Select,
   Input,
   Space,
-  Tag,
   Modal,
   message,
   Tabs,
 } from "antd";
-import {
-  PlusOutlined,
-  EyeOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import BlogEditModal from "../../components/admin/blogs/BlogEditModal";
 import BlogDetailModal from "../../components/admin/blogs/BlogDetailModal";
+import BlogTableColumns from "../../components/admin/blogs/BlogTableColumns";
 import authService from "../../services/authService";
 import * as bloodArticleService from "../../services/bloodArticleService";
+import * as newsService from "../../services/newsService";
+import * as userApi from "../../services/userApi";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getAllTags, getNewsTags } from "../../services/tagService";
+import { getNewsId, getNewsUserId, findNewsById } from "../../utils/newsUtils";
 
 const { Option } = Select;
 
 const BlogManagement = () => {
-  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -38,343 +37,318 @@ const BlogManagement = () => {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [editImage, setEditImage] = useState(null);
   const [form] = Form.useForm();
-  const [activeTab, setActiveTab] = useState("Tài liệu");
-  const currentUser = authService.getCurrentUser();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get("tab") === "news" ? "Tin tức" : "Tài liệu";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [tags, setTags] = useState([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
+
+  // Lấy currentUser từ authService, nếu null thì lấy từ localStorage
+  let currentUser = authService.getCurrentUser();
+  if (!currentUser) {
+    try {
+      const userData = localStorage.getItem("currentUser");
+      if (userData) {
+        currentUser = JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error(
+        "Error loading currentUser from localStorage in Doctor:",
+        error
+      );
+    }
+  }
+
   const [articleLoading, setArticleLoading] = useState(false);
   const [articles, setArticles] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [news, setNews] = useState([]);
+  const [userMap, setUserMap] = useState({});
+  const navigate = useNavigate();
 
-  // Mock data - replace with API calls
-  // API: GET /api/blogs?author_id={user_id}&role={user_role}
   useEffect(() => {
-    const mockBlogs = [
-      {
-        id: 1,
-        title: "Hướng dẫn chuẩn bị trước khi hiến máu",
-        category: "Tài liệu",
-        contentType: "document", // For Guest/Member "Tài liệu" section
-        status: "published",
-        author: "BS. Nguyễn Văn A",
-        authorRole: "doctor",
-        createdAt: "2024-01-15",
-        views: 245,
-        excerpt:
-          "Hướng dẫn chi tiết các bước chuẩn bị cần thiết trước khi hiến máu...",
-        targetAudience: "public", // Will show on Guest/Member pages
-      },
-      {
-        id: 2,
-        title: "Thông tin về các nhóm máu và tính tương thích",
-        category: "Tài liệu",
-        contentType: "document",
-        status: "published",
-        author: "BS. Trần Thị B",
-        authorRole: "doctor",
-        createdAt: "2024-01-12",
-        views: 189,
-        excerpt:
-          "Kiến thức cơ bản về nhóm máu ABO, Rh và tính tương thích trong truyền máu...",
-        targetAudience: "public",
-      },
-      {
-        id: 3,
-        title: "Tin tức: Chiến dịch hiến máu tháng 2/2024",
-        category: "Tin tức",
-        contentType: "news", // For Guest/Member "Tin tức" section
-        status: "draft",
-        author: "BS. Lê Văn C",
-        authorRole: "doctor",
-        createdAt: "2024-01-10",
-        views: 0,
-        excerpt: "Bệnh viện Ánh Dương tổ chức chiến dịch hiến máu nhân đạo...",
-        targetAudience: "public",
-      },
-      {
-        id: 4,
-        title: "Thông báo: Lịch trực khoa Huyết học tháng 2/2024",
-        category: "Thông báo",
-        contentType: "announcement",
-        status: "published", // Doctor auto-publishes
-        author: "BS. Phạm Thị D",
-        authorRole: "doctor",
-        createdAt: "2024-01-08",
-        publishedAt: "2024-01-08T09:00:00Z",
-        views: 89,
-        excerpt:
-          "Thông báo lịch trực và phân công công việc cho khoa Huyết học...",
-        targetAudience: "internal", // Staff only
-      },
-    ];
-
-    setTimeout(() => {
-      setBlogs(mockBlogs);
-      setLoading(false);
-    }, 1000);
+    userApi
+      .getUsers()
+      .then((usersData) => {
+        const tempUserMap = {};
+        if (Array.isArray(usersData)) {
+          usersData.forEach((user) => {
+            const userId = user.id || user.userId || user.userID;
+            const userName =
+              user.name ||
+              user.fullName ||
+              user.username ||
+              user.email ||
+              `User ${userId}`;
+            tempUserMap[userId] = userName;
+          });
+        }
+        setUserMap(tempUserMap);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+        setUserMap({});
+      });
   }, []);
 
-  // Fetch articles for 'Tài liệu' tab from API
   useEffect(() => {
     if (activeTab === "Tài liệu") {
       setArticleLoading(true);
       bloodArticleService
         .getBloodArticles()
-        .then((data) => {
-          setArticles(Array.isArray(data) ? data : []);
+        .then((articlesData) => {
+          setArticles(Array.isArray(articlesData) ? articlesData : []);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("Error fetching data:", error);
           message.error("Không thể tải danh sách tài liệu");
         })
         .finally(() => setArticleLoading(false));
     }
   }, [activeTab]);
 
-  // Filter blogs by tab/category
+  useEffect(() => {
+    if (activeTab === "Tin tức") {
+      setNewsLoading(true);
+      newsService
+        .fetchAllNews()
+        .then((data) => {
+          setNews(Array.isArray(data) ? data : []);
+        })
+        .catch((error) => {
+          console.error("Error fetching news:", error);
+          message.error("Không thể tải danh sách tin tức");
+        })
+        .finally(() => setNewsLoading(false));
+    }
+  }, [activeTab]);
+
+  // Load tags based on active tab
+  useEffect(() => {
+    const loadTags = async () => {
+      setTagsLoading(true);
+      try {
+        let tagsData = [];
+        if (activeTab === "Tài liệu") {
+          tagsData = await getAllTags();
+        } else if (activeTab === "Tin tức") {
+          tagsData = await getNewsTags();
+        }
+        setTags(Array.isArray(tagsData) ? tagsData : []);
+      } catch (error) {
+        console.error("Error loading tags:", error);
+        setTags([]);
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+
+    loadTags();
+  }, [activeTab]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const tabCategories = [
     { key: "Tài liệu", label: "Tài liệu" },
     { key: "Tin tức", label: "Tin tức" },
   ];
 
-  const getFilteredBlogs = (category) =>
-    blogs.filter(
-      (blog) =>
-        blog.category === category &&
-        (searchTerm === "" ||
-          blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (statusFilter === "all" || blog.status === statusFilter)
+  const getFilteredNews = () =>
+    news.filter(
+      (item) =>
+        searchTerm === "" ||
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.tags &&
+          Array.isArray(item.tags) &&
+          item.tags
+            .map((tag) => {
+              const tagText =
+                typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+              return tagText;
+            })
+            .join(" ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()))
     );
 
-  const getColumns = (category) => [
-    {
-      title: "Tiêu đề",
-      dataIndex: "title",
-      key: "title",
-      render: (text, record) => (
-        <a onClick={() => handleViewBlog(record)}>{text}</a>
-      ),
-      ellipsis: true,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) =>
-        status === "published" ? (
-          <Tag color="green">Đã đăng</Tag>
-        ) : (
-          <Tag color="orange">Bản nháp</Tag>
-        ),
-      width: 100,
-    },
-    {
-      title: "Tác giả",
-      dataIndex: "author",
-      key: "author",
-      width: 140,
-    },
-    {
-      title: category === "Tin tức" ? "Ngày đăng" : "Ngày tạo",
-      dataIndex: category === "Tin tức" ? "postedAt" : "createdAt",
-      key: category === "Tin tức" ? "postedAt" : "createdAt",
-      render: (date) =>
-        date ? new Date(date).toLocaleDateString("vi-VN") : "",
-      width: 110,
-      sorter: (a, b) =>
-        new Date(a[category === "Tin tức" ? "postedAt" : "createdAt"]) -
-        new Date(b[category === "Tin tức" ? "postedAt" : "createdAt"]),
-    },
-    {
-      title: "Lượt xem",
-      dataIndex: "views",
-      key: "views",
-      width: 90,
-    },
-    {
-      title: "Hành động",
-      key: "actions",
-      width: 160,
-      render: (_, record) => {
-        const isOwner =
-          currentUser &&
-          (record.userId === currentUser.id ||
-            record.author === currentUser.name);
-        return (
-          <Space>
-            <Button
-              icon={<EyeOutlined />}
-              onClick={() => handleViewBlog(record)}
-              size="small"
-            />
-            {isOwner && (
-              <Button
-                icon={<EditOutlined />}
-                onClick={() => handleEditBlog(record)}
-                size="small"
-              />
-            )}
-            {isOwner && (
-              <Button
-                icon={<DeleteOutlined />}
-                onClick={() => handleDeleteBlog(record.id)}
-                danger
-                size="small"
-              />
-            )}
-          </Space>
-        );
-      },
-    },
-  ];
-
-  const handleCreateBlog = () => {
-    setSelectedBlog(null);
-    setEditImage(null);
-    setEditModalVisible(true);
-  };
-
-  const handleEditBlog = (blog) => {
-    setSelectedBlog(blog);
-    setEditImage(blog.imgUrl || null);
-    setEditModalVisible(true);
-  };
-
-  const handleViewBlog = (blog) => {
-    setSelectedBlog(blog);
-    setDetailModalVisible(true);
-  };
-
-  const handleDeleteBlog = async (blogId) => {
-    Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa bài viết này?",
-      okText: "Xóa",
-      okType: "danger",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          const response = await blogService.deleteBlog(blogId);
-          if (response.success) {
-            setBlogs((prev) => prev.filter((b) => b.id !== blogId));
-            message.success("Xóa bài viết thành công!");
-          } else {
-            message.error("Lỗi: " + response.message);
-          }
-        } catch {
-          message.error("Có lỗi xảy ra khi xóa bài viết!");
-        }
-      },
-    });
-  };
-
-  // For 'Tài liệu' tab, use articles from API
   const getFilteredArticles = () =>
     articles.filter(
       (article) =>
-        (searchTerm === "" ||
-          article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (article.tags || [])
+        searchTerm === "" ||
+        article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (article.tags &&
+          Array.isArray(article.tags) &&
+          article.tags
+            .map((tag) => {
+              const tagText =
+                typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+              return tagText;
+            })
             .join(" ")
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())) &&
-        (statusFilter === "all" || article.status === statusFilter)
+            .includes(searchTerm.toLowerCase()) &&
+          (statusFilter === "all" || article.status === statusFilter))
     );
 
-  const getArticleColumns = () => [
-    {
-      title: "Tiêu đề",
-      dataIndex: "title",
-      key: "title",
-      render: (text, record) => (
-        <a onClick={() => handleViewArticle(record)}>{text}</a>
-      ),
-      ellipsis: true,
-    },
-    {
-      title: "Tác giả",
-      dataIndex: "userId",
-      key: "userId",
-      width: 100,
-      render: (userId) => userId,
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date) =>
-        date ? new Date(date).toLocaleDateString("vi-VN") : "",
-      width: 110,
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-    },
-    {
-      title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
-      render: (tags) => (tags || []).map((tag, i) => <Tag key={i}>{tag}</Tag>),
-      width: 180,
-    },
-    {
-      title: "Hành động",
-      key: "actions",
-      width: 160,
-      render: (_, record) => {
-        const isOwner = currentUser && record.userId === currentUser.id;
-        return (
-          <Space>
-            <Button
-              icon={<EyeOutlined />}
-              onClick={() => handleViewArticle(record)}
-              size="small"
-            />
-            {isOwner && (
-              <Button
-                icon={<EditOutlined />}
-                onClick={() => handleEditArticle(record)}
-                size="small"
-              />
-            )}
-            {isOwner && (
-              <Button
-                icon={<DeleteOutlined />}
-                onClick={() => handleDeleteArticle(record.articleId)}
-                danger
-                size="small"
-              />
-            )}
-          </Space>
-        );
-      },
-    },
-  ];
-
-  // Handlers for article actions
-  const handleCreateArticle = () => {
-    setSelectedBlog({});
-    setEditImage(null);
-    setEditModalVisible(true);
-  };
   const handleEditArticle = (article) => {
+    const articleUserId =
+      article.userId || article.userID || article.authorId || article.createdBy;
+    const currentUserId =
+      currentUser?.id || currentUser?.userId || currentUser?.userID;
+
+    const canEdit =
+      currentUser &&
+      (currentUser.role === "4" || // Admin role
+        currentUser.role === "admin" || // Fallback for string role
+        currentUser.role === "Admin" || // Fallback for string role
+        String(articleUserId) === String(currentUserId));
+
+    if (!canEdit) {
+      message.error("Bạn không có quyền chỉnh sửa bài viết này!");
+      return;
+    }
+
     setSelectedBlog(article);
     setEditImage(article.imgUrl || null);
     setEditModalVisible(true);
   };
+
   const handleViewArticle = (article) => {
     setSelectedBlog(article);
     setDetailModalVisible(true);
   };
+
   const handleDeleteArticle = async (articleId) => {
-    Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa bài viết này?",
-      okText: "Xóa",
-      okType: "danger",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          await bloodArticleService.deleteArticle(articleId);
-          setArticles((prev) => prev.filter((a) => a.articleId !== articleId));
-          message.success("Xóa bài viết thành công!");
-        } catch {
-          message.error("Có lỗi xảy ra khi xóa bài viết!");
-        }
-      },
-    });
+    const article = articles.find((a) => a.articleId === articleId);
+
+    if (!article) {
+      message.error("Không tìm thấy bài viết!");
+      return;
+    }
+
+    const articleUserId =
+      article.userId || article.userID || article.authorId || article.createdBy;
+    const currentUserId =
+      currentUser?.id || currentUser?.userId || currentUser?.userID;
+
+    // Kiểm tra quyền: admin hoặc chính user đó
+    const canDelete =
+      currentUser &&
+      (currentUser.role === "4" || // Admin role
+        currentUser.role === "admin" || // Fallback for string role
+        currentUser.role === "Admin" || // Fallback for string role
+        String(articleUserId) === String(currentUserId));
+
+    if (!canDelete) {
+      message.error("Bạn không có quyền xóa bài viết này!");
+      return;
+    }
+
+    try {
+      await bloodArticleService.deleteArticle(articleId);
+
+      // Update local state
+      setArticles((prev) => prev.filter((a) => a.articleId !== articleId));
+
+      // Refresh articles from server to ensure UI is in sync
+      try {
+        const refreshedArticles = await bloodArticleService.getBloodArticles();
+        setArticles(Array.isArray(refreshedArticles) ? refreshedArticles : []);
+      } catch (refreshError) {
+        console.error("Error refreshing articles:", refreshError);
+      }
+
+      message.success("Xóa bài viết tài liệu thành công!");
+    } catch (error) {
+      console.error("Error deleting article:", error);
+      message.error("Có lỗi xảy ra khi xóa bài viết tài liệu!");
+    }
+  };
+
+  const handleEditNews = (newsItem) => {
+    const newsUserId = getNewsUserId(newsItem);
+    const currentUserId =
+      currentUser?.id || currentUser?.userId || currentUser?.userID;
+
+    const canEdit =
+      currentUser &&
+      (currentUser.role === "4" || // Admin role
+        currentUser.role === "admin" || // Fallback for string role
+        String(newsUserId) === String(currentUserId));
+
+    if (!canEdit) {
+      message.error("Bạn không có quyền chỉnh sửa bài viết này!");
+      return;
+    }
+
+    setSelectedBlog(newsItem);
+    setEditImage(newsItem.imgUrl || null);
+    setEditModalVisible(true);
+  };
+
+  const handleViewNews = (newsItem) => {
+    setSelectedBlog(newsItem);
+    setDetailModalVisible(true);
+  };
+
+  const handleDeleteNews = async (newsId) => {
+    const newsItem = findNewsById(news, newsId);
+
+    if (!newsItem) {
+      message.error("Không tìm thấy bài viết!");
+      return;
+    }
+
+    const newsUserId = getNewsUserId(newsItem);
+    const currentUserId =
+      currentUser?.id || currentUser?.userId || currentUser?.userID;
+
+    // Kiểm tra quyền: admin hoặc chính user đó
+    const canDelete =
+      currentUser &&
+      (currentUser.role === "4" || // Admin role
+        currentUser.role === "admin" || // Fallback for string role
+        currentUser.role === "Admin" || // Fallback for string role
+        String(newsUserId) === String(currentUserId));
+
+    if (!canDelete) {
+      message.error("Bạn không có quyền xóa bài viết này!");
+      return;
+    }
+
+    try {
+      const actualNewsId = getNewsId(newsItem);
+      await newsService.deleteNews(actualNewsId);
+
+      // Update local state
+      setNews((prev) =>
+        prev.filter((n) => {
+          const nId = getNewsId(n);
+          return nId !== actualNewsId;
+        })
+      );
+
+      // Refresh news from server to ensure UI is in sync
+      try {
+        const refreshedNews = await newsService.fetchAllNews();
+        setNews(Array.isArray(refreshedNews) ? refreshedNews : []);
+      } catch (refreshError) {
+        console.error("Error refreshing news:", refreshError);
+      }
+
+      message.success("Xóa bài viết tin tức thành công!");
+    } catch (error) {
+      console.error("Error deleting news:", error);
+      message.error("Có lỗi xảy ra khi xóa bài viết tin tức!");
+    }
   };
 
   if (loading) {
@@ -394,15 +368,6 @@ const BlogManagement = () => {
     <DoctorLayout
       pageTitle="Quản lý Blog"
       pageDescription="Tạo, chỉnh sửa và quản lý các bài viết tài liệu, tin tức, thông báo của khoa Huyết học."
-      pageActions={[
-        {
-          label: "Tạo bài viết mới",
-          icon: <PlusOutlined />,
-          type: "primary",
-          onClick:
-            activeTab === "Tài liệu" ? handleCreateArticle : handleCreateBlog,
-        },
-      ]}
     >
       <Card style={{ marginBottom: 24 }}>
         <Tabs
@@ -411,37 +376,35 @@ const BlogManagement = () => {
           items={tabCategories.map((tab) => ({
             key: tab.key,
             label: tab.label,
-            children:
-              tab.key === "Tài liệu" ? (
-                <>
-                  <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
-                    <Input.Search
-                      placeholder="Tìm kiếm bài viết..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{ width: 260 }}
-                      allowClear
-                    />
-                  </Space>
-                  <Table
-                    columns={getArticleColumns()}
-                    dataSource={getFilteredArticles()}
-                    rowKey="articleId"
-                    loading={articleLoading}
-                    pagination={{ pageSize: 8 }}
-                    bordered
+            children: (
+              <>
+                <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
+                  <Input.Search
+                    placeholder="Tìm kiếm bài viết..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ width: 260 }}
+                    allowClear
                   />
-                </>
-              ) : (
-                <>
-                  <Space style={{ marginBottom: 16, flexWrap: "wrap" }}>
-                    <Input.Search
-                      placeholder="Tìm kiếm bài viết..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{ width: 260 }}
-                      allowClear
-                    />
+                  {tab.key === "Tài liệu" && (
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => navigate("/doctor/blog/create-article")}
+                    >
+                      Thêm bài viết mới
+                    </Button>
+                  )}
+                  {tab.key === "Tin tức" && (
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => navigate("/doctor/blog/create-news")}
+                    >
+                      Thêm bài viết mới
+                    </Button>
+                  )}
+                  {tab.key === "Tin tức" && (
                     <Select
                       value={statusFilter}
                       onChange={setStatusFilter}
@@ -451,17 +414,45 @@ const BlogManagement = () => {
                       <Option value="published">Đã đăng</Option>
                       <Option value="draft">Bản nháp</Option>
                     </Select>
-                  </Space>
+                  )}
+                </Space>
+                {tab.key === "Tài liệu" ? (
                   <Table
-                    columns={getColumns(tab.key)}
-                    dataSource={getFilteredBlogs(tab.key)}
-                    rowKey="id"
-                    loading={loading}
+                    className="admin-blog-table"
+                    columns={BlogTableColumns({
+                      activeTab: "Tài liệu",
+                      userMap,
+                      onView: handleViewArticle,
+                      onEdit: handleEditArticle,
+                      onDelete: handleDeleteArticle,
+                      currentUser,
+                    })}
+                    dataSource={getFilteredArticles()}
+                    rowKey="articleId"
+                    loading={articleLoading}
                     pagination={{ pageSize: 8 }}
                     bordered
                   />
-                </>
-              ),
+                ) : tab.key === "Tin tức" ? (
+                  <Table
+                    className="admin-blog-table"
+                    columns={BlogTableColumns({
+                      activeTab: "Tin tức",
+                      userMap,
+                      onView: handleViewNews,
+                      onEdit: handleEditNews,
+                      onDelete: handleDeleteNews,
+                      currentUser,
+                    })}
+                    dataSource={getFilteredNews()}
+                    rowKey={(record) => getNewsId(record) || record.title}
+                    loading={newsLoading}
+                    pagination={{ pageSize: 8 }}
+                    bordered
+                  />
+                ) : null}
+              </>
+            ),
           }))}
         />
       </Card>
@@ -470,33 +461,71 @@ const BlogManagement = () => {
         selectedBlog={selectedBlog}
         activeTab={activeTab}
         editImage={editImage}
+        tags={tags}
+        tagsLoading={tagsLoading}
         onCancel={() => setEditModalVisible(false)}
         onSubmit={async () => {
           try {
             const values = await form.validateFields();
-            if (selectedBlog && selectedBlog.articleId) {
-              // Edit
-              await bloodArticleService.updateBlog(selectedBlog.articleId, {
-                ...values,
-                imgUrl: editImage,
-                userId: currentUser.id,
-              });
-              message.success("Cập nhật bài viết thành công!");
-            } else {
-              // Create
-              await bloodArticleService.updateBlog("", {
-                ...values,
-                imgUrl: editImage,
-                userId: currentUser.id,
-              });
-              message.success("Tạo bài viết thành công!");
+
+            const currentUserId =
+              currentUser?.id || currentUser?.userId || currentUser?.userID;
+
+            if (activeTab === "Tài liệu") {
+              if (selectedBlog && selectedBlog.articleId) {
+                const updateData = {
+                  ...values,
+                  tagIds: values.tags || [],
+                  imgUrl: editImage,
+                  userId: currentUserId,
+                };
+                await bloodArticleService.updateArticle(
+                  selectedBlog.articleId,
+                  updateData
+                );
+                message.success("Cập nhật bài viết thành công!");
+              } else {
+                const createData = {
+                  ...values,
+                  tagIds: values.tags || [],
+                  imgUrl: editImage,
+                  userId: currentUserId,
+                };
+                await bloodArticleService.createArticle(createData);
+                message.success("Tạo bài viết thành công!");
+              }
+              const articlesData = await bloodArticleService.getBloodArticles();
+              setArticles(Array.isArray(articlesData) ? articlesData : []);
+            } else if (activeTab === "Tin tức") {
+              if (selectedBlog && getNewsId(selectedBlog)) {
+                const newsId = getNewsId(selectedBlog);
+                const updateData = {
+                  ...values,
+                  tagIds: values.tags || [],
+                  imgUrl: editImage,
+                  userId: currentUserId,
+                };
+                await newsService.updateNews(newsId, updateData);
+                message.success("Cập nhật bài viết tin tức thành công!");
+              } else {
+                const createData = {
+                  ...values,
+                  tagIds: values.tags || [],
+                  imgUrl: editImage,
+                  userId: currentUserId,
+                };
+                await newsService.createNews(createData);
+                message.success("Tạo bài viết tin tức thành công!");
+              }
+              const data = await newsService.fetchAllNews();
+              setNews(Array.isArray(data) ? data : []);
             }
             setEditModalVisible(false);
-            // Refresh list
-            const data = await bloodArticleService.getBloodArticles();
-            setArticles(Array.isArray(data) ? data : []);
-          } catch {
+          } catch (error) {
+            console.error("Error saving:", error);
             message.error("Có lỗi xảy ra khi lưu bài viết!");
+            // Đảm bảo modal đóng ngay cả khi có lỗi
+            setEditModalVisible(false);
           }
         }}
         onImageChange={setEditImage}
@@ -506,11 +535,15 @@ const BlogManagement = () => {
         visible={detailModalVisible}
         selectedBlog={selectedBlog}
         activeTab={activeTab}
-        userMap={{}}
+        userMap={userMap}
         onClose={() => setDetailModalVisible(false)}
         onDelete={(id) => {
           setDetailModalVisible(false);
-          handleDeleteArticle(id);
+          if (activeTab === "Tài liệu") {
+            handleDeleteArticle(id);
+          } else {
+            handleDeleteNews(id);
+          }
         }}
       />
     </DoctorLayout>

@@ -35,7 +35,12 @@ const BlogPage = ({ CustomNavbar, hideNavbar }) => {
       item.summary?.toLowerCase().includes(lower) ||
       item.content?.toLowerCase().includes(lower) ||
       (Array.isArray(item.tags) &&
-        item.tags.some((tag) => tag.toLowerCase().includes(lower)))
+        item.tags.some((tag) => {
+          // Xử lý cả string và object tags
+          const tagText =
+            typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+          return tagText.toLowerCase().includes(lower);
+        }))
     );
   };
   const {

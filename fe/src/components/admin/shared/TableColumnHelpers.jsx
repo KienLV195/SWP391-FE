@@ -100,7 +100,15 @@ export const createTagsColumn = (dataIndex = "tags") => ({
   key: "tags",
   render: (tags) => {
     if (!tags || tags.length === 0) return "-";
-    return tags.map((tag, idx) => <Tag key={idx}>{tag}</Tag>);
+    return tags.map((tag, idx) => {
+      // Xử lý cả string và object tags
+      const tagText =
+        typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+      const tagKey =
+        typeof tag === "object" && tag.tagId ? tag.tagId : tag || idx;
+
+      return <Tag key={tagKey}>{tagText}</Tag>;
+    });
   },
 });
 

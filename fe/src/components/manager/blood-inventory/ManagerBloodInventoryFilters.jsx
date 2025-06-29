@@ -76,6 +76,25 @@ export default function ManagerBloodInventoryFilters({
           ))}
         </Select>
       </Col>
+      <Col xs={24} sm={8} md={6}>
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ fontWeight: "bold", color: "#20374E" }}>
+            Máu hiếm:
+          </label>
+        </div>
+        <Select
+          value={filters.isRare || "all"}
+          onChange={(value) =>
+            setFilters((prev) => ({ ...prev, isRare: value }))
+          }
+          style={{ width: "100%" }}
+          placeholder="Chọn máu hiếm"
+        >
+          <Option value="all">Tất cả</Option>
+          <Option value="true">Hiếm</Option>
+          <Option value="false">Không hiếm</Option>
+        </Select>
+      </Col>
     </Row>
   );
 }

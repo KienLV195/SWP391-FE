@@ -1,6 +1,6 @@
 // src/styles/index.scss
-@use './base/variables' as vars;
-@use './base/mixin' as mix;
+@use "./base/variables" as vars;
+@use "./base/mixin" as mix;
 
 // Áp dụng reset và base cho toàn cục
 * {
@@ -10,3 +10,6 @@
 body {
   @include mix.body-base();
 }
+
+// Import page styles
+@import "./pages/BlogManagementNew.scss";

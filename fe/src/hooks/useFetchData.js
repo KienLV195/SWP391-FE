@@ -21,7 +21,9 @@ const useRequest = (apiFn, deps = []) => {
         // Nếu trả về response của axios, lấy .data
         if (result && result.data !== undefined) result = result.data;
       }
-      setData(result);
+
+      // Đảm bảo result luôn là mảng
+      setData(Array.isArray(result) ? result : []);
     } catch (err) {
       setError(err?.message || "Đã xảy ra lỗi khi tải dữ liệu");
     } finally {

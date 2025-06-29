@@ -9,7 +9,6 @@ export async function getUsers() {
   return response.data;
 }
 
-// Force reload user list, tránh cache bằng cách thêm query string random
 export async function getUsersForce() {
   const url = `${API_URL}?_=${Date.now()}`;
   const response = await axios.get(url);

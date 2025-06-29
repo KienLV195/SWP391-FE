@@ -34,7 +34,11 @@ const useSearchAndFilter = (data, options = {}) => {
         if (!value) return false;
 
         if (Array.isArray(value)) {
-          return value.some((v) => v.toLowerCase().includes(lowerTerm));
+          return value.some((v) => {
+            // Xử lý cả string và object tags
+            const tagText = typeof v === "object" && v.tagName ? v.tagName : v;
+            return tagText.toLowerCase().includes(lowerTerm);
+          });
         }
 
         return value.toLowerCase().includes(lowerTerm);
@@ -54,9 +58,12 @@ const useSearchAndFilter = (data, options = {}) => {
 
   // Combined filtering logic
   const filteredData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    // Đảm bảo data luôn là mảng
+    const dataArray = Array.isArray(data) ? data : [];
 
-    let result = data;
+    if (dataArray.length === 0) return [];
+
+    let result = dataArray;
 
     // Apply search
     if (debouncedSearchTerm) {

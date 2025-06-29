@@ -2,8 +2,8 @@
 $primary-color: #1976d2; // Xanh dương chính
 $primary-hover: #1565c0; // Xanh dương khi hover
 $secondary-color: #d32f2f; // Đỏ chính
-$secondary-hover: #C21121; // Đỏ khi hover
-$dark-blue: #02314B; // Xanh đậm cho nền section
+$secondary-hover: #c21121; // Đỏ khi hover
+$dark-blue: #02314b; // Xanh đậm cho nền section
 $background-main: #f6fbfd; // Nền chính
 $background-box: #e3f2fd; // Nền hộp (nhóm máu dương)
 $background-box-secondary: #ffebee; // Nền hộp (nhóm máu âm)
@@ -68,7 +68,7 @@ $font-secondary: "Open Sans", "Roboto", "Inter", Arial, Helvetica, sans-serif;
 $font-manager: "Inter", "Roboto", "Segoe UI", sans-serif; // Font cho Manager
 
 // Extended colors
-$accent-color: #02314B; // Same as dark-blue
+$accent-color: #02314b; // Same as dark-blue
 $primary-light: #e3f2fd;
 $secondary-light: #ffebee;
 $secondary-dark: #b71c1c;
@@ -79,10 +79,10 @@ $error-color: #f44336;
 $info-color: #2196f3;
 
 // Manager Theme Colors (Minimalistic)
-$manager-primary: #D93E4C; // Màu chính cho Manager - nổi bật
-$manager-dark: #20374E; // Nền tối sang trọng cho báo cáo
-$manager-warm: #DECCAA; // Màu ấm áp cho vùng phụ trợ
-$manager-emergency: #D91022; // Cảnh báo/khẩn cấp
+$manager-primary: #d93e4c; // Màu chính cho Manager - nổi bật
+$manager-dark: #20374e; // Nền tối sang trọng cho báo cáo
+$manager-warm: #deccaa; // Màu ấm áp cho vùng phụ trợ
+$manager-emergency: #d91022; // Cảnh báo/khẩn cấp
 $manager-bg: #ffffff; // Nền trắng
 $manager-bg-light: #f5f7fa; // Nền xanh nhạt
 $manager-text: #2c3e50; // Text chính
@@ -100,11 +100,19 @@ $background-card: #ffffff;
 $background-section: #f8f9fa;
 $background-light: #f6f6f6;
 
+// Background variants
+$bg-light: #f8f9fa;
+$bg-hover: #f1f3f4;
+
 $border-medium: #dee2e6;
+
+// Border colors
+$border-color: #e9ecef;
 
 // Border radius
 $border-radius-sm: 4px;
 $border-radius-base: 8px;
+$border-radius-md: 6px;
 $border-radius-lg: 12px;
 $border-radius-full: 50%;
 
@@ -117,3 +125,13 @@ $line-height-relaxed: 1.75;
 $z-index-dropdown: 1000;
 $z-index-fixed: 1020;
 $z-index-modal: 1050;
+
+// Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);

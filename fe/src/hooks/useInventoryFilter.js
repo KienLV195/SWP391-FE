@@ -16,6 +16,13 @@ export default function useInventoryFilter(inventory, filters) {
     if (filters.status && filters.status !== "all") {
       filtered = filtered.filter((item) => item.status === filters.status);
     }
+    if (filters.isRare && filters.isRare !== "all") {
+      filtered = filtered.filter((item) => {
+        if (filters.isRare === "true") return item.isRare === true;
+        if (filters.isRare === "false") return item.isRare === false;
+        return true;
+      });
+    }
     return filtered;
   }, [inventory, filters]);
 }

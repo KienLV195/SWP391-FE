@@ -1,5 +1,5 @@
-@use '../base/variables' as vars;
-@use '../base/mixin' as mixins;
+@use "../base/variables" as vars;
+@use "../base/mixin" as mixins;
 
 // Layout for Doctor/Manager with sidebar
 .doctor-layout,
@@ -40,7 +40,11 @@
 
     .header-content {
       h1 {
-        @include mixins.heading(vars.$font-size-3xl, vars.$font-weight-bold, vars.$text-primary);
+        @include mixins.heading(
+          vars.$font-size-3xl,
+          vars.$font-weight-bold,
+          vars.$text-primary
+        );
         @include mixins.text-gradient(vars.$accent-color, vars.$primary-color);
         margin-bottom: vars.$spacing-2;
       }
@@ -164,7 +168,11 @@
           gap: vars.$spacing-3;
 
           .category {
-            @include mixins.text(vars.$font-size-xs, vars.$primary-color, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$primary-color,
+              vars.$font-weight-medium
+            );
             background: vars.$primary-light;
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
@@ -173,7 +181,11 @@
           }
 
           .status-badge {
-            @include mixins.text(vars.$font-size-xs, vars.$white, vars.$font-weight-medium);
+            @include mixins.text(
+              vars.$font-size-xs,
+              vars.$white,
+              vars.$font-weight-medium
+            );
             padding: vars.$spacing-1 vars.$spacing-2;
             border-radius: vars.$border-radius-sm;
             text-transform: uppercase;
@@ -199,28 +211,52 @@
 
         .blog-actions {
           @include mixins.flex-align(center, center);
-          gap: vars.$spacing-1;
+          gap: vars.$spacing-2;
 
-          .action-btn {
-            @include mixins.button-ghost(vars.$text-secondary);
-            padding: vars.$spacing-2;
+          .btn-icon {
+            @include mixins.button-icon;
+            @include mixins.flex-align(center, center);
+            width: 32px;
+            height: 32px;
             border-radius: vars.$border-radius-sm;
-            font-size: vars.$font-size-sm;
             transition: all 0.2s ease;
 
-            &.view:hover {
-              background: vars.$info-color;
-              color: vars.$white;
+            &:hover {
+              transform: translateY(-1px);
+              @include mixins.shadow-elevation(2);
             }
 
-            &.edit:hover {
-              background: vars.$warning-color;
-              color: vars.$white;
+            &.btn-view {
+              background: vars.$primary-light;
+              color: vars.$primary-color;
+              border: 1px solid vars.$primary-color;
+
+              &:hover {
+                background: vars.$primary-color;
+                color: vars.$white;
+              }
             }
 
-            &.delete:hover {
-              background: vars.$error-color;
-              color: vars.$white;
+            &.btn-edit {
+              background: vars.$success-light;
+              color: vars.$success-color;
+              border: 1px solid vars.$success-color;
+
+              &:hover {
+                background: vars.$success-color;
+                color: vars.$white;
+              }
+            }
+
+            &.btn-delete {
+              background: vars.$danger-light;
+              color: vars.$danger-color;
+              border: 1px solid vars.$danger-color;
+
+              &:hover {
+                background: vars.$danger-color;
+                color: vars.$white;
+              }
             }
           }
         }
@@ -230,50 +266,49 @@
         padding: vars.$spacing-6;
 
         .blog-title {
-          @include mixins.heading(vars.$font-size-lg, vars.$font-weight-semibold, vars.$text-primary);
+          @include mixins.heading(
+            vars.$font-size-lg,
+            vars.$font-weight-semibold,
+            vars.$text-primary
+          );
           margin-bottom: vars.$spacing-3;
-          line-height: vars.$line-height-tight;
+          line-height: 1.4;
           display: -webkit-box;
+          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          max-height: 2.8em; // 2 dòng
         }
 
         .blog-excerpt {
-          @include mixins.text(vars.$font-size-sm, vars.$text-secondary);
-          line-height: vars.$line-height-relaxed;
+          @include mixins.text(vars.$font-size-base, vars.$text-secondary);
+          line-height: 1.6;
+          margin-bottom: vars.$spacing-4;
           display: -webkit-box;
+          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          max-height: 4.8em; // 3 dòng
-          margin: 0;
         }
-      }
 
-      .blog-footer {
-        padding: vars.$spacing-4 vars.$spacing-6;
-        border-top: 1px solid vars.$border-light;
-        background: vars.$background-light;
+        .blog-footer {
+          @include mixins.flex-between;
+          @include mixins.text(vars.$font-size-sm, vars.$text-muted);
 
-        .blog-info {
-          @include mixins.flex-align(flex-start, center);
-          gap: vars.$spacing-4;
-          flex-wrap: wrap;
-
-          span {
+          .blog-stats {
             @include mixins.flex-align(center, center);
-            gap: vars.$spacing-1;
-            @include mixins.text(vars.$font-size-xs, vars.$text-muted);
+            gap: vars.$spacing-4;
 
-            i {
-              font-size: vars.$font-size-xs;
-              color: vars.$text-muted;
+            .stat-item {
+              @include mixins.flex-align(center, center);
+              gap: vars.$spacing-1;
+
+              i {
+                font-size: vars.$font-size-sm;
+              }
             }
           }
 
-          .author {
-            color: vars.$text-secondary;
-            font-weight: vars.$font-weight-medium;
+          .blog-date {
+            @include mixins.text(vars.$font-size-xs, vars.$text-muted);
           }
         }
       }
@@ -282,24 +317,28 @@
 
   .empty-state {
     @include mixins.card-base;
-    @include mixins.card-padding(vars.$spacing-16);
+    @include mixins.card-padding(vars.$spacing-12);
     text-align: center;
-    grid-column: 1 / -1;
+    margin: vars.$spacing-8 0;
 
-    i {
-      font-size: vars.$font-size-5xl;
+    .empty-icon {
+      font-size: 4rem;
       color: vars.$text-muted;
-      margin-bottom: vars.$spacing-6;
+      margin-bottom: vars.$spacing-4;
     }
 
     h3 {
-      @include mixins.heading(vars.$font-size-xl, vars.$font-weight-semibold, vars.$text-primary);
-      margin-bottom: vars.$spacing-3;
+      @include mixins.heading(
+        vars.$font-size-xl,
+        vars.$font-weight-semibold,
+        vars.$text-primary
+      );
+      margin-bottom: vars.$spacing-2;
     }
 
     p {
       @include mixins.text(vars.$font-size-base, vars.$text-secondary);
-      margin-bottom: vars.$spacing-8;
+      margin-bottom: vars.$spacing-6;
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
@@ -307,46 +346,44 @@
 
     .btn-primary {
       @include mixins.button-primary;
+      @include mixins.flex-align(center, center);
+      gap: vars.$spacing-2;
+      margin: 0 auto;
     }
   }
 
-  .loading-spinner {
-    @include mixins.flex-center;
-    flex-direction: column;
-    padding: vars.$spacing-16;
-    gap: vars.$spacing-4;
+  .loading-state {
+    @include mixins.card-base;
+    @include mixins.card-padding(vars.$spacing-12);
+    text-align: center;
+    margin: vars.$spacing-8 0;
 
-    .spinner {
+    .loading-spinner {
       width: 40px;
       height: 40px;
       border: 4px solid vars.$border-light;
       border-top: 4px solid vars.$primary-color;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+      margin: 0 auto vars.$spacing-4;
     }
 
     p {
       @include mixins.text(vars.$font-size-base, vars.$text-secondary);
-      margin: 0;
     }
   }
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  // === RESPONSIVE DESIGN ===
-  @include mixins.tablet {
-    padding: vars.$spacing-4;
-
+// Responsive adjustments
+@include mixins.tablet {
+  .blog-management {
     .page-header {
       flex-direction: column;
       gap: vars.$spacing-4;
-      text-align: center;
+      align-items: flex-start;
 
       .btn-primary {
-        align-self: center;
+        align-self: stretch;
       }
     }
 
@@ -359,83 +396,46 @@
       }
 
       .filter-controls {
-        width: 100%;
-        justify-content: stretch;
-
-        .filter-select {
-          flex: 1;
-          min-width: auto;
-        }
+        justify-content: flex-start;
       }
     }
 
     .blogs-grid {
       grid-template-columns: 1fr;
-      gap: vars.$spacing-4;
     }
   }
+}
 
-  @include mixins.mobile {
-    padding: vars.$spacing-3;
-
+@include mixins.mobile {
+  .blog-management {
     .page-header {
-      padding: vars.$spacing-4;
-
-      .header-content h1 {
-        font-size: vars.$font-size-2xl;
+      .header-content {
+        .content-guide {
+          flex-direction: column;
+          align-items: flex-start;
+        }
       }
     }
 
     .filters-section {
-      padding: vars.$spacing-4;
-    }
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: vars.$spacing-3;
 
-    .blog-card {
-      .blog-header {
-        padding: vars.$spacing-3 vars.$spacing-4;
-
-        .blog-meta {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: vars.$spacing-2;
-        }
-
-        .blog-actions {
-          gap: vars.$spacing-2;
-        }
-      }
-
-      .blog-content {
-        padding: vars.$spacing-4;
-      }
-
-      .blog-footer {
-        padding: vars.$spacing-3 vars.$spacing-4;
-
-        .blog-info {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: vars.$spacing-2;
+        .filter-select {
+          min-width: auto;
         }
       }
     }
   }
+}
 
-  // Auto-published badge for Doctor
-  .auto-published-badge {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: auto;
-
-    i {
-      font-size: 0.9rem;
-    }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

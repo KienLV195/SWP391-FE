@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { message } from "antd";
 import useRequest from "./useFetchData";
 import {
@@ -18,7 +18,7 @@ const CATEGORY_OPTIONS = [
   { value: "Theo dõi hoạt động", label: "Theo dõi hoạt động" },
 ];
 
-export const useBlogApproval = () => {
+export const useBlogApproval = (currentUser) => {
   const {
     data: blogs = [],
     loading: blogsLoading,
@@ -45,6 +45,34 @@ export const useBlogApproval = () => {
   const [editMode, setEditMode] = useState(false);
   const [editImage, setEditImage] = useState(null);
   const [userMap, setUserMap] = useState({});
+
+  // Polling ref for activity logs
+  const pollingIntervalRef = useRef(null);
+
+  // Polling effect for activity logs
+  useEffect(() => {
+    // Clear any existing interval
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
+    // Start polling only when on activity logs tab
+    if (activeTab === "Theo dõi hoạt động") {
+      // Set up polling every 3 seconds for more responsive updates
+      pollingIntervalRef.current = setInterval(() => {
+        refetchActivityLogs();
+      }, 3000);
+    }
+
+    // Cleanup function
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [activeTab, refetchActivityLogs]);
 
   const customFilterFn = (item) => {
     if (dateFilter) {
@@ -74,13 +102,13 @@ export const useBlogApproval = () => {
   const getCurrentData = () => {
     switch (activeTab) {
       case "Tài liệu":
-        return blogs;
+        return Array.isArray(blogs) ? blogs : [];
       case "Tin tức":
-        return news;
+        return Array.isArray(news) ? news : [];
       case "Theo dõi hoạt động":
-        return activityLogs;
+        return Array.isArray(activityLogs) ? activityLogs : [];
       default:
-        return blogs;
+        return Array.isArray(blogs) ? blogs : [];
     }
   };
 
@@ -109,7 +137,7 @@ export const useBlogApproval = () => {
   } = useSearchAndFilter(currentData, {
     searchFields:
       activeTab === "Theo dõi hoạt động"
-        ? ["description", "activityType", "entityType"]
+        ? ["description", "activityType", "entityType", "userName", "roleName"]
         : ["title", "content", "tags"],
     filterField: activeTab === "Theo dõi hoạt động" ? null : "category",
     filterFn: customFilterFn,
@@ -118,17 +146,17 @@ export const useBlogApproval = () => {
       const lowerTerm = term.toLowerCase();
 
       if (activeTab === "Theo dõi hoạt động") {
-        const textMatch = ["description", "activityType", "entityType"].some(
-          (field) => {
-            const value = item[field];
-            if (!value) return false;
-            return value.toLowerCase().includes(lowerTerm);
-          }
-        );
-
-        const userMatch =
-          userMap[item.userID] &&
-          userMap[item.userID].toLowerCase().includes(lowerTerm);
+        const textMatch = [
+          "description",
+          "activityType",
+          "entityType",
+          "userName",
+          "roleName",
+        ].some((field) => {
+          const value = item[field];
+          if (!value) return false;
+          return value.toLowerCase().includes(lowerTerm);
+        });
 
         const dateMatch =
           item.createdAt &&
@@ -136,14 +164,18 @@ export const useBlogApproval = () => {
             .toLocaleDateString("vi-VN")
             .includes(lowerTerm);
 
-        return textMatch || userMatch || dateMatch;
+        return textMatch || dateMatch;
       } else {
         const textMatch = ["title", "content", "tags"].some((field) => {
           const value = item[field];
           if (!value) return false;
 
           if (Array.isArray(value)) {
-            return value.some((v) => v.toLowerCase().includes(lowerTerm));
+            return value.some((v) => {
+              const tagText =
+                typeof v === "object" && v.tagName ? v.tagName : v;
+              return tagText.toLowerCase().includes(lowerTerm);
+            });
           }
 
           return value.toLowerCase().includes(lowerTerm);
@@ -170,6 +202,17 @@ export const useBlogApproval = () => {
   useEffect(() => {
     setActiveTabFilter(activeTab);
   }, [activeTab, setActiveTabFilter]);
+
+  // Refetch data when tab changes
+  useEffect(() => {
+    if (activeTab === "Tài liệu") {
+      refetchBlogs();
+    } else if (activeTab === "Tin tức") {
+      refetchNews();
+    } else if (activeTab === "Theo dõi hoạt động") {
+      refetchActivityLogs();
+    }
+  }, [activeTab, refetchBlogs, refetchNews, refetchActivityLogs]);
 
   useEffect(() => {
     getUsers()
@@ -216,15 +259,21 @@ export const useBlogApproval = () => {
         message.error("Tiêu đề và nội dung không được để trống!");
         return;
       }
+
+      const userId =
+        currentUser?.id || currentUser?.userId || currentUser?.userID;
+
       try {
         if (activeTab === "Tài liệu") {
-          await updateBlog(selectedBlog.articleId, {
+          const updateData = {
             ...values,
             tags: Array.isArray(values.tags)
               ? values.tags.join(",")
               : values.tags,
             imgUrl: editImage,
-          });
+            userId,
+          };
+          await updateBlog(selectedBlog.articleId, updateData);
           refetchBlogs();
         } else {
           // TODO: Implement update news when API is ready
@@ -233,8 +282,11 @@ export const useBlogApproval = () => {
         }
         setShowModal(false);
         message.success("Cập nhật bài viết thành công!");
-      } catch {
+      } catch (error) {
+        console.error("Error updating blog:", error);
         message.error("Cập nhật bài viết thất bại!");
+        // Đảm bảo modal đóng ngay cả khi có lỗi
+        setShowModal(false);
       }
     });
   };

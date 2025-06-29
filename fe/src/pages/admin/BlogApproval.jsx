@@ -15,9 +15,26 @@ import {
   HistoryOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import authService from "../../services/authService";
 
 const BlogApproval = () => {
   const [form] = Form.useForm();
+
+  // Lấy currentUser từ authService, nếu null thì lấy từ localStorage
+  let currentUser = authService.getCurrentUser();
+  if (!currentUser) {
+    try {
+      const userData = localStorage.getItem("currentUser");
+      if (userData) {
+        currentUser = JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error(
+        "Error loading currentUser from localStorage in Admin:",
+        error
+      );
+    }
+  }
 
   const {
     activeTab,
@@ -40,7 +57,7 @@ const BlogApproval = () => {
     handleViewBlog,
     handleCloseModal,
     setSearchTerm,
-  } = useBlogApproval();
+  } = useBlogApproval(currentUser);
 
   const handleModalSubmit = () => {
     handleEditSubmit(form);
@@ -52,6 +69,7 @@ const BlogApproval = () => {
     onView: handleViewBlog,
     onEdit: handleEditBlog,
     onDelete: handleDeleteBlog,
+    currentUser,
   });
 
   return (
@@ -140,6 +158,7 @@ const BlogApproval = () => {
         </div>
 
         <AdminTable
+          key={activeTab}
           columns={columns}
           data={filteredItems}
           loading={currentLoading}
@@ -148,7 +167,7 @@ const BlogApproval = () => {
               ? "articleId"
               : activeTab === "Tin tức"
               ? "postId"
-              : "id"
+              : "logId"
           }
         />
       </AdminCard>

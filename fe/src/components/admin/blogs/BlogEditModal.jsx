@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Form, Input, Select, Upload, Button } from "antd";
 
 const { Option } = Select;
@@ -8,11 +8,37 @@ const BlogEditModal = ({
   selectedBlog,
   activeTab,
   editImage,
+  tags = [],
+  tagsLoading = false,
   onCancel,
   onSubmit,
   onImageChange,
   form,
 }) => {
+  useEffect(() => {
+    if (selectedBlog && tags && !tagsLoading) {
+      // Format tags for the form
+      const formattedTags =
+        selectedBlog.tags
+          ?.map((tag) => {
+            if (typeof tag === "object" && tag.tagId && tag.tagName) {
+              return tag.tagId;
+            } else if (typeof tag === "string") {
+              return tag;
+            } else {
+              return "";
+            }
+          })
+          .filter(Boolean) || [];
+
+      form.setFieldsValue({
+        title: selectedBlog.title,
+        content: selectedBlog.content,
+        tags: formattedTags,
+      });
+    }
+  }, [selectedBlog, tags, tagsLoading, form]);
+
   if (!selectedBlog) return null;
 
   return (
@@ -64,9 +90,33 @@ const BlogEditModal = ({
             )}
           </Upload>
         </Form.Item>
-        {activeTab === "Tài liệu" && (
+        {(activeTab === "Tài liệu" || activeTab === "Tin tức") && (
           <Form.Item name="tags" label="Tags">
-            <Select mode="tags" style={{ width: "100%" }} allowClear />
+            <Select
+              mode="tags"
+              placeholder="Chọn tags hoặc nhập tags mới"
+              allowClear
+              loading={tagsLoading}
+              showSearch
+              style={{ width: "100%" }}
+            >
+              {tags.map((tag) => {
+                // Xử lý cả string và object tags
+                const tagValue =
+                  typeof tag === "object" && tag.tagId ? tag.tagId : tag;
+                const tagText =
+                  typeof tag === "object" && tag.tagName ? tag.tagName : tag;
+
+                return (
+                  <Option key={tagValue} value={tagValue}>
+                    {tagText}
+                  </Option>
+                );
+              })}
+            </Select>
+            <small style={{ color: "#666", fontSize: "12px" }}>
+              Bạn có thể chọn tags có sẵn hoặc nhập tags mới
+            </small>
           </Form.Item>
         )}
       </Form>

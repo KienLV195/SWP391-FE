@@ -63,7 +63,7 @@ const MemberInfoPage = () => {
   const [districtList, setDistrictList] = useState([]);
   const [wardList, setWardList] = useState([]);
   const [isValid, setIsValid] = useState(false);
-  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [notification, setNotification] = useState({ message: "", type: "" });
 
   // Thêm hàm fetchUserInfo để lấy thông tin người dùng từ API
   const fetchUserInfo = async () => {
@@ -72,8 +72,8 @@ const MemberInfoPage = () => {
         ` https://localhost:7021/api/Information/${currentUser.id}`,
         {
           headers: {
-            Authorization: `Bearer ${currentUser.token}`
-          }
+            Authorization: `Bearer ${currentUser.token}`,
+          },
         }
       );
 
@@ -82,7 +82,7 @@ const MemberInfoPage = () => {
 
         // Format date from "2003-02-16T00:00:00" to "2003-02-16"
         const formattedDate = userData.dateOfBirth
-          ? userData.dateOfBirth.split('T')[0]
+          ? userData.dateOfBirth.split("T")[0]
           : "";
 
         // Cập nhật form với dữ liệu mới
@@ -283,9 +283,9 @@ const MemberInfoPage = () => {
           dataToSave,
           {
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${currentUser.token}`
-            }
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${currentUser.token}`,
+            },
           }
         );
 
@@ -310,8 +310,11 @@ const MemberInfoPage = () => {
 
           // Lấy thông tin mới nhất từ database sau khi lưu thành công
           await fetchUserInfo();
-          setNotification({ message: "Lưu thông tin thành công!", type: "success" });
-          setTimeout(() => setNotification({ message: '', type: '' }), 3500);
+          setNotification({
+            message: "Lưu thông tin thành công!",
+            type: "success",
+          });
+          setTimeout(() => setNotification({ message: "", type: "" }), 3500);
           console.log("Thông tin đã lưu:", dataToSave);
           if (isFirstTime) {
             navigate("/member", {
@@ -324,8 +327,11 @@ const MemberInfoPage = () => {
         if (error.response) {
           console.error("Response status:", error.response.status);
         }
-        setNotification({ message: "Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.", type: "error" });
-        setTimeout(() => setNotification({ message: '', type: '' }), 3500);
+        setNotification({
+          message: "Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại sau.",
+          type: "error",
+        });
+        setTimeout(() => setNotification({ message: "", type: "" }), 3500);
       }
     }
   };
@@ -344,7 +350,10 @@ const MemberInfoPage = () => {
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
 
@@ -370,18 +379,23 @@ const MemberInfoPage = () => {
         </div>
         <div className="member-info-form-box">
           {notification.message && (
-            <div style={{
-              marginBottom: 16,
-              padding: 12,
-              borderRadius: 6,
-              color: notification.type === 'success' ? '#155724' : '#721c24',
-              background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
-              border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
-              fontWeight: 500,
-              fontSize: '1.08rem',
-              textAlign: 'center',
-              transition: 'all 0.3s'
-            }}>
+            <div
+              style={{
+                marginBottom: 16,
+                padding: 12,
+                borderRadius: 6,
+                color: notification.type === "success" ? "#155724" : "#721c24",
+                background:
+                  notification.type === "success" ? "#d4edda" : "#f8d7da",
+                border: `1px solid ${
+                  notification.type === "success" ? "#c3e6cb" : "#f5c6cb"
+                }`,
+                fontWeight: 500,
+                fontSize: "1.08rem",
+                textAlign: "center",
+                transition: "all 0.3s",
+              }}
+            >
               {notification.message}
             </div>
           )}
@@ -409,25 +423,26 @@ const MemberInfoPage = () => {
               </div>{" "}
               <div className="form-group input-box">
                 <label style={{ fontSize: "1.1rem" }}>
-                  
-                  Số{form.documentType === "passport"
-                    ? " hộ chiếu"   
-                    : " căn cước công dân"} 
-                    <span className="text-danger">*</span>
+                  Số
+                  {form.documentType === "passport"
+                    ? " hộ chiếu"
+                    : " căn cước công dân"}
+                  <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.documentNumber ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.documentNumber ? " is-invalid" : ""
+                  }`}
                   name="documentNumber"
                   value={form.documentNumber}
                   onChange={handleChange}
                   style={{ fontSize: "1.1rem" }}
-                  placeholder={`Nhập ${form.documentType === "passport"
-                    ? "số hộ chiếu"
-                   
+                  placeholder={`Nhập ${
+                    form.documentType === "passport"
+                      ? "số hộ chiếu"
                       : "số CCCD (12 số)"
-                    }`}
+                  }`}
                 />
                 {errors.documentNumber && (
                   <div className="invalid-feedback">
@@ -441,8 +456,9 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.fullName ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.fullName ? " is-invalid" : ""
+                  }`}
                   name="fullName"
                   value={form.fullName}
                   onChange={handleChange}
@@ -459,8 +475,9 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="date"
-                  className={`form-control form-control-lg${errors.dob ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.dob ? " is-invalid" : ""
+                  }`}
                   name="dob"
                   value={form.dob}
                   onChange={handleChange}
@@ -596,8 +613,9 @@ const MemberInfoPage = () => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.address ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.address ? " is-invalid" : ""
+                  }`}
                   name="address"
                   value={form.address}
                   onChange={handleChange}
@@ -612,8 +630,9 @@ const MemberInfoPage = () => {
                 <label style={{ fontSize: "1.1rem" }}>Email</label>
                 <input
                   type="email"
-                  className={`form-control form-control-lg${errors.email ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.email ? " is-invalid" : ""
+                  }`}
                   name="email"
                   value={form.email}
                   onChange={handleChange}
@@ -628,8 +647,9 @@ const MemberInfoPage = () => {
                 <label style={{ fontSize: "1.1rem" }}>Số điện thoại</label>
                 <input
                   type="text"
-                  className={`form-control form-control-lg${errors.phone ? " is-invalid" : ""
-                    }`}
+                  className={`form-control form-control-lg${
+                    errors.phone ? " is-invalid" : ""
+                  }`}
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
@@ -640,7 +660,6 @@ const MemberInfoPage = () => {
                   <div className="invalid-feedback">{errors.phone}</div>
                 )}{" "}
               </div>
-
             </div>
           </form>
           <div className="member-info-actions">

@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBloodArticleDetail } from "../../services/bloodArticleService";
-import { Card, Spin, Tag, Typography, Button, Divider, Space } from "antd";
+import { Card, Spin, Typography, Button, Divider, Space } from "antd";
 import {
   ArrowLeftOutlined,
   ClockCircleOutlined,
@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import useRequest from "../../hooks/useFetchData";
 import "../../styles/pages/BloodInfoPage.scss";
+import ArticleTags from "../../components/common/ArticleTags";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -83,11 +84,7 @@ const ArticleDetailPage = () => {
             {Array.isArray(article.tags) && article.tags.length > 0 && (
               <div className="article-tags">
                 <TagOutlined className="tag-icon" />
-                {article.tags.map((tag) => (
-                  <Tag key={tag} color="blue">
-                    {tag}
-                  </Tag>
-                ))}
+                <ArticleTags tags={article.tags} />
               </div>
             )}
           </div>

@@ -21,10 +21,7 @@ const config = {
     auth: getEnvVar("VITE_AUTH_API", ""),
     information: getEnvVar("VITE_INFORMATION_API", ""),
     nominatim: getEnvVar("VITE_NOMINATIM_API", ""),
-    activityLog: getEnvVar(
-      "VITE_ACTIVITY_LOG_API",
-      "https://localhost:7021/api/ActivityLog/admin"
-    ),
+    activityLog: getEnvVar("VITE_ACTIVITY_LOG_API", ""),
   },
 
   // Application environment

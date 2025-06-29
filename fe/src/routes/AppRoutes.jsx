@@ -47,6 +47,8 @@ import SystemSettings from "../pages/admin/SystemSettings";
 // Doctor Blog Management
 import DoctorBlogManagement from "../pages/doctor/BlogManagement";
 import DoctorBlogEditor from "../pages/doctor/BlogEditor";
+import CreateArticlePage from "../pages/doctor/CreateArticlePage";
+import CreateNewsPage from "../pages/doctor/CreateNewsPage";
 
 import ProtectedRoute, {
   MemberRoute,
@@ -343,10 +345,18 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/doctor/blog/create",
+    path: "/doctor/blog/create-article",
     element: (
       <DoctorRoute>
-        <DoctorBlogEditor />
+        <CreateArticlePage />
+      </DoctorRoute>
+    ),
+  },
+  {
+    path: "/doctor/blog/create-news",
+    element: (
+      <DoctorRoute>
+        <CreateNewsPage />
       </DoctorRoute>
     ),
   },
